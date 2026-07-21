@@ -1,29 +1,42 @@
 using UnityEngine;
-using System; // Event'leri kullanabilmek için ekledim
-using System.Collections; // Zamanlayıcı (Coroutine) kullanabilmek için ekledim
+using System;
+using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
-    [Header("Can Ayarları")]
-    public int maxHealth = 100;
-    public int currentHealth;
-    private bool isShieldActive = false; // Kalkanın o an açık olup olmadığını takip etmesi için değişken tanımladım
+    // Kapsülleme (Encapsulation): Dışarıdan müdahaleye kapalı özel değişkenler
+    private int maxHealth;
+    private int currentHealth;
+    private bool isShieldActive = false; // Kalkanın o an açık olup olmadığını takip eden değişken
 
-    // Bedirhan'ın (UI ve Oyun Döngüsü sorumlusu) kendi sisteminde kullanacağı event'leri (tetikleyicileri) oluşturdum
-    public event Action<int> OnHealthChanged;
-    public event Action OnPlayerDeath;
+    
+    // Bedirhan'ın (UI ve Oyun Döngüsü sorumlusu) kendi sisteminde kullanacağı tetikleyiciler
+    public event Action<int, int> OnHealthChanged; // UI barının doğru oranlanması için hem current hem max canı gönderiyoruz
+    public event Action OnPlayerDeath; // Ölüm anında fırlatılacak olay
 
     private PlayerCarController carController;
 
     private void Awake()
     {
-        carController = GetComponent<PlayerCarController>();
+        carController = GetComponent<PlayerCarController>(); // Aynı objedeki araç kontrolcüsünü hafızaya aldım
     }
 
     private void Start()
     {
-        // Oyun başladığında canı fulledim
-        currentHealth = maxHealth;
+        // Can değerini Inspector'dan manuel girmek yerine, otomatik olarak seçili CarData'dan çekiyoruz
+        if (carController != null && carController.currentCarData != null)
+        {
+            maxHealth = carController.currentCarData.maxHealth;
+        }
+        else
+        {
+            maxHealth = 100; // Veri yoksa hata vermemesi için varsayılan güvenli değer
+        }
+
+        currentHealth = maxHealth; // Oyun başladığında canı fulledim
+
+        // Oyun başlar başlamaz Bedirhan'ın UI sistemini güncellemesi için ilk tetiklemeyi yapıyoruz
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
     private void Update()
@@ -35,7 +48,7 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    // Bedirhan'ın UI'dan çağıracağı Kalkan Fonksiyonunu hazırladım
+    // Bedirhan'ın UI'dan (veya yetenek sisteminden) çağıracağı Kalkan Fonksiyonu
     public void ActivateShield(float duration)
     {
         if (!isShieldActive) // Eğer kalkan zaten açık değilse açılmasını sağladım
@@ -44,25 +57,25 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    // Kalkanın ne kadar süre açık kalacağını hesaplaması için arka plan işlemi yazdım
+    // Kalkanın ne kadar süre açık kalacağını hesaplayan arka plan Coroutine işlemi
     private IEnumerator ShieldRoutine(float duration)
     {
         isShieldActive = true;
-        Debug.Log("🛡️ Kalkan AKTİF! Hasar alınmayacak.");
+        Debug.Log("🛡️ Kalkan AKTİF! Hasar alınmayacak."); 
 
-        yield return new WaitForSeconds(duration); // Belirttiğim süre kadar beklettim
+        yield return new WaitForSeconds(duration); // Belirtilen süre kadar beklettim
 
         isShieldActive = false;
-        Debug.Log("🛡️ Kalkan KAPANDI!");
+        Debug.Log("🛡️ Kalkan KAPANDI!"); 
     }
 
-    // Dışarıdan veya engellerden hasar alınca çalışacak olan fonksiyonu yazdım
+    // Dışarıdan veya engellerden hasar alınca çalışacak olan fonksiyon
     public void TakeDamage(int damageAmount)
     {
-        // KALKAN FIX: Kalkanın hasarı engellemesi için bu kontrolü ekledim. Kalkan açıksa hasar almadan fonksiyondan çıkıyor.
+        // KALKAN FIX: Kalkan açıksa hasar almadan fonksiyondan çıkılıyor
         if (isShieldActive)
         {
-            Debug.Log("Bloklandı! Kalkan hasarı emdi.");
+            Debug.Log("Bloklandı! Kalkan hasarı emdi."); 
             return;
         }
 
@@ -71,10 +84,10 @@ public class PlayerHealth : MonoBehaviour
         // Can sıfırın altına düşmesin diye sınırlandırdım
         currentHealth = Mathf.Max(currentHealth, 0);
 
-        // Bedirhan'ın UI sistemine haber verdim: "Can değişti, can barını vs. güncelle"
-        OnHealthChanged?.Invoke(currentHealth);
+        // Bedirhan'ın UI sistemine haber verdim: "Can değişti, can barını güncelle"
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
 
-        Debug.Log("Araç Hasar Aldı! Kalan Can: " + currentHealth);
+        Debug.Log("Araç Hasar Aldı! Kalan Can: " + currentHealth); 
 
         if (currentHealth <= 0)
         {
@@ -92,7 +105,7 @@ public class PlayerHealth : MonoBehaviour
             carController.enabled = false;
         }
 
-        // Bedirhan'ın Game Over ekranını tetiklemesi için haber verdim (Event'i çağırdım)
+        // Bedirhan'ın Game Over ekranını tetiklemesi için Event'i fırlattım
         OnPlayerDeath?.Invoke();
     }
 
@@ -102,7 +115,7 @@ public class PlayerHealth : MonoBehaviour
         // Eğer çarptığımız obje bir Engel veya Polis ise hasar almasını sağladım
         if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police"))
         {
-            TakeDamage(25); // Çarpınca şimdilik 25 hasar almasını ayarladım (4 vuruşta ölür). Sonradan Pako Forever'daki gibi tekte ölecek şekilde de değiştirebiliriz.
+            TakeDamage(25); // Çarpınca şimdilik 25 hasar almasını ayarladım (4 vuruşta ölür)
         }
     }
 }
