@@ -1,23 +1,35 @@
 using UnityEngine;
-using System.Collections; // Zamanlayıcı kullanabilmek için ekledim
+using System.Collections;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerCarController : MonoBehaviour
 {
-    [Header("Hareket Ayarları")]
-    [SerializeField] private float moveSpeed = 15f;
-    [SerializeField] private float turnSpeed = 100f;
+    [Header("Araç Veri Paketi")]
+    public CarData currentCarData; // Farklı araçların özelliklerini çekeceğim veri dosyası
 
-    private float originalMoveSpeed; // Yetenek bitince arabanın eski hızına dönmesi için başlangıç hızını burada tuttum
+    private float originalMaxSpeed; // Hızlanma yeteneği için orijinal hızı hafızada tutacağım
+    private float currentSpeed = 0f; // Aracın anlık hızı (İvmelenme için)
     private float turnInput;
     private Rigidbody rb;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        // Aracın fiziksel olarak takla atmasını engellemek için dönüşleri kilitledim
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-        originalMoveSpeed = moveSpeed; // Başlangıç hızını kaydettim
+    }
+
+    private void Start()
+    {
+        // Eğer araca bir veri dosyası (CarData) bağlandıysa özelliklerini oradan çek, yoksa varsayılan değerler ata
+        if (currentCarData != null)
+        {
+            originalMaxSpeed = currentCarData.maxSpeed;
+        }
+        else
+        {
+            Debug.LogWarning("DİKKAT: Araca bir CarData bağlanmamış! Varsayılan hızlar kullanılıyor.");
+            originalMaxSpeed = 15f;
+        }
     }
 
     private void Update()
@@ -36,28 +48,25 @@ public class PlayerCarController : MonoBehaviour
             else if (touch.position.x > Screen.width / 2f) turnInput = 1f;
         }
 
-        // Bedirhan UI kısmını halledene kadar kendi bilgisayarımda Space tuşu ile test edebilmek için ekledim
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            ActivateSpeedBoost(2f, 1.5f); // Space'e basınca 1.5 saniye boyunca hızı 2 katına çıkardım
+            ActivateSpeedBoost(2f, 1.5f);
         }
     }
 
-    // Bedirhan'ın UI üzerinden çağıracağı Hızlanma fonksiyonunu hazırladım
     public void ActivateSpeedBoost(float multiplier, float duration)
     {
         StartCoroutine(SpeedBoostRoutine(multiplier, duration));
     }
 
-    // Hızlanma süresini hesaplaması için arka plan işlemi (Coroutine) yazdım
     private IEnumerator SpeedBoostRoutine(float multiplier, float duration)
     {
         Debug.Log("🚀 HIZLANMA AKTİF!");
-        moveSpeed = originalMoveSpeed * multiplier; // Hızı geçici olarak çarptım
+        originalMaxSpeed *= multiplier; // Hedef hızı geçici olarak katladım
 
-        yield return new WaitForSeconds(duration); // Belirttiğim süre dolana kadar beklettim
+        yield return new WaitForSeconds(duration);
 
-        moveSpeed = originalMoveSpeed; // Süre bitince aracı orijinal hızına döndürdüm
+        originalMaxSpeed /= multiplier; // Süre bitince hedef hızı eski haline getirdim
         Debug.Log("🚀 Hızlanma BİTTİ!");
     }
 
@@ -69,13 +78,20 @@ public class PlayerCarController : MonoBehaviour
 
     private void MoveCar()
     {
-        Vector3 movement = transform.forward * moveSpeed * Time.fixedDeltaTime;
+        // İVMELENME MANTIĞI: Araç anında max hıza çıkmaz. Mevcut hızını, max hıza doğru ivme değeri kadar yavaş yavaş artırır.
+        float accel = currentCarData != null ? currentCarData.acceleration : 5f;
+
+        currentSpeed = Mathf.MoveTowards(currentSpeed, originalMaxSpeed, accel * Time.fixedDeltaTime);
+
+        Vector3 movement = transform.forward * currentSpeed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + movement);
     }
 
     private void SteerCar()
     {
-        float turn = turnInput * turnSpeed * Time.fixedDeltaTime;
+        float tSpeed = currentCarData != null ? currentCarData.turnSpeed : 100f;
+
+        float turn = turnInput * tSpeed * Time.fixedDeltaTime;
         Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
         rb.MoveRotation(rb.rotation * turnRotation);
     }
