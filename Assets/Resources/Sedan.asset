@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e45d262c62db3b84b9f8d0f894b68a04, type: 3}
-  m_Name: SporAraba
+  m_Name: Sedan
   m_EditorClassIdentifier: Assembly-CSharp::CarData
-  carName: SporAraba
-  carPrefab: {fileID: 919132149155446097, guid: bf01b8e32bf60244ab1216b7061a55c5, type: 3}
-  colliderCenter: {x: 0, y: -1, z: 0}
-  colliderSize: {x: 2.3, y: 1.7, z: 5.4}
-  maxSpeed: 25
-  acceleration: 15
-  turnSpeed: 120
+  carName: Sedan
+  carPrefab: {fileID: 919132149155446097, guid: f4d52184563e17e4a80f7cdd38816077, type: 3}
+  colliderCenter: {x: 0, y: -0.9, z: 0}
+  colliderSize: {x: 2.3, y: 1.86, z: 5.1}
+  maxSpeed: 15
+  acceleration: 10
+  turnSpeed: 100
   driftGrip: 4
   maxLeanAngle: 5
   maxHealth: 100

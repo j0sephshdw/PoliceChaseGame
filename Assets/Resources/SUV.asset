@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e45d262c62db3b84b9f8d0f894b68a04, type: 3}
-  m_Name: ZirhliKamyon
+  m_Name: SUV
   m_EditorClassIdentifier: Assembly-CSharp::CarData
-  carName: "Z\u0131rhl\u0131Kamyon"
-  carPrefab: {fileID: 919132149155446097, guid: 198ac3ee83cde1a46a00b19335dfe3f5, type: 3}
-  colliderCenter: {x: 0, y: -0.68, z: -0.1}
-  colliderSize: {x: 2.3, y: 2.3, z: 5.87}
-  maxSpeed: 12
-  acceleration: 2
-  turnSpeed: 60
-  driftGrip: 1.5
-  maxLeanAngle: 10
-  maxHealth: 200
-  baseArmor: 0
+  carName: SUV
+  carPrefab: {fileID: 919132149155446097, guid: 55fd9773dca0533498db478c45c9b629, type: 3}
+  colliderCenter: {x: 0, y: -0.86, z: 0.04}
+  colliderSize: {x: 2.3, y: 1.96, z: 4.9}
+  maxSpeed: 16
+  acceleration: 8
+  turnSpeed: 80
+  driftGrip: 7
+  maxLeanAngle: 6
+  maxHealth: 160
+  baseArmor: 5
