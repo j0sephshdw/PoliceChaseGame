@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarData
   carName: Van
   carPrefab: {fileID: 919132149155446097, guid: 198ac3ee83cde1a46a00b19335dfe3f5, type: 3}
-  colliderCenter: {x: 0, y: -0.68, z: -0.1}
-  colliderSize: {x: 2.3, y: 2.3, z: 5.87}
+  colliderCenter: {x: 0, y: -0.5, z: -0.1}
+  colliderSize: {x: 2.3, y: 2.65, z: 5.87}
   maxSpeed: 14
   acceleration: 6
   turnSpeed: 60

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarData
   carName: Hatchback
   carPrefab: {fileID: 919132149155446097, guid: 1a36d48f60534be4083ac36f761e8fa9, type: 3}
-  colliderCenter: {x: 0, y: -0.68, z: -0.1}
-  colliderSize: {x: 2.3, y: 2.3, z: 5.87}
+  colliderCenter: {x: 0, y: -0.88, z: 0.1}
+  colliderSize: {x: 2.3, y: 1.9, z: 5}
   maxSpeed: 17
   acceleration: 12
   turnSpeed: 110

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarData
   carName: Firetruck
   carPrefab: {fileID: 919132149155446097, guid: 3a4cad23f30eba248a9f2063249ac15d, type: 3}
-  colliderCenter: {x: 0, y: -0.68, z: -0.1}
-  colliderSize: {x: 2.3, y: 2.3, z: 5.87}
+  colliderCenter: {x: 0, y: -0.44, z: 0.08}
+  colliderSize: {x: 3, y: 2.77, z: 9.47}
   maxSpeed: 16
   acceleration: 6
   turnSpeed: 55

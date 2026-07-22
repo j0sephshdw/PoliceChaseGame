@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarData
   carName: PoliceSedan
   carPrefab: {fileID: 919132149155446097, guid: e496521f28ed134408b4b71629928aad, type: 3}
-  colliderCenter: {x: 0, y: -1, z: 0}
-  colliderSize: {x: 2.3, y: 1.7, z: 5.4}
+  colliderCenter: {x: 0, y: -0.9, z: 0.03}
+  colliderSize: {x: 2.3, y: 1.87, z: 5.2}
   maxSpeed: 20
   acceleration: 12
   turnSpeed: 100

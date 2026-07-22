@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarData
   carName: SUV
   carPrefab: {fileID: 919132149155446097, guid: 55fd9773dca0533498db478c45c9b629, type: 3}
-  colliderCenter: {x: 0, y: -1, z: 0}
-  colliderSize: {x: 2.3, y: 1.7, z: 5.4}
+  colliderCenter: {x: 0, y: -0.86, z: 0.04}
+  colliderSize: {x: 2.3, y: 1.96, z: 4.9}
   maxSpeed: 16
   acceleration: 8
   turnSpeed: 80
