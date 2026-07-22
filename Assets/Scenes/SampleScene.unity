@@ -628,7 +628,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4309f4b1c02d874cbe2df05633657bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCarController
-  currentCarData: {fileID: 11400000, guid: a263d28a6196dd241b7997c88774497f, type: 2}
+  currentCarData: {fileID: 11400000, guid: 2e5941c24d8e2954e8fa9ae01d4e2da6, type: 2}
   carMesh: {fileID: 1970498755}
 --- !u!54 &540029303
 Rigidbody:

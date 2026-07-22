@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarData
   carName: MonsterTruck
   carPrefab: {fileID: 919132149155446097, guid: 47ef70d02c6f6fd48bcc73ecd1e4d1fe, type: 3}
-  colliderCenter: {x: 0, y: -0.68, z: -0.1}
-  colliderSize: {x: 2.3, y: 2.3, z: 5.87}
+  colliderCenter: {x: 0, y: -0.3, z: 0}
+  colliderSize: {x: 2.3, y: 3, z: 5.45}
   maxSpeed: 15
   acceleration: 16
   turnSpeed: 70

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarData
   carName: Taxi
   carPrefab: {fileID: 919132149155446097, guid: f7482cac7d7514042ab51447eb5adbab, type: 3}
-  colliderCenter: {x: 0, y: -1, z: 0}
-  colliderSize: {x: 2.3, y: 1.7, z: 5.4}
+  colliderCenter: {x: 0, y: -0.93, z: 0}
+  colliderSize: {x: 2.3, y: 1.8, z: 5.1}
   maxSpeed: 18
   acceleration: 10
   turnSpeed: 90

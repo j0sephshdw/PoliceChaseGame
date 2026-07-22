@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarData
   carName: PoliceSports
   carPrefab: {fileID: 919132149155446097, guid: 2d204f38df872be4088e097b51c2a2b0, type: 3}
-  colliderCenter: {x: 0, y: -1, z: 0}
-  colliderSize: {x: 2.3, y: 1.7, z: 5.4}
+  colliderCenter: {x: 0, y: -1, z: 0.067}
+  colliderSize: {x: 2.3, y: 1.7, z: 5.53}
   maxSpeed: 26
   acceleration: 17
   turnSpeed: 115
