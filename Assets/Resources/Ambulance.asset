@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e45d262c62db3b84b9f8d0f894b68a04, type: 3}
-  m_Name: SporAraba
+  m_Name: Ambulance
   m_EditorClassIdentifier: Assembly-CSharp::CarData
-  carName: SporAraba
-  carPrefab: {fileID: 919132149155446097, guid: bf01b8e32bf60244ab1216b7061a55c5, type: 3}
-  colliderCenter: {x: 0, y: -1, z: 0}
-  colliderSize: {x: 2.3, y: 1.7, z: 5.4}
-  maxSpeed: 25
-  acceleration: 15
-  turnSpeed: 120
-  driftGrip: 4
+  carName: Ambulance
+  carPrefab: {fileID: 919132149155446097, guid: 0d367e1cf1f1bd447bb24ae73e0025ce, type: 3}
+  colliderCenter: {x: 0, y: -0.68, z: -0.1}
+  colliderSize: {x: 2.3, y: 2.3, z: 5.87}
+  maxSpeed: 20
+  acceleration: 7
+  turnSpeed: 75
+  driftGrip: 8
   maxLeanAngle: 5
-  maxHealth: 100
-  baseArmor: 0
+  maxHealth: 175
+  baseArmor: 5
