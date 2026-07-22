@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Limousine
   m_EditorClassIdentifier: Assembly-CSharp::CarData
   carName: Limousine
+  engineSound: {fileID: 8300000, guid: 4c83fa58137027040a00e11430e472e4, type: 3}
+  baseEnginePitch: 0.85
   carPrefab: {fileID: 919132149155446097, guid: d31c4262f127ead49bda41c0ccd4637d, type: 3}
   colliderCenter: {x: 0, y: -0.9, z: 0.5}
   colliderSize: {x: 2.3, y: 1.8, z: 10}

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Ambulance
   m_EditorClassIdentifier: Assembly-CSharp::CarData
   carName: Ambulance
+  engineSound: {fileID: 8300000, guid: 4c83fa58137027040a00e11430e472e4, type: 3}
+  baseEnginePitch: 0.9
   carPrefab: {fileID: 919132149155446097, guid: 0d367e1cf1f1bd447bb24ae73e0025ce, type: 3}
   colliderCenter: {x: 0, y: -0.5, z: -0.28}
   colliderSize: {x: 2.3, y: 2.7, z: 5.9}

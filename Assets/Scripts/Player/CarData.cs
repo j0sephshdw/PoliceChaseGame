@@ -6,6 +6,11 @@ public class CarData : ScriptableObject
     [Header("Araç Kimliği")]
     public string carName;
 
+    [Header("Motor Sesi Ayarları")]
+    public AudioClip engineSound; // Buraya tek bir gerçek motor sesi atacağız
+    [Tooltip("Kamyon için 0.6 (Kalın), Normal için 1.0, Spor araç için 1.5 (İnce)")]
+    public float baseEnginePitch = 1.0f; // Sesi arabaya göre kalınlaştırma/inceltme ayarı
+
     [Header("3D Görsel Model")]
     public GameObject carPrefab;
 

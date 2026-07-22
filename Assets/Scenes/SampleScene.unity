@@ -628,8 +628,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4309f4b1c02d874cbe2df05633657bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCarController
-  currentCarData: {fileID: 11400000, guid: 2e5941c24d8e2954e8fa9ae01d4e2da6, type: 2}
+  currentCarData: {fileID: 11400000, guid: f65dcbf5fb00aec4e8e0a11d8df2b718, type: 2}
   carMesh: {fileID: 1970498755}
+  globalCrashSound: {fileID: 8300000, guid: 7c18f527990d42340b618f0e5c553205, type: 3}
+  globalExplosionSound: {fileID: 8300000, guid: 605c3155035017c4aa6acd86c5f2b964, type: 3}
+  numberOfGears: 5
 --- !u!54 &540029303
 Rigidbody:
   m_ObjectHideFlags: 0
