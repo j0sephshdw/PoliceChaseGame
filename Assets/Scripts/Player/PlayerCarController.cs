@@ -258,4 +258,11 @@ public class PlayerCarController : MonoBehaviour
             wheel.Rotate(Vector3.right, spinAmount, Space.Self);
         }
     }
+    public void StopEngineSound()
+    {
+        if (engineAudioSource != null && engineAudioSource.isPlaying)
+        {
+            engineAudioSource.Stop();
+        }
+    }
 }
