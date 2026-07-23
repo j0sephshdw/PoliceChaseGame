@@ -132,7 +132,19 @@ public class PlayerCarController : MonoBehaviour
     // --- ŞANZIMAN SİMÜLASYONU VE VİTES GEÇİŞ MATEMATİĞİ ---
     private void UpdateEngineSound()
     {
-        if (engineAudioSource == null || !engineAudioSource.isPlaying || currentCarData == null) return;
+        if (engineAudioSource == null || currentCarData == null) return;
+
+        // YENİ EKLENEN KISIM: Oyun durdurulduysa (TimeScale 0 ise) sesi dondur
+        if (Time.timeScale == 0f)
+        {
+            if (engineAudioSource.isPlaying) engineAudioSource.Pause();
+            return; // Zaman durduğu için alttaki vites hesaplamalarına girmeden çık
+        }
+        else // Oyun devam ediyorsa sesi geri başlat
+        {
+            // Play değil UnPause kullanıyoruz ki ses kaldığı devirden devam etsin
+            if (!engineAudioSource.isPlaying) engineAudioSource.UnPause();
+        }
 
         // Aracın genel hız oranını bul (0.0 ile 1.0 arası)
         float speedRatio = currentSpeed / originalMaxSpeed;
@@ -164,7 +176,6 @@ public class PlayerCarController : MonoBehaviour
             targetPitch -= 0.15f;
         }
 
-       
         // Lerp hızını 12'den 4'e çektim. Böylece devir aniden sekmez, gerçek araba gibi ağır ağır yükselip düşer.
         engineAudioSource.pitch = Mathf.Lerp(engineAudioSource.pitch, targetPitch, 4f * Time.deltaTime);
     }
