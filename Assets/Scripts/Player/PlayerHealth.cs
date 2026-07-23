@@ -97,11 +97,12 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log("Araç Parçalandı! GAME OVER."); // Şimdilik konsola yazdırdım
+        Debug.Log("Araç Parçalandı! GAME OVER.");
 
-        // Aracı durdurdum
+        // Aracı ve motor sesini durdurduk
         if (carController != null)
         {
+            carController.StopEngineSound(); // Sesi kesen metodu çağırdık
             carController.enabled = false;
         }
 

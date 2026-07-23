@@ -15,7 +15,7 @@ MonoBehaviour:
   carName: MonsterTruck
   engineSound: {fileID: 8300000, guid: 4c83fa58137027040a00e11430e472e4, type: 3}
   baseEnginePitch: 0.55
-  carPrefab: {fileID: 919132149155446097, guid: 47ef70d02c6f6fd48bcc73ecd1e4d1fe, type: 3}
+  carPrefab: {fileID: 1330924812911493412, guid: 2c79de4a6a64afe4b86cb4878157d174, type: 3}
   colliderCenter: {x: 0, y: -0.3, z: 0}
   colliderSize: {x: 2.3, y: 3, z: 5.45}
   maxSpeed: 15
