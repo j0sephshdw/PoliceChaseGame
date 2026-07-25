@@ -59,6 +59,16 @@ public class ScoreManager : MonoBehaviour
         OnXPChanged?.Invoke(currentXP, XPToNextLevel);
     }
 
+    private void Update()
+{
+    // GEÇİCİ TEST KODU: T tuşuna basınca 50 XP kazanılır (kart seçim ekranını test etmek için).
+    // Gerçek XP kazanımı ileride Kişi 2'nin (Berat) engel/polis sisteminden gelecek, o zaman bu kaldırılacak.
+    if (Input.GetKeyDown(KeyCode.T))
+    {
+        AddXP(50);
+    }
+}
+
     // --- KİŞİ 2 (Berat — Çevre/Engel/AI sorumlusu) İÇİN NOT ---
     // Bir polis arabası etkisiz hale getirildiğinde, bir engel başarıyla aşıldığında
     // veya benzeri "puan kazandıran" bir olay olduğunda kendi scriptinden şunu çağır:

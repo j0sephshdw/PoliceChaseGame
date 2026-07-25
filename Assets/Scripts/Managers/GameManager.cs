@@ -16,6 +16,7 @@ public enum GameState
 {
     Playing,
     Paused,
+    CardSelection,
     GameOver
 }
 
@@ -64,6 +65,9 @@ public class GameManager : MonoBehaviour
                 // Zaman durur. NOT: PlayerCarController'a hiç dokunmadık —
                 // Time.timeScale = 0 olunca FixedUpdate içindeki Time.fixedDeltaTime
                 // otomatik olarak 0 olur, araç kendiliğinden durur.
+                Time.timeScale = 0f;
+                break;
+            case GameState.CardSelection:
                 Time.timeScale = 0f;
                 break;
             case GameState.GameOver:
