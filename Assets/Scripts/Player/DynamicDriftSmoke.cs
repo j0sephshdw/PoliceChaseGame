@@ -8,14 +8,16 @@ public class DynamicDriftSmoke : MonoBehaviour
     public BoxCollider carCollider;
 
     [Header("Ayarlar")]
-    [Tooltip("Dumanın çıkması için gereken kayma şiddeti. (Çok düşürdük)")]
-    public float driftThreshold = 0.2f;
-
-    private Vector3 lastPosition;
+    [Tooltip("Dumanın çıkması için arabanın ne kadar hızlı hareket etmesi gerektiği (Duran arabada direksiyonu çevirince duman çıkmasın diye).")]
+    public float minimumSpeedForSmoke = 1.0f; // Sadece hız kontrolü için bir eşik
 
     // Play/Stop yerine sadece vanayı açıp kapatmak için Emission modüllerini alıyoruz
     private ParticleSystem.EmissionModule leftEmission;
     private ParticleSystem.EmissionModule rightEmission;
+
+    private PlayerCarController carController;
+    private Vector3 lastPosition;
+    private float currentSpeed;
 
     void Start()
     {
@@ -29,12 +31,14 @@ public class DynamicDriftSmoke : MonoBehaviour
         if (!leftSmoke.isPlaying) leftSmoke.Play();
         if (!rightSmoke.isPlaying) rightSmoke.Play();
 
-        // Sadece vanaları (emission) kapalı tut, araba kayınca açacağız
+        // Sadece vanaları (emission) kapalı tut
         leftEmission.enabled = false;
         rightEmission.enabled = false;
+
+        // Dönüş girdisini okuyabilmek için PlayerCarController'ı alıyoruz
+        carController = GetComponentInParent<PlayerCarController>();
     }
 
-    // Fiziğin hesaplandığı yerle senkronize çalışması için FixedUpdate kullanıyoruz!
     void FixedUpdate()
     {
         if (carCollider == null || Time.fixedDeltaTime == 0) return;
@@ -42,21 +46,29 @@ public class DynamicDriftSmoke : MonoBehaviour
         // 1. Dumanların Yerini Otomatik Ayarla (Jant hizası)
         Vector3 center = carCollider.center;
         Vector3 size = carCollider.size;
-
         float smokeHeight = center.y - (size.y / 2) + 0.3f;
 
         leftSmoke.transform.localPosition = new Vector3(center.x - (size.x / 2), smokeHeight, center.z - (size.z / 2));
         rightSmoke.transform.localPosition = new Vector3(center.x + (size.x / 2), smokeHeight, center.z - (size.z / 2));
 
-        // 2. Gerçek Hız Hesabı (Artık fizik karesinde hatasız ölçülecek)
-        Vector3 realVelocity = (transform.position - lastPosition) / Time.fixedDeltaTime;
+        // 2. Sadece arabanın ileri doğru hareket edip etmediğini kontrol et (Duran arabada duman çıkmasın)
+        currentSpeed = Vector3.Distance(transform.position, lastPosition) / Time.fixedDeltaTime;
         lastPosition = transform.position;
 
-        // 3. Yanal kayma (Drift) şiddetini vektörlerle bul
-        float lateralVelocity = Vector3.Dot(realVelocity, transform.right);
+        // 3. Duman Eşiği Kontrolü: 
+        // Eğer araba hareket ediyorsa VE oyuncu sağa/sola dönüyorsa (Input sıfır değilse) duman çıkar.
+        bool isDrifting = false;
 
-        // 4. Eşik aşıldıysa duman vanasını aç, toparladıysa kapat!
-        bool isDrifting = Mathf.Abs(lateralVelocity) > driftThreshold;
+        if (carController != null && currentSpeed > minimumSpeedForSmoke)
+        {
+            // Input.GetAxisRaw("Horizontal") veya senin koddaki turnInput değerini kontrol ediyoruz.
+            // Eğer oyuncu dönüyorsa (turnInput sıfır değilse) duman çıkar
+            float horizontalInput = Input.GetAxisRaw("Horizontal");
+            if (Mathf.Abs(horizontalInput) > 0.1f)
+            {
+                isDrifting = true;
+            }
+        }
 
         leftEmission.enabled = isDrifting;
         rightEmission.enabled = isDrifting;

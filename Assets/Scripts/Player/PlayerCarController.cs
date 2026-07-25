@@ -129,62 +129,83 @@ public class PlayerCarController : MonoBehaviour
         UpdateEngineSound(); // Vites ve devir seslerini hesapla
     }
 
-    // --- ŞANZIMAN SİMÜLASYONU VE VİTES GEÇİŞ MATEMATİĞİ ---
+    // --- ŞANZIMAN VE MOTOR SESİ KONTROL SİSTEMİ ---
     private void UpdateEngineSound()
     {
+        // Null-Check: Araç verisi veya ses dosyası atanmamışsa oyunun çökmesini (NullReferenceException) engelliyoruz.
         if (engineAudioSource == null || currentCarData == null) return;
 
-        // YENİ EKLENEN KISIM: Oyun durdurulduysa (TimeScale 0 ise) sesi dondur
+        // BUG FİX: Oyun pause menüsünde durdurulduğunda (TimeScale = 0) motor sesinin arkada çalmaya devam etmesini engelliyoruz.
         if (Time.timeScale == 0f)
         {
             if (engineAudioSource.isPlaying) engineAudioSource.Pause();
-            return; // Zaman durduğu için alttaki vites hesaplamalarına girmeden çık
+            return; // Zaman akmadığı için gereksiz matematiksel hesaplamalara girmeden fonksiyondan çıkıyoruz.
         }
-        else // Oyun devam ediyorsa sesi geri başlat
+        else
         {
-            // Play değil UnPause kullanıyoruz ki ses kaldığı devirden devam etsin
+            // Oyun devam ettiğinde sesi sıfırdan başlatmak yerine kaldığı devirden devam etmesi için UnPause kullandık.
             if (!engineAudioSource.isPlaying) engineAudioSource.UnPause();
         }
 
-        // Aracın genel hız oranını bul (0.0 ile 1.0 arası)
+        // Aracın o anki hızının maksimum hıza bölümüyle % kaçlık bir hıza ulaştığımızı hesaplıyoruz 0  1 arası
         float speedRatio = currentSpeed / originalMaxSpeed;
 
-        //  O ANKİ VİTESİ HESAPLAMA 
+        // VİTES HESAPLAMA MANTIĞI: 
+        // Toplam hız oranını vites sayısıyla çarpıp aşağı yuvarlıyoruz
+        // Örn: 5 vitesli araçta %50 hızdaysak matematiksel olarak 2. vitesteyiz demektir. 
+        // Dizi sınırlarını aşmamak için Clamp ile 0 ile (Max Vites - 1) arasında sınırlandırdık.
         int newGear = Mathf.Clamp(Mathf.FloorToInt(speedRatio * numberOfGears), 0, numberOfGears - 1);
 
+        // VİTES ATMA ANINI YAKALAMA VE HİSSİYAT:
         if (newGear != currentGear)
         {
             currentGear = newGear;
+
+            // Gerçek arabalarda vites büyüyünce motor devri aniden düşer ve ses kalınlaşır. 
+            // Lerp'in yumuşak geçişini kırıp pitch değerini manuel olarak aşağı çekerek "vites atma" hissini verdik.
+            engineAudioSource.pitch -= 0.25f;
         }
 
-        //  VİTES İÇİ DEVİR ORANINI BULMA
+        // BULUNDUĞUMUZ VİTESİN İÇİNDE YÜZDE KAÇTAYIZ?
+        // Sadece genel hıza bakarsak ses doğru çıkmıyor. Bu yüzden o anki vitesin alt ve üst hız sınırlarını bulup,
+        // sadece o vitesin içindeki devir oranımızı hesaplıyoruz.
         float gearMinRatio = (float)currentGear / numberOfGears;
         float gearMaxRatio = (float)(currentGear + 1) / numberOfGears;
         float currentGearRatio = (speedRatio - gearMinRatio) / (gearMaxRatio - gearMinRatio);
 
-        // PITCH (DEVİR SESİ) HESAPLAMASI (Sakinleştirildi)
-        // Vites büyüdükçe temel ses çok ufak artsın (0.1 yerine 0.05)
-        float gearBaseOffset = currentGear * 0.05f;
+        // MOTOR DEVİR SESİ (PITCH) MATEMATİĞİ:
+        // Sesi doğrusal (lineer) arttırınca oyuncak araba gibi çıkıyordu. 
+        // Mathf.Pow(..., 1.5f) kullanarak son devirlere doğru motorun daha agresif/yırtıcı bağırmasını sağladık.
+        float rpmCurve = Mathf.Pow(currentGearRatio, 1.5f);
 
-        // Vitesin içindeki bağırma payını  0.35te tuttum ki kesiciye girmiş gibi tizleşmesin
-        float targetPitch = currentCarData.baseEnginePitch + gearBaseOffset + (currentGearRatio * 0.35f);
+        // Üst viteslere çıktıkça motorun genel uğultusunu çok hafif kalınlaştırıyoruz (tok bir ses için).
+        float gearBaseOffset = currentGear * 0.08f;
 
-        // 4. KESİCİ ENGELLEYİCİ (Overdrive Rahatlaması)
-        // Araba son vitesteyse ve maksimum hıza çok yaklaştıysa motor bağırmayı bırakıp sabit bir devirde rahatlar
-        if (currentGear == numberOfGears - 1 && currentGearRatio > 0.9f)
+        // Temel sese , vites ağırlığını ve devir eğrisini ekleyerek hedef sesi buluyoruz.
+        float targetPitch = currentCarData.baseEnginePitch + gearBaseOffset + (rpmCurve * 0.50f);
+
+        // SON VİTES  RAHATLAMASI:
+        // Son vitesin sonlarına gelindiğinde (maksimum hıza ulaşıldığında) motorun sürekli tiz bir şekilde 
+        // bağırmasını engellemek için sesi biraz kısarak devri sabitliyoruz.
+        if (currentGear == numberOfGears - 1 && currentGearRatio > 0.95f)
         {
             targetPitch -= 0.15f;
         }
 
-        // Lerp hızını 12'den 4'e çektim. Böylece devir aniden sekmez, gerçek araba gibi ağır ağır yükselip düşer.
-        engineAudioSource.pitch = Mathf.Lerp(engineAudioSource.pitch, targetPitch, 4f * Time.deltaTime);
+        // Hedeflenen sese aniden geçmek yerine Lerp ile pürüzsüz bir geçiş sağlıyoruz. 
+        // Geçiş hızını 6f tutarak motorun gaza ve yavaşlamaya anında tepki vermesini sağladık.
+        engineAudioSource.pitch = Mathf.Lerp(engineAudioSource.pitch, targetPitch, 6f * Time.deltaTime);
     }
 
     // --- KAZA VE PATLAMA FİZİKLERİ ---
     private void OnCollisionEnter(Collision collision)
     {
-        // Araç duvara veya polislere çarptığında ortak kaza sesini bir kere (PlayOneShot) çaldırdım
-        if (globalCrashSound != null) effectsAudioSource.PlayOneShot(globalCrashSound);
+        // Zeminle temas ettiğinde ses çıkmaması için sadece Engel veya Polis etiketli objeleri filtrele
+        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police"))
+        {
+            // Araç duvara veya polislere çarptığında ortak kaza sesini bir kere (PlayOneShot) çaldırdım
+            if (globalCrashSound != null) effectsAudioSource.PlayOneShot(globalCrashSound);
+        }
     }
 
     public void Explode()

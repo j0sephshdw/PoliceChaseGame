@@ -610,7 +610,7 @@ MonoBehaviour:
   leftSmoke: {fileID: 735364418}
   rightSmoke: {fileID: 311568642}
   carCollider: {fileID: 1533053499}
-  driftThreshold: 2
+  minimumSpeedForSmoke: 1
 --- !u!114 &1533053496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -635,7 +635,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4309f4b1c02d874cbe2df05633657bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCarController
-  currentCarData: {fileID: 11400000, guid: 54cbf7d86b8bf0442b84a176a0aca3ba, type: 2}
+  currentCarData: {fileID: 11400000, guid: b8cdcb656a255f4428cf787a577928f6, type: 2}
   carMesh: {fileID: 2011377297}
   globalCrashSound: {fileID: 8300000, guid: 7c18f527990d42340b618f0e5c553205, type: 3}
   globalExplosionSound: {fileID: 8300000, guid: 605c3155035017c4aa6acd86c5f2b964, type: 3}
@@ -746,7 +746,7 @@ Transform:
   m_GameObject: {fileID: 1533053494}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.38, y: 1.2, z: -7.49}
+  m_LocalPosition: {x: 0.34, y: 1.2, z: -7.218}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -816,7 +816,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 12.6
+  field of view: 55.6
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -843,7 +843,7 @@ Transform:
   m_GameObject: {fileID: 1883669108}
   serializedVersion: 2
   m_LocalRotation: {x: 0.48188752, y: 0.00020154286, z: -0.00012332317, w: 0.87623304}
-  m_LocalPosition: {x: 0.5434555, y: 17.058485, z: -16.795687}
+  m_LocalPosition: {x: 0.148, y: 13.837, z: -14.752}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
