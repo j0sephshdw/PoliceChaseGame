@@ -18,10 +18,10 @@ MonoBehaviour:
   carPrefab: {fileID: 919132149155446097, guid: 55fd9773dca0533498db478c45c9b629, type: 3}
   colliderCenter: {x: 0, y: -0.86, z: 0.04}
   colliderSize: {x: 2.3, y: 1.96, z: 4.9}
-  maxSpeed: 16
-  acceleration: 8
-  turnSpeed: 80
-  driftGrip: 7
-  maxLeanAngle: 6
+  maxSpeed: 5
+  acceleration: 1.5
+  turnSpeed: 75
+  driftGrip: 5
+  maxLeanAngle: 7.5
   maxHealth: 160
   baseArmor: 5
