@@ -833,6 +833,7 @@ GameObject:
   - component: {fileID: 64277362}
   - component: {fileID: 64277361}
   - component: {fileID: 64277360}
+  - component: {fileID: 64277363}
   m_Layer: 5
   m_Name: Card1  (1)
   m_TagString: Untagged
@@ -944,6 +945,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 64277358}
   m_CullTransparentMesh: 1
+--- !u!114 &64277363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64277358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17c6d1dba0419054ab2e1e92cb3150e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardUI
+  button: {fileID: 64277360}
+  icon: {fileID: 2093245253}
+  nameText: {fileID: 96728742}
+  descriptionText: {fileID: 728482192}
 --- !u!1 &96728740
 GameObject:
   m_ObjectHideFlags: 0
@@ -1601,7 +1618,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.3407186, y: -0.08189965, z: 0.029809028, w: 0.9361168}
-  m_LocalPosition: {x: 3.5, y: 16, z: -19.5}
+  m_LocalPosition: {x: 1.54, y: 5.6, z: -6.06}
   m_LocalScale: {x: 1.0301536, y: 2.2146099, z: 0.6812707}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1676,6 +1693,7 @@ GameObject:
   - component: {fileID: 369176885}
   - component: {fileID: 369176884}
   - component: {fileID: 369176883}
+  - component: {fileID: 369176886}
   m_Layer: 5
   m_Name: 'Card1 '
   m_TagString: Untagged
@@ -1787,6 +1805,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 369176881}
   m_CullTransparentMesh: 1
+--- !u!114 &369176886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 369176881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17c6d1dba0419054ab2e1e92cb3150e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardUI
+  button: {fileID: 369176883}
+  icon: {fileID: 700954317}
+  nameText: {fileID: 858456963}
+  descriptionText: {fileID: 1992695085}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -2190,7 +2224,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.5, y: 0.915, z: 0.5}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1970498755}
@@ -2269,7 +2303,7 @@ MonoBehaviour:
   leftSmoke: {fileID: 2075715020}
   rightSmoke: {fileID: 17421894}
   carCollider: {fileID: 540029298}
-  driftThreshold: 2
+  minimumSpeedForSmoke: 1
 --- !u!1 &593795503
 GameObject:
   m_ObjectHideFlags: 0
@@ -3563,6 +3597,7 @@ GameObject:
   - component: {fileID: 955763922}
   - component: {fileID: 955763921}
   - component: {fileID: 955763920}
+  - component: {fileID: 955763923}
   m_Layer: 5
   m_Name: Card1  (2)
   m_TagString: Untagged
@@ -3674,6 +3709,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 955763918}
   m_CullTransparentMesh: 1
+--- !u!114 &955763923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 955763918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17c6d1dba0419054ab2e1e92cb3150e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardUI
+  button: {fileID: 955763920}
+  icon: {fileID: 1313023873}
+  nameText: {fileID: 739945613}
+  descriptionText: {fileID: 425811421}
 --- !u!1 &985378247
 GameObject:
   m_ObjectHideFlags: 0
@@ -5901,6 +5952,7 @@ GameObject:
   - component: {fileID: 1847638215}
   - component: {fileID: 1847638214}
   - component: {fileID: 1847638213}
+  - component: {fileID: 1847638217}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -5995,6 +6047,28 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1847638217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1847638212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b707b4049762da488b9252618a3e8ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardSelectionUI
+  cardSelectionPanel: {fileID: 802289836}
+  playerObject: {fileID: 540029297}
+  allAbilities:
+  - {fileID: 11400000, guid: 92ff49ede21317f419705caeb96f0345, type: 2}
+  - {fileID: 11400000, guid: 4fc1d3b63ab10a24e9df45698e8d94e4, type: 2}
+  - {fileID: 11400000, guid: 3bbd8d8d8c4493346bf60c9245239fc3, type: 2}
+  cards:
+  - {fileID: 369176886}
+  - {fileID: 64277363}
+  - {fileID: 955763923}
 --- !u!1 &1886548084
 GameObject:
   m_ObjectHideFlags: 0
