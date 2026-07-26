@@ -297,4 +297,23 @@ public class PlayerCarController : MonoBehaviour
             engineAudioSource.Stop();
         }
     }
+    public void ActivateShockwave(float radius, float force)
+    {
+        // Aracın etrafındaki belirtilen yarıçaptaki tüm collider'ları bul
+        Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
+
+        foreach (Collider nearbyObject in colliders)
+        {
+            // Sadece polisleri ve engelleri fırlatmak istiyoruz
+            if (nearbyObject.CompareTag("Police") || nearbyObject.CompareTag("Obstacle"))
+            {
+                Rigidbody rb = nearbyObject.GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    // Z eksenindeki freeze ayarlarını bozmamak kaydıyla nesneleri arabadan uzağa fırlatır
+                    rb.AddExplosionForce(force, transform.position, radius, 1f, ForceMode.Impulse);
+                }
+            }
+        }
+    }
 }
