@@ -12,7 +12,11 @@ public class PlayerCarController : MonoBehaviour
     private Rigidbody rb;
     private Vector3 currentMoveDirection; // Aracın virajlarda yanal kayma (drift) yönünü tutuyorum
     private BoxCollider boxCollider; // Her arabanın boyutuna göre dinamik değişecek çarpışma kutusu
-    private List<Transform> wheels = new List<Transform>(); // Tekerlek dönme animasyonu için listem
+    private List<Transform> wheels = new List<Transform>(); // Tekerlek dönme animasyonu için liste
+
+    // --- EL FRENİ / SERT MANEVRA DEĞİŞKENLERİ ---
+    private bool isHandbrakeActive = false; // El freni (iki tuşa basma) aktif mi?
+    private float handbrakeDirection = 0f;  // El frenine girerken ilk basılan yön (1 sağ, -1 sol)
 
     [Header("Araç Veri Paketi (Scriptable Object)")]
     public CarData currentCarData; // Her arabanın kendine has verilerini (hız, ses) tutan dosyamız
@@ -109,24 +113,48 @@ public class PlayerCarController : MonoBehaviour
 
     private void Update()
     {
-        turnInput = 0f;
+        // PC platformu için klavye yön girdileri
+        float rawHorizontal = Input.GetAxisRaw("Horizontal");
 
-        // PC platformu için klavye yön girdileri (Input.GetAxisRaw ile keskin dönüş)
-        if (Input.GetAxisRaw("Horizontal") != 0) turnInput = Input.GetAxisRaw("Horizontal");
+        // --- YENİ: SAĞ-SOL AYNI ANDA BASILMA (EL FRENİ) KONTROLÜ ---
+        bool pressingRight = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D);
+        bool pressingLeft = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A);
 
-        // Mobil cihazlar için dokunmatik ekran kontrol altyapısı entegrasyonu
-        if (Input.touchCount > 0)
+        if (pressingRight && pressingLeft)
+        {
+            if (!isHandbrakeActive)
+            {
+                // İki tuşa ilk defa aynı anda basıldıysa:
+                isHandbrakeActive = true;
+
+                // Hangi tuşun önce basıldığını anlamak için önceki karenin (turnInput) yönünü kullan
+                handbrakeDirection = Mathf.Sign(turnInput);
+
+                // Eğer daha önce hiç dönmüyorsa ama ikisine aniden basıldıysa (nadir bir durum), varsayılan olarak sağa/sola bir karar ver
+                if (turnInput == 0) handbrakeDirection = 1f;
+            }
+            // El freni modundayken dönüş yönünü kilitliyoruz (İlk basılan yöne doğru)
+            turnInput = handbrakeDirection;
+        }
+        else
+        {
+            // İki tuşa aynı anda basılmıyorsa, normal dönüş sistemine geri dön
+            isHandbrakeActive = false;
+            turnInput = rawHorizontal;
+        }
+
+        // Mobil cihazlar için dokunmatik ekran kontrol altyapısı (Bunu el freni için sonra mobilde revize edebiliriz)
+        if (Input.touchCount > 0 && !isHandbrakeActive)
         {
             Touch touch = Input.GetTouch(0);
             if (touch.position.x < Screen.width / 2f) turnInput = -1f;
             else if (touch.position.x > Screen.width / 2f) turnInput = 1f;
         }
 
-        // Space tuşuna basınca Dash (Hızlanma) yeteneğini test etmek için tetikledim
         if (Input.GetKeyDown(KeyCode.Space)) ActivateSpeedBoost(2f, 1.5f);
 
-        SpinWheels(); // Tekerlek animasyonunu her karede çağır
-        UpdateEngineSound(); // Vites ve devir seslerini hesapla
+        SpinWheels();
+        UpdateEngineSound();
     }
 
     // --- ŞANZIMAN VE MOTOR SESİ KONTROL SİSTEMİ ---
@@ -241,24 +269,27 @@ public class PlayerCarController : MonoBehaviour
     private void MoveCar()
     {
         float accel = currentCarData != null ? currentCarData.acceleration : 5f;
-        float grip = currentCarData != null ? currentCarData.driftGrip : 3f;
 
-        // Aniden hızlanmak yerine pürüzsüz ivmelenme (Acceleration) için MoveTowards kullandım
+        // --- EL FRENİ AKTİFSE YOL TUTUŞUNU (GRIP) DÜŞÜR Kİ ARABA KAYMASIN (SAVRULSUN) ---
+        float baseGrip = currentCarData != null ? currentCarData.driftGrip : 3f;
+        float finalGrip = isHandbrakeActive ? (baseGrip * 0.2f) : baseGrip; // Tutunmayı %80 azalt
+
         currentSpeed = Mathf.MoveTowards(currentSpeed, originalMaxSpeed, accel * Time.fixedDeltaTime);
 
-        // Oto-Drift mantığı: Yanal kayma sağlamak için hareket vektörünü Lerp ile yumuşatarak getirdim
-        currentMoveDirection = Vector3.Lerp(currentMoveDirection, transform.forward, grip * Time.fixedDeltaTime);
+        // Oto-Drift mantığı (El freni varsa finalGrip düşük olacağı için araba savrulacak)
+        currentMoveDirection = Vector3.Lerp(currentMoveDirection, transform.forward, finalGrip * Time.fixedDeltaTime);
 
         Vector3 movement = currentMoveDirection * currentSpeed * Time.fixedDeltaTime;
-        rb.MovePosition(rb.position + movement); // Rigidbody üzerinden aracı fiziksel olarak hareket ettirdim
+        rb.MovePosition(rb.position + movement);
     }
 
     private void SteerCar()
     {
-        float tSpeed = currentCarData != null ? currentCarData.turnSpeed : 100f;
+        // --- EL FRENİ AKTİFSE DÖNÜŞ HIZINI (TURN SPEED) ARTIR Kİ SERT DÖNSÜN ---
+        float baseTurnSpeed = currentCarData != null ? currentCarData.turnSpeed : 100f;
+        float finalTurnSpeed = isHandbrakeActive ? (baseTurnSpeed * 1.8f) : baseTurnSpeed; // Dönüşü %80 hızlandır
 
-        // Kullanıcının dönüş girdisini (turnInput) alıp Y ekseninde Quaternion rotasyonu uyguladım
-        float turn = turnInput * tSpeed * Time.fixedDeltaTime;
+        float turn = turnInput * finalTurnSpeed * Time.fixedDeltaTime;
         Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
         rb.MoveRotation(rb.rotation * turnRotation);
     }
@@ -299,21 +330,31 @@ public class PlayerCarController : MonoBehaviour
     }
     public void ActivateShockwave(float radius, float force)
     {
-        // Aracın etrafındaki belirtilen yarıçaptaki tüm collider'ları bul
+        // Aracın etrafındaki belirtilen yarıçaptaki tüm colliderları bul
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
 
         foreach (Collider nearbyObject in colliders)
         {
-            // Sadece polisleri ve engelleri fırlatmak istiyoruz
+            // Sadece polisleri ve engelleri fırlat
             if (nearbyObject.CompareTag("Police") || nearbyObject.CompareTag("Obstacle"))
             {
                 Rigidbody rb = nearbyObject.GetComponent<Rigidbody>();
                 if (rb != null)
                 {
-                    // Z eksenindeki freeze ayarlarını bozmamak kaydıyla nesneleri arabadan uzağa fırlatır
+                    // Z eksenindeki freeze ayarlarını bozmamak kaydıyla nesneleri arabadan uzağa fırlat
                     rb.AddExplosionForce(force, transform.position, radius, 1f, ForceMode.Impulse);
                 }
             }
         }
+    }
+    // Duman sisteminin kapsüllemeyi bozmadan dönüş değerlerini okusun diye Getterlar
+    public float GetTurnInput()
+    {
+        return turnInput;
+    }
+
+    public bool GetHandbrakeStatus()
+    {
+        return isHandbrakeActive;
     }
 }
