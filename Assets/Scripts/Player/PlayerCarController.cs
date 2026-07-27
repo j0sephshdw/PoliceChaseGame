@@ -113,44 +113,47 @@ public class PlayerCarController : MonoBehaviour
 
     private void Update()
     {
-        // PC platformu için klavye yön girdileri
+        // --- 1. MOBİL EKRAN DOKUNUŞLARINI TARA ---
+        bool touchLeft = false;
+        bool touchRight = false;
+
+        // Ekrandaki tüm parmakları (dokunuşları) kontrol et
+        for (int i = 0; i < Input.touchCount; i++)
+        {
+            Touch touch = Input.GetTouch(i);
+            if (touch.position.x < Screen.width / 2f) touchLeft = true;
+            else if (touch.position.x > Screen.width / 2f) touchRight = true;
+        }
+
+        // --- 2. KLAVYE VE MOBİL GİRDİLERİ BİRLEŞTİR ---
+        // Oyuncu klavyeden VEYA ekrandan sağa/sola basıyor mu?
+        bool pressingRight = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) || touchRight;
+        bool pressingLeft = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) || touchLeft;
+
+        // --- 3. EL FRENİ VE DÖNÜŞ MANTIĞI ---
         float rawHorizontal = Input.GetAxisRaw("Horizontal");
 
-        // --- YENİ: SAĞ-SOL AYNI ANDA BASILMA (EL FRENİ) KONTROLÜ ---
-        bool pressingRight = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D);
-        bool pressingLeft = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A);
+        // Eğer mobilden basılıyorsa rawHorizontal'ı dokunuşa göre ez
+        if (touchRight && !touchLeft) rawHorizontal = 1f;
+        else if (touchLeft && !touchRight) rawHorizontal = -1f;
 
         if (pressingRight && pressingLeft)
         {
             if (!isHandbrakeActive)
             {
-                // İki tuşa ilk defa aynı anda basıldıysa:
                 isHandbrakeActive = true;
-
-                // Hangi tuşun önce basıldığını anlamak için önceki karenin (turnInput) yönünü kullan
                 handbrakeDirection = Mathf.Sign(turnInput);
-
-                // Eğer daha önce hiç dönmüyorsa ama ikisine aniden basıldıysa (nadir bir durum), varsayılan olarak sağa/sola bir karar ver
                 if (turnInput == 0) handbrakeDirection = 1f;
             }
-            // El freni modundayken dönüş yönünü kilitliyoruz (İlk basılan yöne doğru)
             turnInput = handbrakeDirection;
         }
         else
         {
-            // İki tuşa aynı anda basılmıyorsa, normal dönüş sistemine geri dön
             isHandbrakeActive = false;
             turnInput = rawHorizontal;
         }
 
-        // Mobil cihazlar için dokunmatik ekran kontrol altyapısı (Bunu el freni için sonra mobilde revize edebiliriz)
-        if (Input.touchCount > 0 && !isHandbrakeActive)
-        {
-            Touch touch = Input.GetTouch(0);
-            if (touch.position.x < Screen.width / 2f) turnInput = -1f;
-            else if (touch.position.x > Screen.width / 2f) turnInput = 1f;
-        }
-
+        // Hızlanma ve diğer fonksiyonlar aynı kalıyor...
         if (Input.GetKeyDown(KeyCode.Space)) ActivateSpeedBoost(2f, 1.5f);
 
         SpinWheels();
