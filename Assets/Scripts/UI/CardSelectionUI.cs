@@ -48,6 +48,7 @@ public class CardSelectionUI : MonoBehaviour
         PickRandomAbilities();
         PopulateCards();
         cardSelectionPanel.SetActive(true);
+        UISoundPlayer.PlayCardSelect();
         GameManager.Instance.SetState(GameState.CardSelection);
     }
 

@@ -20,6 +20,7 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private Slider healthBar;
     [SerializeField] private Slider xpBar;
     [SerializeField] private TMP_Text levelText;
+    [SerializeField] private TMP_Text hudSoundToggleText;
 
     [Header("Game Over Elemanları")]
     [SerializeField] private TMP_Text finalScoreText;
@@ -36,6 +37,8 @@ public class GameUIManager : MonoBehaviour
         GameEvents.Instance.OnPlayerHealthChanged += HandleHealthChanged;
 
         hudPanel.SetActive(true);
+        UIManager.ApplySavedMuteState();
+        hudSoundToggleText.text = UIManager.IsMuted() ? "SES KAPALI" : "SES AÇIK";
         pausePanel.SetActive(false);
         gameOverPanel.SetActive(false);
     }
@@ -117,6 +120,12 @@ public class GameUIManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(mainMenuSceneName);
+    }
+
+    public void OnSoundButtonClicked()
+    {
+        UIManager.ToggleMute();
+        hudSoundToggleText.text = UIManager.IsMuted() ? "SES KAPALI" : "SES AÇIK";
     }
 
     public void OnQuitButtonClicked()

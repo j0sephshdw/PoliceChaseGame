@@ -40,15 +40,20 @@ public class CarSelectionUI : MonoBehaviour
     private int currentIndex = 0;
 
     private void Start()
-    {
-        playerCarController = FindAnyObjectByType<PlayerCarController>();
+{
+    // Bu paneli Editor'de yanlışlıkla kapalı bırakırsak oyun donuk kalır
+    // (GameManager CarSelect durumunda bekler) — bu yüzden burada kod
+    // panelin açık olmasını garantiliyor, Editor'deki checkbox'a güvenmiyoruz.
+    carSelectionPanel.SetActive(true);
 
-        previousButton.onClick.AddListener(ShowPreviousCar);
-        nextButton.onClick.AddListener(ShowNextCar);
-        carPreviewButton.onClick.AddListener(SelectCurrentCar);
+    playerCarController = FindAnyObjectByType<PlayerCarController>();
 
-        UpdateDisplay();
-    }
+    previousButton.onClick.AddListener(ShowPreviousCar);
+    nextButton.onClick.AddListener(ShowNextCar);
+    carPreviewButton.onClick.AddListener(SelectCurrentCar);
+
+    UpdateDisplay();
+}
 
     private void ShowPreviousCar()
     {
@@ -78,13 +83,11 @@ public class CarSelectionUI : MonoBehaviour
         {
             carPreviewImage.color = unlockedColor;
             lockInfoText.text = "";
-            carPreviewButton.interactable = true;
         }
         else
         {
             carPreviewImage.color = lockedColor;
             lockInfoText.text = "Skor: " + car.requiredScore + " gerekli";
-            carPreviewButton.interactable = false; // kilitliyken tıklanamaz, oyun yanlışlıkla başlamaz
         }
     }
 
@@ -92,8 +95,16 @@ public class CarSelectionUI : MonoBehaviour
     private void SelectCurrentCar()
     {
         CarOption car = availableCars[currentIndex];
+        bool isUnlocked = ScoreManager.GetHighScore() >= car.requiredScore;
+
+        if (!isUnlocked)
+        {
+            UISoundPlayer.PlayError();
+            return;
+        }
+
         playerCarController.currentCarData = car.carData;
-        playerCarController.LoadCarModel(); // Kişi 1'in public yaptığı fonksiyon
+        playerCarController.LoadCarModel();
 
         carSelectionPanel.SetActive(false);
         GameManager.Instance.SetState(GameState.Playing);

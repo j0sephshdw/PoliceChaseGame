@@ -1,9 +1,11 @@
 using UnityEngine;
+using TMPro;
 
 // ============================================================
 // UI MANAGER (Ana Menü) — Oyun Döngüsü ve UI (Bedirhan) sorumluluğunda.
 // Sadece "MainMenu" sahnesinde çalışır; Ana Menü, Ayarlar, Nasıl Oynanır
-// ve Harita Seçim panelleri arasındaki geçişleri yönetir.
+// ve Harita Seçim panelleri arasındaki geçişleri, ayrıca ses aç/kapa ve
+// en yüksek skor gösterimini yönetir.
 // Kişi 1/Kişi 2'nin sistemleriyle doğrudan bir bağlantısı yok — bu tamamen
 // menü sahnesine özel, bağımsız bir script.
 // ============================================================
@@ -14,12 +16,40 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject howToPlayPanel;
-    [SerializeField] private GameObject mapSelectionPanel; // Harita Seçim ekranı (yeni eklendi)
+    [SerializeField] private GameObject mapSelectionPanel;
+
+    [Header("Diğer UI Elemanları")]
+    [SerializeField] private TMP_Text highScoreText;   // MainMenuPanel'deki "En Yüksek Skor: 0" yazısı
+    [SerializeField] private TMP_Text soundToggleText;  // SoundToggleButton'ın üzerindeki yazı
+    [SerializeField] private UnityEngine.UI.Slider musicVolumeSlider;
+    [SerializeField] private UnityEngine.UI.Slider sfxVolumeSlider;
+    [SerializeField] private UnityEngine.UI.Toggle vibrationToggle;
+
+    // Ses açık/kapalı durumunu PlayerPrefs'te saklamak için kullandığımız anahtar.
+    private const string MuteKey = "IsMuted";
+    private const string MusicVolumeKey = "MusicVolume";
+    private const string SFXVolumeKey = "SFXVolume";
+    private const string VibrationKey = "VibrationEnabled";
 
     private void Start()
     {
         // Sahne ilk açıldığında sadece Ana Menü görünsün, diğer paneller kapalı kalsın.
         ShowMainMenu();
+
+        // En yüksek skoru ScoreManager'ın kalıcı (PlayerPrefs) kaydından okuyup yazıya bas.
+        highScoreText.text = "En Yüksek Skor: " + ScoreManager.GetHighScore();
+
+        // Daha önce kaydedilmiş bir ses tercihi varsa onu uygula (varsayılan: sessiz değil).
+        ApplySavedMuteState();
+        soundToggleText.text = IsMuted() ? "SES KAPALI" : "SES AÇIK";
+
+        musicVolumeSlider.value = PlayerPrefs.GetFloat(MusicVolumeKey, 1f);
+        sfxVolumeSlider.value = PlayerPrefs.GetFloat(SFXVolumeKey, 1f);
+        vibrationToggle.isOn = PlayerPrefs.GetInt(VibrationKey, 1) == 1;
+
+        musicVolumeSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
+        sfxVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
+        vibrationToggle.onValueChanged.AddListener(OnVibrationChanged);
     }
 
     // Dört ShowX() fonksiyonu da aynı mantıkta çalışıyor: istenen paneli açıp
@@ -71,10 +101,62 @@ public class UIManager : MonoBehaviour
 #endif
     }
 
-    // --- TODO (Bedirhan) ---
-    // Ses aç/kapa butonu ve "En Yüksek Skor" yazısı şu an sahnede görsel olarak
-    // duruyor ama bu script'e henüz bağlı değil. Sonraki bir adımda:
-    //   - Ses butonu: AudioListener.volume ile mute/unmute + PlayerPrefs'e kaydetme
-    //   - En Yüksek Skor yazısı: Start()'ta ScoreManager.GetHighScore() okunup metne yazılacak
-    // eklenecek.
+    // "SES" butonuna bağlı. Basıldıkça açık/kapalı durumu tersine çevirir,
+    // tercihi PlayerPrefs'e kalıcı olarak kaydeder (oyunu kapatıp açsan bile hatırlanır).
+    public void ToggleSound()
+    {
+        ToggleMute();
+        soundToggleText.text = IsMuted() ? "SES KAPALI" : "SES AÇIK";
+    }
+
+    // Ses durumunu gerçekten uygular: AudioListener.volume, sahnedeki TÜM
+    // seslerin (müzik, efekt) ana ses seviyesini kontrol eder — 0 tamamen
+    // sessiz, 1 normal ses demek. Buton yazısını da duruma göre günceller.
+    public static bool IsMuted()
+    {
+        return PlayerPrefs.GetInt(MuteKey, 0) == 1;
+    }
+
+    public static void ToggleMute()
+    {
+        bool newState = !IsMuted();
+        PlayerPrefs.SetInt(MuteKey, newState ? 1 : 0);
+        PlayerPrefs.Save();
+        AudioListener.volume = newState ? 0f : 1f;
+    }
+
+    public static void ApplySavedMuteState()
+    {
+        AudioListener.volume = IsMuted() ? 0f : 1f;
+    }
+
+    private void OnMusicVolumeChanged(float value)
+    {
+        PlayerPrefs.SetFloat(MusicVolumeKey, value);
+    }
+
+    private void OnSFXVolumeChanged(float value)
+    {
+        PlayerPrefs.SetFloat(SFXVolumeKey, value);
+    }
+
+    private void OnVibrationChanged(bool isOn)
+    {
+        PlayerPrefs.SetInt(VibrationKey, isOn ? 1 : 0);
+    }
+
+    public static float GetMusicVolume()
+    {
+        return PlayerPrefs.GetFloat(MusicVolumeKey, 1f);
+    }
+
+    public static float GetSFXVolume()
+    {
+        return PlayerPrefs.GetFloat(SFXVolumeKey, 1f);
+    }
+
+    public static bool IsVibrationEnabled()
+    {
+        return PlayerPrefs.GetInt(VibrationKey, 1) == 1;
+    }
 }

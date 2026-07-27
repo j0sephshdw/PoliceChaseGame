@@ -69,19 +69,25 @@ public class MapSelectionUI : MonoBehaviour
         {
             mapPreviewImage.color = unlockedColor;
             lockInfoText.text = "";
-            mapPreviewButton.interactable = true;
         }
         else
         {
             mapPreviewImage.color = lockedColor;
             lockInfoText.text = "Skor: " + map.requiredScore + " gerekli";
-            mapPreviewButton.interactable = false;
         }
     }
 
     private void SelectCurrentMap()
     {
         MapOption map = availableMaps[currentIndex];
+        bool isUnlocked = ScoreManager.GetHighScore() >= map.requiredScore;
+
+        if (!isUnlocked)
+        {
+            UISoundPlayer.PlayError();
+            return;
+        }
+
         SceneManager.LoadScene(map.sceneName);
     }
 }
