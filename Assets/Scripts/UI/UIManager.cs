@@ -1,10 +1,9 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 // ============================================================
 // UI MANAGER (Ana Menü) — Oyun Döngüsü ve UI (Bedirhan) sorumluluğunda.
-// Sadece "MainMenu" sahnesinde çalışır; Ana Menü, Ayarlar ve Nasıl Oynanır
-// panelleri arasındaki geçişleri ve oyun sahnesine geçişi yönetir.
+// Sadece "MainMenu" sahnesinde çalışır; Ana Menü, Ayarlar, Nasıl Oynanır
+// ve Harita Seçim panelleri arasındaki geçişleri yönetir.
 // Kişi 1/Kişi 2'nin sistemleriyle doğrudan bir bağlantısı yok — bu tamamen
 // menü sahnesine özel, bağımsız bir script.
 // ============================================================
@@ -15,27 +14,23 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject howToPlayPanel;
-
-    [Header("Sahne Ayarları")]
-    // "OYNA" butonuna basılınca yüklenecek sahnenin adı. Sahne ileride
-    // "Game" gibi bir isme değişirse burayı Inspector'dan güncellemek yeterli,
-    // kodda arama yapmaya gerek kalmaz.
-    [SerializeField] private string gameSceneName = "SampleScene";
+    [SerializeField] private GameObject mapSelectionPanel; // Harita Seçim ekranı (yeni eklendi)
 
     private void Start()
     {
-        // Sahne ilk açıldığında sadece Ana Menü görünsün, diğer iki panel kapalı kalsın.
+        // Sahne ilk açıldığında sadece Ana Menü görünsün, diğer paneller kapalı kalsın.
         ShowMainMenu();
     }
 
-    // Üç ShowX() fonksiyonu da aynı mantıkta çalışıyor: istenen paneli açıp
-    // diğer ikisini kapatıyor. Aynı anda birden fazla panelin açık kalmasını
-    // (örn. Ayarlar ile Ana Menü'nün üst üste binmesini) bu şekilde engelliyoruz.
+    // Dört ShowX() fonksiyonu da aynı mantıkta çalışıyor: istenen paneli açıp
+    // diğerlerini kapatıyor. Aynı anda birden fazla panelin açık kalmasını
+    // (örn. Ayarlar ile Harita Seçimi'nin üst üste binmesini) bu şekilde engelliyoruz.
     public void ShowMainMenu()
     {
         mainMenuPanel.SetActive(true);
         settingsPanel.SetActive(false);
         howToPlayPanel.SetActive(false);
+        mapSelectionPanel.SetActive(false);
     }
 
     public void ShowSettings()
@@ -43,6 +38,7 @@ public class UIManager : MonoBehaviour
         mainMenuPanel.SetActive(false);
         settingsPanel.SetActive(true);
         howToPlayPanel.SetActive(false);
+        mapSelectionPanel.SetActive(false);
     }
 
     public void ShowHowToPlay()
@@ -50,13 +46,18 @@ public class UIManager : MonoBehaviour
         mainMenuPanel.SetActive(false);
         settingsPanel.SetActive(false);
         howToPlayPanel.SetActive(true);
+        mapSelectionPanel.SetActive(false);
     }
 
-    // "OYNA" butonuna bağlı. SceneManager.LoadScene, mevcut sahneyi (MainMenu)
-    // kapatıp belirtilen sahneyi (gameSceneName) yükler.
+    // "OYNA" butonuna bağlı. Artık direkt oyun sahnesine geçmiyoruz — önce
+    // Harita Seçim ekranını açıyoruz; asıl sahne geçişini (SceneManager.LoadScene)
+    // MapSelectionUI, oyuncunun seçtiği haritaya göre kendisi yapacak.
     public void PlayGame()
     {
-        SceneManager.LoadScene(gameSceneName);
+        mainMenuPanel.SetActive(false);
+        settingsPanel.SetActive(false);
+        howToPlayPanel.SetActive(false);
+        mapSelectionPanel.SetActive(true);
     }
 
     // "ÇIKIŞ" butonuna bağlı. Application.Quit() gerçek (build alınmış) oyunda çalışır;

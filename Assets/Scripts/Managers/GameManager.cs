@@ -14,6 +14,7 @@ using UnityEngine;
 // karşılaştırma yapmamızı sağlıyor.
 public enum GameState
 {
+    CarSelect,
     Playing,
     Paused,
     CardSelection,
@@ -48,8 +49,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        // Sahne yüklendiğinde oyun direkt oynanabilir durumda başlasın.
-        SetState(GameState.Playing);
+        SetState(GameState.CarSelect);
     }
 
     public void SetState(GameState newState)
@@ -58,6 +58,9 @@ public class GameManager : MonoBehaviour
 
         switch (newState)
         {
+            case GameState.CarSelect:
+            Time.timeScale = 0f; // Araç seçilene kadar oyun donuk kalsın
+            break;
             case GameState.Playing:
                 Time.timeScale = 1f; // Zaman normal akışına döner
                 break;

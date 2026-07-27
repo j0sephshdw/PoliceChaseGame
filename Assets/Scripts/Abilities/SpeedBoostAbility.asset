@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eeb25b42a61626f418b732ef9dd84af8, type: 3}
+  m_Name: SpeedBoostAbility
+  m_EditorClassIdentifier: Assembly-CSharp::SpeedBoostAbilityData
+  abilityName: "Nitro H\u0131zlanma"
+  description: "Arac\u0131n maksimum h\u0131z\u0131n\u0131 k\u0131sa s\xFCreli\u011Fine
+    2 kat\u0131na \xE7\u0131kar\u0131r."
+  icon: {fileID: 0}
+  speedMultiplier: 2
+  duration: 1.5
