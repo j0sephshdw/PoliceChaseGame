@@ -455,7 +455,7 @@ MonoBehaviour:
   leftSmoke: {fileID: 1123146658}
   rightSmoke: {fileID: 582202092}
   carCollider: {fileID: 902755324}
-  driftThreshold: 2
+  minimumSpeedForSmoke: 1
 --- !u!114 &902755321
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1104,9 +1104,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2828226223676530407, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
+      propertyPath: 'parkedCarPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5787238577119049162, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
       propertyPath: m_Name
       value: GroundTile
+      objectReference: {fileID: 0}
+    - target: {fileID: 5787238577119049162, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8535533592082976966, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1151,13 +1159,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4559586507711282857, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 9157403018796256022, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
