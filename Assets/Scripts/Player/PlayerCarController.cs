@@ -70,7 +70,7 @@ public class PlayerCarController : MonoBehaviour
     }
 
     // Seçilen CarData paketindeki 3D prefab modelini dinamik olarak yükleyen mimarim
-    private void LoadCarModel()
+    public  void LoadCarModel()
     {
         if (carMesh == null || currentCarData == null || currentCarData.carPrefab == null) return;
 
