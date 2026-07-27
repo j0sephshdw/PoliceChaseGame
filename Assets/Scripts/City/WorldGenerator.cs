@@ -28,6 +28,7 @@ public class WorldGenerator : MonoBehaviour
         int playerTileX = Mathf.FloorToInt(player.position.x / tileSize);
         int playerTileZ = Mathf.FloorToInt(player.position.z / tileSize);
 
+        // Oyuncunun etrafındaki tile'ları oluştur
         for (int x = playerTileX - renderDistance; x <= playerTileX + renderDistance; x++)
         {
             for (int z = playerTileZ - renderDistance; z <= playerTileZ + renderDistance; z++)
@@ -38,11 +39,34 @@ public class WorldGenerator : MonoBehaviour
                 {
                     Vector3 pos = new Vector3(x * tileSize, 0, z * tileSize);
 
-                    GameObject tile = Instantiate(groundTilePrefab, pos, Quaternion.identity);
+                    GameObject tile = Instantiate(
+                        groundTilePrefab,
+                        pos,
+                        Quaternion.identity);
 
                     spawnedTiles.Add(coord, tile);
                 }
             }
+        }
+
+        // Oyuncudan uzak tile'ları sil
+        List<Vector2Int> tilesToRemove = new List<Vector2Int>();
+
+        foreach (var tile in spawnedTiles)
+        {
+            int distanceX = Mathf.Abs(tile.Key.x - playerTileX);
+            int distanceZ = Mathf.Abs(tile.Key.y - playerTileZ);
+
+            if (distanceX > renderDistance || distanceZ > renderDistance)
+            {
+                Destroy(tile.Value);
+                tilesToRemove.Add(tile.Key);
+            }
+        }
+
+        foreach (var coord in tilesToRemove)
+        {
+            spawnedTiles.Remove(coord);
         }
     }
 }

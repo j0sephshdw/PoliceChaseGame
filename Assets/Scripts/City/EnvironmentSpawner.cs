@@ -8,9 +8,16 @@ public class EnvironmentSpawner : MonoBehaviour
     [Range(0, 100)]
     public int buildingSpawnChance = 70;
 
+    [Header("Parked Cars")]
+    public GameObject[] parkedCarPrefabs;
+
+    [Range(0, 100)]
+    public int parkedCarSpawnChance = 40;
+
     private void Start()
     {
         SpawnBuildings();
+        SpawnParkedCars();
     }
 
     private void SpawnBuildings()
@@ -18,32 +25,59 @@ public class EnvironmentSpawner : MonoBehaviour
         Transform city = transform.Find("City");
 
         if (city == null)
-        {
-            Debug.LogError("City objesi bulunamadı!");
             return;
-        }
 
         Transform buildingParent = city.Find("BuildingSpawnPoints");
 
         if (buildingParent == null)
-        {
-            Debug.LogError("BuildingSpawnPoints bulunamadı!");
             return;
-        }
 
         foreach (Transform spawnPoint in buildingParent)
         {
-            if (Random.Range(0, 100) > buildingSpawnChance)
+            if (Random.Range(0, 100) >= buildingSpawnChance)
                 continue;
 
-            GameObject randomBuilding =  buildingPrefabs[Random.Range(0, buildingPrefabs.Length)]; //buildingPrefabs[11];
+            GameObject randomBuilding =
+                buildingPrefabs[Random.Range(0, buildingPrefabs.Length)];
 
-            Instantiate(
-                randomBuilding,
-                spawnPoint.position,
-                spawnPoint.rotation,
-                city
-            );
+            Instantiate(randomBuilding,
+                        spawnPoint.position,
+                        spawnPoint.rotation,
+                        city);
+        }
+    }
+
+    private void SpawnParkedCars()
+    {
+        Transform city = transform.Find("City");
+
+        if (city == null)
+            return;
+
+        foreach (Transform child in city)
+        {
+            // Sadece Park objeleri
+            if (!child.name.StartsWith("Park"))
+                continue;
+
+            Transform spawnParent = child.Find("CarSpawnPoints");
+
+            if (spawnParent == null)
+                continue;
+
+            foreach (Transform spawnPoint in spawnParent)
+            {
+                if (Random.Range(0, 100) >= parkedCarSpawnChance)
+                    continue;
+
+                GameObject randomCar =
+                    parkedCarPrefabs[Random.Range(0, parkedCarPrefabs.Length)];
+
+                Instantiate(randomCar,
+                            spawnPoint.position,
+                            spawnPoint.rotation,
+                            child);
+            }
         }
     }
 }
