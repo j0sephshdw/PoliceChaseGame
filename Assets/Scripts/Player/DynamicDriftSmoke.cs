@@ -63,8 +63,11 @@ public class DynamicDriftSmoke : MonoBehaviour
         {
             // Input.GetAxisRaw("Horizontal") veya senin koddaki turnInput değerini kontrol ediyoruz.
             // Eğer oyuncu dönüyorsa (turnInput sıfır değilse) duman çıkar
-            float horizontalInput = Input.GetAxisRaw("Horizontal");
-            if (Mathf.Abs(horizontalInput) > 0.1f)
+            // Unity'nin ham inputu değil, kendi araba yönünü okusun
+            float horizontalInput = carController.GetTurnInput();
+
+            // Eğer oyuncu dönüyorsa veyaa el freni aktifse duman çıkar
+            if (Mathf.Abs(horizontalInput) > 0.1f || carController.GetHandbrakeStatus())
             {
                 isDrifting = true;
             }
