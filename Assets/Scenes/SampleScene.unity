@@ -3802,9 +3802,9 @@ MonoBehaviour:
   cardSelectionPanel: {fileID: 802289836}
   playerObject: {fileID: 540029297}
   allAbilities:
-  - {fileID: 11400000, guid: 6da6380a11a92f448aa3945fce91ea10, type: 2}
-  - {fileID: 11400000, guid: 058c77018611476479616f65a7f04ff5, type: 2}
-  - {fileID: 11400000, guid: 446aa74fbde0da84fbcaf7378086eae6, type: 2}
+  - {fileID: 11400000, guid: 3bbd8d8d8c4493346bf60c9245239fc3, type: 2}
+  - {fileID: 11400000, guid: 4fc1d3b63ab10a24e9df45698e8d94e4, type: 2}
+  - {fileID: 11400000, guid: 92ff49ede21317f419705caeb96f0345, type: 2}
   cards:
   - {fileID: 369176886}
   - {fileID: 64277363}

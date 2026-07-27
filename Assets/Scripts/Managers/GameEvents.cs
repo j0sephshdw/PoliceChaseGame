@@ -10,27 +10,37 @@ using System;
 // ============================================================
 public class GameEvents : MonoBehaviour
 {
+    // Singleton: sahnede tek bir GameEvents olur, her script
+    // "GameEvents.Instance" diyerek erişebilir.
     public static GameEvents Instance { get; private set; }
 
-    [SerializeField] private PlayerHealth playerHealth;
+    // Artık Inspector'dan elle sürüklenmiyor — her haritaya (sahneye) kopyalandığında
+    // o sahnenin kendi PlayerHealth'ini otomatik bulsun diye Awake()'te aranıyor.
+    private PlayerHealth playerHealth;
 
-    // (mevcut can, maksimum can) — max artık sabit değil, seçili araca (CarData) göre
-    // değişebiliyor, bu yüzden HUD can barını oranlarken (current / max) ikisini de almalı.
+    // HUD ve diğer UI scriptleri PlayerHealth'i değil, bu event'leri dinleyecek.
     public event Action<int, int> OnPlayerHealthChanged;
     public event Action OnPlayerDied;
 
     private void Awake()
     {
+        // Sahnede yanlışlıkla birden fazla GameEvents oluşursa fazlasını yok edip
+        // tek bir Instance kalmasını garanti ediyorum.
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
         Instance = this;
+
+        // Bu sahnedeki PlayerHealth'i otomatik bul (hangi haritaya kopyalanırsak kopyalanalım çalışsın diye).
+        playerHealth = FindAnyObjectByType<PlayerHealth>();
     }
 
     private void OnEnable()
     {
+        // PlayerHealth'in event'lerine abone oluyorum. "if" kontrolü, playerHealth
+        // bulunamazsa (null kalırsa) çökme yaşanmasını engelliyor.
         if (playerHealth != null)
         {
             playerHealth.OnHealthChanged += HandleHealthChanged;
@@ -40,6 +50,8 @@ public class GameEvents : MonoBehaviour
 
     private void OnDisable()
     {
+        // Her += için bir -= şart: aksi halde obje tekrar aktif olduğunda
+        // aynı fonksiyon listeye ikinci kez eklenir ve birden fazla kez tetiklenir.
         if (playerHealth != null)
         {
             playerHealth.OnHealthChanged -= HandleHealthChanged;
@@ -47,13 +59,14 @@ public class GameEvents : MonoBehaviour
         }
     }
 
-    // PlayerHealth.OnHealthChanged artık Action<int, int> olduğu için imza burada da
-    // iki int parametre almak zorunda, aksi halde derleyici eşleştiremiyor (aldığımız hata buydu).
+    // PlayerHealth.OnHealthChanged tetiklenince çalışır, gelen değeri kendi
+    // event'imize aktarıp (forward) HUD'a haber veriyorum.
     private void HandleHealthChanged(int currentHealth, int maxHealth)
     {
         OnPlayerHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
+    // PlayerHealth.OnPlayerDeath tetiklenince (can sıfırlanınca) çalışır.
     private void HandlePlayerDeath()
     {
         ScoreManager.Instance.SaveHighScoreIfNeeded();
@@ -63,12 +76,5 @@ public class GameEvents : MonoBehaviour
 
     // --- KİŞİ 1 (Yusuf) İÇİN NOT ---
     // PlayerHealth.cs'deki OnHealthChanged/OnPlayerDeath event imzalarını
-    // (parametre tipi/sayısı) değiştirirseniz bana haber verin, sadece bu dosyayı
-    // güncellemem yeterli olur — HUD/GameOver tarafında hiçbir şey bozulmaz.
-    //
-    // --- KİŞİ 2 (Berat) İÇİN NOT ---
-    // Bu script sadece oyuncunun canını dinliyor; polis/engel AI'ınızla ilgili
-    // doğrudan bir bağlantısı yok. İleride "oyuncu bir polis arabasını etkisiz
-    // hale getirdi" gibi bir olay eklerseniz, onu ScoreManager.Instance.AddScore()
-    // ile doğrudan kendi scriptinizden çağırmanız yeterli (GameEvents'e gerek yok).
+    // değiştirirseniz bana haber verin, sadece bu dosyayı güncellemem yeterli olur.
 }

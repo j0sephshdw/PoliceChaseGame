@@ -7,19 +7,20 @@ public class CardSelectionUI : MonoBehaviour
     [Header("Panel")]
     [SerializeField] private GameObject cardSelectionPanel;
 
-    [Header("Oyuncu")]
-    [SerializeField] private GameObject playerObject;
-
     [Header("Kullanılabilir Yetenekler (Tümü)")]
     [SerializeField] private List<ScriptableObject> allAbilities;
 
     [Header("Kartlar (3 adet)")]
     [SerializeField] private CardUI[] cards;
 
+    private GameObject playerObject;
+
     private IAbility[] currentOptions = new IAbility[3];
 
     private void Start()
     {
+        playerObject = FindAnyObjectByType<PlayerCarController>().gameObject;
+
         cardSelectionPanel.SetActive(false);
         ScoreManager.Instance.OnLevelUp += HandleLevelUp;
 
@@ -37,30 +38,30 @@ public class CardSelectionUI : MonoBehaviour
     }
 
     private void HandleLevelUp(int newLevel)
-{
-    if (allAbilities.Count < currentOptions.Length)
     {
-        Debug.LogWarning("Kart seçimi için yeterli yetenek yok, en az 3 ability eklenmeli.");
-        return;
+        if (allAbilities.Count < currentOptions.Length)
+        {
+            Debug.LogWarning("Kart seçimi için yeterli yetenek yok, en az 3 ability eklenmeli.");
+            return;
+        }
+
+        PickRandomAbilities();
+        PopulateCards();
+        cardSelectionPanel.SetActive(true);
+        GameManager.Instance.SetState(GameState.CardSelection);
     }
 
-    PickRandomAbilities();
-    PopulateCards();
-    cardSelectionPanel.SetActive(true);
-    GameManager.Instance.SetState(GameState.CardSelection);
-}
-
-private void PickRandomAbilities()
-{
-    List<ScriptableObject> pool = new List<ScriptableObject>(allAbilities);
-
-    for (int i = 0; i < currentOptions.Length; i++)
+    private void PickRandomAbilities()
     {
-        int randomIndex = Random.Range(0, pool.Count);
-        currentOptions[i] = pool[randomIndex] as IAbility;
-        pool.RemoveAt(randomIndex);
+        List<ScriptableObject> pool = new List<ScriptableObject>(allAbilities);
+
+        for (int i = 0; i < currentOptions.Length; i++)
+        {
+            int randomIndex = Random.Range(0, pool.Count);
+            currentOptions[i] = pool[randomIndex] as IAbility;
+            pool.RemoveAt(randomIndex);
+        }
     }
-}
 
     private void PopulateCards()
     {
