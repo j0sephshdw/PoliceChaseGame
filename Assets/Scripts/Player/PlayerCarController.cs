@@ -1,111 +1,126 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerCarController : MonoBehaviour
 {
-    // Kapsülleme (Encapsulation) kurallarına uyarak değişkenlerimi private tanımladım
-    private float originalMaxSpeed; // Dash (hızlanma) bitince eski hıza dönebilmek için orijinal hızı tutuyorum
-    private float currentSpeed = 0f; // Aracın o anki hızını ivmelenme hesapları için takip ediyorum
+    // Temel fizik ve hareket değişkenleri
+    private float originalMaxSpeed;
+    private float currentSpeed = 0f;
     private float turnInput;
     private Rigidbody rb;
-    private Vector3 currentMoveDirection; // Aracın virajlarda yanal kayma (drift) yönünü tutuyorum
-    private BoxCollider boxCollider; // Her arabanın boyutuna göre dinamik değişecek çarpışma kutusu
-    private List<Transform> wheels = new List<Transform>(); // Tekerlek dönme animasyonu için liste
+    private Vector3 currentMoveDirection;
+    private BoxCollider boxCollider;
+    private List<Transform> wheels = new List<Transform>();
 
-    // --- EL FRENİ / SERT MANEVRA DEĞİŞKENLERİ ---
-    private bool isHandbrakeActive = false; // El freni (iki tuşa basma) aktif mi?
-    private float handbrakeDirection = 0f;  // El frenine girerken ilk basılan yön (1 sağ, -1 sol)
+    // Yeni Input Sistemi
+    private PlayerInputActions inputActions;
 
-    [Header("Araç Veri Paketi (Scriptable Object)")]
-    public CarData currentCarData; // Her arabanın kendine has verilerini (hız, ses) tutan dosyamız
+    // El Freni (Sert Manevra) Kontrolleri
+    private bool isHandbrakeActive = false;
+    private float handbrakeDirection = 0f;
 
-    [Header("Görsel Model Kapsayıcısı (CarMesh)")]
-    public Transform carMesh; // Farklı 3D araba modellerinin Instantiate edileceği ebeveyn obje
+    [Header("Araç Özellikleri")]
+    public CarData currentCarData;
+    public Transform carMesh;
 
-    [Header("Ortak Ses Efektleri (Tüm Araçlar İçin)")]
-    public AudioClip globalCrashSound;     // Arabalar duvara çarpınca çalacak ortak kaza sesi
-    public AudioClip globalExplosionSound; // Arabalar patlayıp yok olduğunda çalacak ses
+    [Header("Ses Efektleri")]
+    public AudioClip globalCrashSound;
+    public AudioClip globalExplosionSound;
 
-    // --- YENİ: ŞANZIMAN (VİTES) SİSTEMİ DEĞİŞKENLERİ ---
-    [Header("Şanzıman (Gearbox) Ayarları")]
-    public int numberOfGears = 5; // Aracın toplam vites sayısı (Matematiksel dilimleme için)
-    private int currentGear = 0; // Aracın o anki aktif vitesi (0'dan başlar)
-
-    private AudioSource engineAudioSource;  // Gerçek motor sesini (.wav) sürekli çalacak oynatıcım
-    private AudioSource effectsAudioSource; // Kaza ve patlama gibi anlık sesleri çalacak oynatıcım
+    [Header("Şanzıman ve Motor Sesi")]
+    public int numberOfGears = 5;
+    private int currentGear = 0;
+    private AudioSource engineAudioSource;
+    private AudioSource effectsAudioSource;
 
     private void Awake()
     {
+        inputActions = new PlayerInputActions();
         rb = GetComponent<Rigidbody>();
         boxCollider = GetComponent<BoxCollider>();
 
-        // Aracın fiziksel çarpışmalarda takla atıp saçmalamasını engellemek için X ve Z dönüşlerini kilitledim
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        // Çarpışma hatalarını önlemek için fizik ayarları
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
 
-        // 1. Kaza ve anlık efektler için AudioSource kurulumu
+        
+        rb.constraints = RigidbodyConstraints.None;
+
+        // Ağırlık merkezini arabanın 1.5 metre altına çek
+        rb.centerOfMass = new Vector3(0f, -1.5f, 0f);
+
+        // Efektler için AudioSource ayarları
         effectsAudioSource = gameObject.AddComponent<AudioSource>();
-        effectsAudioSource.loop = false; // Kaza sesi bir kere çalar
+        effectsAudioSource.loop = false;
         effectsAudioSource.playOnAwake = false;
 
-        // 2. Gerçek motor sesi için AudioSource kurulumu
+        // Motor sesi için AudioSource ayarları
         engineAudioSource = gameObject.AddComponent<AudioSource>();
-        engineAudioSource.loop = true; // Motor sesi hiç susmadan dönecek
+        engineAudioSource.loop = true;
         engineAudioSource.playOnAwake = false;
-        engineAudioSource.spatialBlend = 0f; // Sesi 2D yaptım ki kamera uzaklaşınca duyulmamazlık yapmasın
+        engineAudioSource.spatialBlend = 0f;
+    }
+
+    private void OnEnable()
+    {
+        inputActions.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputActions.Disable();
     }
 
     private void Start()
     {
-        // Veri dosyasından (Scriptable Object) aracın özelliklerini Null-Check yaparak çektim
         if (currentCarData != null)
         {
             originalMaxSpeed = currentCarData.maxSpeed;
-            LoadCarModel(); // 3D modeli, tekerlekleri ve sesleri sahneye yüklettim
+            LoadCarModel();
         }
         else
         {
-            originalMaxSpeed = 15f; // Veri bağlanmamışsa oyun çökmesin diye varsayılan bir hız atadım
+            originalMaxSpeed = 15f;
         }
 
-        // Oyun başladığında hareket vektörünü arabanın baktığı yöne eşitledim
         currentMoveDirection = transform.forward;
     }
 
-    // Seçilen CarData paketindeki 3D prefab modelini dinamik olarak yükleyen mimarim
-    public  void LoadCarModel()
+    // ScriptableObject içindeki modele ve verilere göre aracı sahnede oluşturur
+    public void LoadCarModel()
     {
         if (carMesh == null || currentCarData == null || currentCarData.carPrefab == null) return;
 
-        // CarMesh'in altındaki önceki geçici (placeholder) modelleri temizliyorum
+        // Eski placeholder modelleri temizle
         foreach (Transform child in carMesh) Destroy(child.gameObject);
 
-        // Yeni araba modelini Instantiate edip tam merkeze sıfır rotasyonla oturttum
+        // Yeni aracı yükle ve pozisyonunu sıfırla
         GameObject newModel = Instantiate(currentCarData.carPrefab, carMesh);
         newModel.transform.localPosition = Vector3.zero;
         newModel.transform.localRotation = Quaternion.identity;
 
-        // Çarpışma kutusunu (Collider) o araca özel (Tır ise büyük, Taksi ise küçük) otomatik boyutlandırdım
+        // Aracın boyutlarına göre çarpışma kutusunu ayarla
         if (boxCollider != null)
         {
             boxCollider.center = currentCarData.colliderCenter;
             boxCollider.size = currentCarData.colliderSize;
         }
 
-        wheels.Clear(); // Arabanın tekerleklerini bulup animasyon listesine ekliyorum
+        // Tekerlekleri animasyon için listeye al
+        wheels.Clear();
         Transform[] allChildren = newModel.GetComponentsInChildren<Transform>();
         foreach (Transform child in allChildren)
         {
             if (child.name.ToLower().Contains("wheel")) wheels.Add(child);
         }
 
-        // --- CAR DATA'DAKİ GERÇEK SESİ AL VE ÇALMAYA BAŞLA ---
+        // Motor sesini başlat
         if (currentCarData.engineSound != null)
         {
-            engineAudioSource.clip = currentCarData.engineSound; // Sesi teybe taktık
-
-            // Araca özel temel ses kalınlığını atadım (Tır ise baştan kalın, spor ise ince başlayacak)
+            engineAudioSource.clip = currentCarData.engineSound;
             engineAudioSource.pitch = currentCarData.baseEnginePitch;
             engineAudioSource.Play();
         }
@@ -113,30 +128,31 @@ public class PlayerCarController : MonoBehaviour
 
     private void Update()
     {
-        // --- 1. MOBİL EKRAN DOKUNUŞLARINI TARA ---
-        bool touchLeft = false;
-        bool touchRight = false;
+        bool pressingLeft = false;
+        bool pressingRight = false;
 
-        // Ekrandaki tüm parmakları (dokunuşları) kontrol et
-        for (int i = 0; i < Input.touchCount; i++)
+        // 1. KLAVYE GİRDİLERİ (İki tuşa aynı anda basıldığını algılamak için donanımı doğrudan okuyoruz)
+        if (Keyboard.current != null)
         {
-            Touch touch = Input.GetTouch(i);
-            if (touch.position.x < Screen.width / 2f) touchLeft = true;
-            else if (touch.position.x > Screen.width / 2f) touchRight = true;
+            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) pressingLeft = true;
+            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) pressingRight = true;
         }
 
-        // --- 2. KLAVYE VE MOBİL GİRDİLERİ BİRLEŞTİR ---
-        // Oyuncu klavyeden VEYA ekrandan sağa/sola basıyor mu?
-        bool pressingRight = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) || touchRight;
-        bool pressingLeft = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) || touchLeft;
+        // 2. MOBİL DOKUNMATİK GİRDİLERİ (Ekranın sağ ve sol kısımları)
+        if (Touchscreen.current != null)
+        {
+            // Yeni sistemde ekrana dokunan tüm parmakları  tara
+            foreach (var touch in Touchscreen.current.touches)
+            {
+                if (touch.press.isPressed)
+                {
+                    if (touch.position.ReadValue().x < Screen.width / 2f) pressingLeft = true;
+                    else if (touch.position.ReadValue().x > Screen.width / 2f) pressingRight = true;
+                }
+            }
+        }
 
-        // --- 3. EL FRENİ VE DÖNÜŞ MANTIĞI ---
-        float rawHorizontal = Input.GetAxisRaw("Horizontal");
-
-        // Eğer mobilden basılıyorsa rawHorizontal'ı dokunuşa göre ez
-        if (touchRight && !touchLeft) rawHorizontal = 1f;
-        else if (touchLeft && !touchRight) rawHorizontal = -1f;
-
+        // 3. HOCANIN İSTEDİĞİ SAĞ + SOL İKİLİ BASMA (EL FRENİ) MANTIĞI
         if (pressingRight && pressingLeft)
         {
             if (!isHandbrakeActive)
@@ -150,136 +166,193 @@ public class PlayerCarController : MonoBehaviour
         else
         {
             isHandbrakeActive = false;
-            turnInput = rawHorizontal;
-        }
 
-        // Hızlanma ve diğer fonksiyonlar aynı kalıyor...
-        if (Input.GetKeyDown(KeyCode.Space)) ActivateSpeedBoost(2f, 1.5f);
+            if (pressingLeft) turnInput = -1f;
+            else if (pressingRight) turnInput = 1f;
+            else turnInput = 0f;
+        }
 
         SpinWheels();
         UpdateEngineSound();
     }
 
-    // --- ŞANZIMAN VE MOTOR SESİ KONTROL SİSTEMİ ---
+    // Aracın hızına göre vites ve motor sesi hesaplamaları
     private void UpdateEngineSound()
     {
-        // Null-Check: Araç verisi veya ses dosyası atanmamışsa oyunun çökmesini (NullReferenceException) engelliyoruz.
         if (engineAudioSource == null || currentCarData == null) return;
 
-        // BUG FİX: Oyun pause menüsünde durdurulduğunda (TimeScale = 0) motor sesinin arkada çalmaya devam etmesini engelliyoruz.
+        // Oyun duraklatıldığında motor sesini durdur
         if (Time.timeScale == 0f)
         {
             if (engineAudioSource.isPlaying) engineAudioSource.Pause();
-            return; // Zaman akmadığı için gereksiz matematiksel hesaplamalara girmeden fonksiyondan çıkıyoruz.
+            return;
         }
         else
         {
-            // Oyun devam ettiğinde sesi sıfırdan başlatmak yerine kaldığı devirden devam etmesi için UnPause kullandık.
             if (!engineAudioSource.isPlaying) engineAudioSource.UnPause();
         }
 
-        // Aracın o anki hızının maksimum hıza bölümüyle % kaçlık bir hıza ulaştığımızı hesaplıyoruz 0  1 arası
         float speedRatio = currentSpeed / originalMaxSpeed;
-
-        // VİTES HESAPLAMA MANTIĞI: 
-        // Toplam hız oranını vites sayısıyla çarpıp aşağı yuvarlıyoruz
-        // Örn: 5 vitesli araçta %50 hızdaysak matematiksel olarak 2. vitesteyiz demektir. 
-        // Dizi sınırlarını aşmamak için Clamp ile 0 ile (Max Vites - 1) arasında sınırlandırdık.
         int newGear = Mathf.Clamp(Mathf.FloorToInt(speedRatio * numberOfGears), 0, numberOfGears - 1);
 
-        // VİTES ATMA ANINI YAKALAMA VE HİSSİYAT:
+        // Vites değişimi anında motor sesini düşür (vites atma hissi)
         if (newGear != currentGear)
         {
             currentGear = newGear;
-
-            // Gerçek arabalarda vites büyüyünce motor devri aniden düşer ve ses kalınlaşır. 
-            // Lerp'in yumuşak geçişini kırıp pitch değerini manuel olarak aşağı çekerek "vites atma" hissini verdik.
             engineAudioSource.pitch -= 0.25f;
         }
 
-        // BULUNDUĞUMUZ VİTESİN İÇİNDE YÜZDE KAÇTAYIZ?
-        // Sadece genel hıza bakarsak ses doğru çıkmıyor. Bu yüzden o anki vitesin alt ve üst hız sınırlarını bulup,
-        // sadece o vitesin içindeki devir oranımızı hesaplıyoruz.
+        // Mevcut vites içindeki devir oranını hesapla
         float gearMinRatio = (float)currentGear / numberOfGears;
         float gearMaxRatio = (float)(currentGear + 1) / numberOfGears;
         float currentGearRatio = (speedRatio - gearMinRatio) / (gearMaxRatio - gearMinRatio);
 
-        // MOTOR DEVİR SESİ (PITCH) MATEMATİĞİ:
-        // Sesi doğrusal (lineer) arttırınca oyuncak araba gibi çıkıyordu. 
-        // Mathf.Pow(..., 1.5f) kullanarak son devirlere doğru motorun daha agresif/yırtıcı bağırmasını sağladık.
         float rpmCurve = Mathf.Pow(currentGearRatio, 1.5f);
-
-        // Üst viteslere çıktıkça motorun genel uğultusunu çok hafif kalınlaştırıyoruz (tok bir ses için).
         float gearBaseOffset = currentGear * 0.08f;
-
-        // Temel sese , vites ağırlığını ve devir eğrisini ekleyerek hedef sesi buluyoruz.
         float targetPitch = currentCarData.baseEnginePitch + gearBaseOffset + (rpmCurve * 0.50f);
 
-        // SON VİTES  RAHATLAMASI:
-        // Son vitesin sonlarına gelindiğinde (maksimum hıza ulaşıldığında) motorun sürekli tiz bir şekilde 
-        // bağırmasını engellemek için sesi biraz kısarak devri sabitliyoruz.
+        // Son viteste devir kesici (limiter) benzeri rahatlama
         if (currentGear == numberOfGears - 1 && currentGearRatio > 0.95f)
         {
             targetPitch -= 0.15f;
         }
 
-        // Hedeflenen sese aniden geçmek yerine Lerp ile pürüzsüz bir geçiş sağlıyoruz. 
-        // Geçiş hızını 6f tutarak motorun gaza ve yavaşlamaya anında tepki vermesini sağladık.
         engineAudioSource.pitch = Mathf.Lerp(engineAudioSource.pitch, targetPitch, 6f * Time.deltaTime);
     }
 
-    // --- KAZA VE PATLAMA FİZİKLERİ ---
     private void OnCollisionEnter(Collision collision)
     {
-        // Zeminle temas ettiğinde ses çıkmaması için sadece Engel veya Polis etiketli objeleri filtrele
         if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police"))
         {
-            // Araç duvara veya polislere çarptığında ortak kaza sesini bir kere (PlayOneShot) çaldırdım
             if (globalCrashSound != null) effectsAudioSource.PlayOneShot(globalCrashSound);
+
+            // 1. Anında hızı ve fiziksel ivmeyi SIFIRLA
+            currentSpeed = 0f;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero; // Arabanın burnunun havaya kalkmasını (torku) iptal et
+
+            // 2. Çarpma yönünü al ama Y (Yukarı) eksenini KESİNLİKLE sıfırla!
+            Vector3 wallNormal = collision.contacts[0].normal;
+            Vector3 flatPushBack = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
+
+            // 3. Arabayı YUKARI değil, SADECE yatayda (X ve Z ekseninde) geriye it
+            rb.AddForce(flatPushBack * 10f, ForceMode.Impulse);
+
+            // 4. Aracın yönünü duvardan uzağa kır (Yine Y eksenini sıfırlayarak)
+            Vector3 flatForward = new Vector3(currentMoveDirection.x, 0f, currentMoveDirection.z);
+            currentMoveDirection = Vector3.Reflect(flatForward, flatPushBack).normalized;
         }
     }
 
-    public void Explode()
+    private void OnCollisionStay(Collision collision)
     {
-        // Araç silinse dahi patlama sesinin yarıda kesilmemesi için bağımsız 3D noktada ses ürettirdim
-        if (globalExplosionSound != null) AudioSource.PlayClipAtPoint(globalExplosionSound, transform.position);
+        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police"))
+        {
+            if (collision.contacts.Length > 0)
+            {
+                Vector3 wallNormal = collision.contacts[0].normal;
 
-        Destroy(gameObject); // Aracı sahneden yok et
+                // Araba duvara ne kadar dik (kafa kafaya) çarpıyor? (1 = tam dik, 0 = paralel sürtünme)
+                float hitAngle = Vector3.Dot(transform.forward, -wallNormal);
+
+                // Eğer kafa kafaya giriyorsak hızı sıfırda tut ki ileri doğru (duvara) tırmanma gücü üretmesin
+                if (hitAngle > 0.8f)
+                {
+                    currentSpeed = 0f;
+                }
+                else
+                {
+                    // Yandan sürtüyorsa duvar boyunca kaydır ama yukarı çıkmasını YASAKLA
+                    Vector3 slideDirection = Vector3.ProjectOnPlane(transform.forward, wallNormal);
+                    slideDirection.y = 0f; // Tırmanmayı kesin olarak engelle
+
+                    if (slideDirection != Vector3.zero)
+                    {
+                        currentMoveDirection = Vector3.Lerp(currentMoveDirection, slideDirection.normalized, 10f * Time.fixedDeltaTime);
+                    }
+                }
+            }
+        }
     }
 
-    // Diğer scriptlerden (örneğin UI butonundan) çağrılacak hızlandırma (Dash) metodu
+    // Araç canı sıfırlandığında çağrılan parçalanma fonksiyonu
+    public void Explode()
+    {
+        // 1. Motor sesini hemen kes
+        StopEngineSound();
+
+        // 2. Patlama sesini çal
+        if (globalExplosionSound != null) AudioSource.PlayClipAtPoint(globalExplosionSound, transform.position);
+
+        // 3. Cinemachine kameranın bizi takip etmeyi bırakmasını sağla (Hata vermemesi için)
+        var vcam = FindObjectOfType<Unity.Cinemachine.CinemachineCamera>();
+        if (vcam != null)
+        {
+            vcam.Target.TrackingTarget = null;
+        }
+
+        // 4. Görsel parçalanma fiziği
+        if (carMesh != null)
+        {
+            MeshRenderer[] allParts = carMesh.GetComponentsInChildren<MeshRenderer>();
+
+            foreach (MeshRenderer meshPart in allParts)
+            {
+                Transform part = meshPart.transform;
+                part.SetParent(null);
+
+                part.gameObject.AddComponent<BoxCollider>();
+                Rigidbody partRb = part.gameObject.AddComponent<Rigidbody>();
+
+                partRb.mass = 3f;
+                partRb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+
+                Vector3 randomDirection = new Vector3(
+                    UnityEngine.Random.Range(-2f, 2f),
+                    UnityEngine.Random.Range(1f, 3f),
+                    UnityEngine.Random.Range(-2f, 2f)
+                );
+
+                partRb.AddForce(randomDirection, ForceMode.Impulse);
+                partRb.AddTorque(UnityEngine.Random.insideUnitSphere * 5f, ForceMode.Impulse);
+
+                Destroy(part.gameObject, 5f);
+            }
+        }
+
+        // 5. Ana araba objesini yok et
+        Destroy(gameObject);
+    }
+
+    // Yetenek sistemi (Kartlar vb.) için geçici hız artışı
     public void ActivateSpeedBoost(float multiplier, float duration)
     {
         StartCoroutine(SpeedBoostRoutine(multiplier, duration));
     }
 
-    // Hızlanma sürecini oyunu dondurmadan arka planda yürütmek için Coroutine (IEnumerator) kullandım
     private IEnumerator SpeedBoostRoutine(float multiplier, float duration)
     {
-        originalMaxSpeed *= multiplier; // Maksimum hızı geçici olarak artır
-        yield return new WaitForSeconds(duration); // Verilen süre kadar bekle
-        originalMaxSpeed /= multiplier; // Süre dolunca eski hıza geri dön
+        originalMaxSpeed *= multiplier;
+        yield return new WaitForSeconds(duration);
+        originalMaxSpeed /= multiplier;
     }
 
-    // --- SÜRÜŞ FİZİKLERİ (Kare atlamaması için FixedUpdate içinde) ---
     private void FixedUpdate()
     {
         MoveCar();
         SteerCar();
-        ApplyBodyLean(); // Merkezkaç ağırlık transferi fiziğini uygula
+        ApplyBodyLean();
     }
 
     private void MoveCar()
     {
         float accel = currentCarData != null ? currentCarData.acceleration : 5f;
-
-        // --- EL FRENİ AKTİFSE YOL TUTUŞUNU (GRIP) DÜŞÜR Kİ ARABA KAYMASIN (SAVRULSUN) ---
         float baseGrip = currentCarData != null ? currentCarData.driftGrip : 3f;
-        float finalGrip = isHandbrakeActive ? (baseGrip * 0.2f) : baseGrip; // Tutunmayı %80 azalt
+
+        // El freni çekiliyse yol tutuşunu düşürerek drift başlat
+        float finalGrip = isHandbrakeActive ? (baseGrip * 0.2f) : baseGrip;
 
         currentSpeed = Mathf.MoveTowards(currentSpeed, originalMaxSpeed, accel * Time.fixedDeltaTime);
-
-        // Oto-Drift mantığı (El freni varsa finalGrip düşük olacağı için araba savrulacak)
         currentMoveDirection = Vector3.Lerp(currentMoveDirection, transform.forward, finalGrip * Time.fixedDeltaTime);
 
         Vector3 movement = currentMoveDirection * currentSpeed * Time.fixedDeltaTime;
@@ -288,42 +361,37 @@ public class PlayerCarController : MonoBehaviour
 
     private void SteerCar()
     {
-        // --- EL FRENİ AKTİFSE DÖNÜŞ HIZINI (TURN SPEED) ARTIR Kİ SERT DÖNSÜN ---
         float baseTurnSpeed = currentCarData != null ? currentCarData.turnSpeed : 100f;
-        float finalTurnSpeed = isHandbrakeActive ? (baseTurnSpeed * 1.8f) : baseTurnSpeed; // Dönüşü %80 hızlandır
+
+        // El freni devredeyse dönüş keskinliğini artır
+        float finalTurnSpeed = isHandbrakeActive ? (baseTurnSpeed * 1.8f) : baseTurnSpeed;
 
         float turn = turnInput * finalTurnSpeed * Time.fixedDeltaTime;
         Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
         rb.MoveRotation(rb.rotation * turnRotation);
     }
 
+    // Virajlarda merkezkaç kuvvetiyle kasanın yana yatması
     private void ApplyBodyLean()
     {
-        // Virajlarda süspansiyon esnemesi (kasanın yana yatması) hissiyatı ekledim
         if (carMesh != null && carMesh.childCount > 0)
         {
             float maxLean = currentCarData != null ? currentCarData.maxLeanAngle : 15f;
-
-            // Sağa dönerken aracı sola yatırdım (Z ekseninde)
             float targetLean = turnInput * maxLean;
             Quaternion targetRotation = Quaternion.Euler(0f, 0f, targetLean);
-
-            // Kasa eğilmesinin pürüzsüz gerçekleşmesi için rotasyon geçişine Lerp uyguladım
             carMesh.localRotation = Quaternion.Lerp(carMesh.localRotation, targetRotation, 10f * Time.fixedDeltaTime);
         }
     }
 
     private void SpinWheels()
     {
-        // Tekerleklerin dönüş hızını arabanın mevcut hızıyla (currentSpeed) orantıladım
         float spinAmount = currentSpeed * 20f * Time.deltaTime;
-
         foreach (Transform wheel in wheels)
         {
-            // Listeye aldığım tüm tekerlekleri X ekseninde ileri doğru döndürdüm
             wheel.Rotate(Vector3.right, spinAmount, Space.Self);
         }
     }
+
     public void StopEngineSound()
     {
         if (engineAudioSource != null && engineAudioSource.isPlaying)
@@ -331,26 +399,24 @@ public class PlayerCarController : MonoBehaviour
             engineAudioSource.Stop();
         }
     }
+
+    // Yetenek sistemi için etraftaki engelleri fırlatma
     public void ActivateShockwave(float radius, float force)
     {
-        // Aracın etrafındaki belirtilen yarıçaptaki tüm colliderları bul
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
-
         foreach (Collider nearbyObject in colliders)
         {
-            // Sadece polisleri ve engelleri fırlat
             if (nearbyObject.CompareTag("Police") || nearbyObject.CompareTag("Obstacle"))
             {
                 Rigidbody rb = nearbyObject.GetComponent<Rigidbody>();
                 if (rb != null)
                 {
-                    // Z eksenindeki freeze ayarlarını bozmamak kaydıyla nesneleri arabadan uzağa fırlat
                     rb.AddExplosionForce(force, transform.position, radius, 1f, ForceMode.Impulse);
                 }
             }
         }
     }
-    // Duman sisteminin kapsüllemeyi bozmadan dönüş değerlerini okusun diye Getterlar
+
     public float GetTurnInput()
     {
         return turnInput;

@@ -104,6 +104,9 @@ public class PlayerHealth : MonoBehaviour
         {
             carController.StopEngineSound(); // Sesi kesen metodu çağırdık
             carController.enabled = false;
+
+            // parçalanma fiziğini tetikle
+            carController.Explode();
         }
 
         // Bedirhan'ın Game Over ekranını tetiklemesi için Event'i fırlattım
