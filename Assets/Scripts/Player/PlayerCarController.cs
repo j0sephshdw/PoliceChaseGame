@@ -320,8 +320,21 @@ public class PlayerCarController : MonoBehaviour
             }
         }
 
-        // 5. Ana araba objesini yok et
-        Destroy(gameObject);
+        // 5. Ana araba objesini hemen yok etmek yerine, gövdeyi kapatıp 5 saniye sonra yok ediyoruz
+        // (Böylece PlayerHealth'teki Invoke sayacı çalışabilsin)
+        if (carMesh != null)
+        {
+            carMesh.gameObject.SetActive(false);
+        }
+
+        Collider mainCollider = GetComponent<Collider>();
+        if (mainCollider != null)
+        {
+            mainCollider.enabled = false;
+        }
+
+        // PlayerHealth içindeki Game Over sayacı 4 saniye olduğu için arabanın tamamen silinmesini 5 saniyeye ayarlıyoruz ki script işini bitirebilsin.
+        Destroy(gameObject, 5f);
     }
 
     // Yetenek sistemi (Kartlar vb.) için geçici hız artışı
