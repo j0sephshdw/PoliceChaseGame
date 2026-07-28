@@ -124,7 +124,7 @@ public class PlayerHealth : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         // Eğer çarptığımız obje bir Engel veya Polis ise hasar almasını sağladım
-        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police"))
+        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police") || collision.gameObject.CompareTag("Traffic"))
         {
             TakeDamage(25); // Çarpınca şimdilik 25 hasar almasını ayarladım (4 vuruşta ölür)
         }

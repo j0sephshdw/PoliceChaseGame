@@ -32,7 +32,7 @@ public class TrafficSpawner : MonoBehaviour
         if (trafficCars.Length == 0)
             return;
 
-        if (spawnPointsParent.childCount == 0)
+        if (spawnPointsParent == null || spawnPointsParent.childCount == 0)
             return;
 
         Transform spawnPoint =
@@ -41,9 +41,12 @@ public class TrafficSpawner : MonoBehaviour
         GameObject randomCar =
             trafficCars[Random.Range(0, trafficCars.Length)];
 
-        Instantiate(
+        GameObject car = Instantiate(
             randomCar,
             spawnPoint.position,
             spawnPoint.rotation);
+
+        // Tag'ı oluşturulduktan sonra ver
+        car.tag = "Traffic";
     }
 }
