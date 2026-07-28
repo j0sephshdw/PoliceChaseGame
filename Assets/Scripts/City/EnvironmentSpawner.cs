@@ -73,10 +73,15 @@ public class EnvironmentSpawner : MonoBehaviour
                 GameObject randomCar =
                     parkedCarPrefabs[Random.Range(0, parkedCarPrefabs.Length)];
 
-                Instantiate(randomCar,
-                            spawnPoint.position,
-                            spawnPoint.rotation,
-                            child);
+                // Aracı oluştur
+                GameObject parkedCar = Instantiate(
+                    randomCar,
+                    spawnPoint.position,
+                    spawnPoint.rotation,
+                    child);
+
+                // Park halindeki araç engel olarak davranacak
+                parkedCar.tag = "Obstacle";
             }
         }
     }
