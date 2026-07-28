@@ -105,10 +105,17 @@ public class PlayerHealth : MonoBehaviour
             carController.StopEngineSound(); // Sesi kesen metodu çağırdık
             carController.enabled = false;
 
-            // parçalanma fiziğini tetikle
+            // parçalanma fiziğini tetikle (Parçalar havaya uçmaya başlar)
             carController.Explode();
         }
 
+        // GAME OVER EKRANI GECİKMSİ: Parçalanma efektini 1.5 saniye izleyip sonra ekranı getiriyoruz
+        Invoke(nameof(TriggerGameOverUI), 1.5f);
+    }
+
+    // Gecikmeli çalışacak UI tetikleme metodu
+    private void TriggerGameOverUI()
+    {
         // Bedirhan'ın Game Over ekranını tetiklemesi için Event'i fırlattım
         OnPlayerDeath?.Invoke();
     }
@@ -121,5 +128,5 @@ public class PlayerHealth : MonoBehaviour
         {
             TakeDamage(25); // Çarpınca şimdilik 25 hasar almasını ayarladım (4 vuruşta ölür)
         }
-    }
+    } 
 }
