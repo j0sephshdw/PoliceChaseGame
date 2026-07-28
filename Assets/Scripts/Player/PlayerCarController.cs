@@ -222,7 +222,7 @@ public class PlayerCarController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police"))
+        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police") || collision.gameObject.CompareTag("Traffic"))
         {
             if (globalCrashSound != null) effectsAudioSource.PlayOneShot(globalCrashSound);
 
@@ -246,7 +246,7 @@ public class PlayerCarController : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police"))
+        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police") || collision.gameObject.CompareTag("Traffic"))
         {
             if (collision.contacts.Length > 0)
             {

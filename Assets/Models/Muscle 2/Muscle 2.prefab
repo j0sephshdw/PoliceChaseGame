@@ -75,6 +75,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7fdde701c77d80540927a6758e80ef93, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8084847159419862280}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7fdde701c77d80540927a6758e80ef93, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3588191448801775356}
   m_SourcePrefab: {fileID: 100100000, guid: 7fdde701c77d80540927a6758e80ef93, type: 3}
 --- !u!1 &1586802013262612894 stripped
 GameObject:
@@ -102,3 +105,17 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.3318567, y: 1.8888133, z: 6.0510936}
   m_Center: {x: 0.046382844, y: 0.88920724, z: 0.04620862}
+--- !u!114 &3588191448801775356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1586802013262612894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0758d777599c074aacf8160f9ba4e82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrafficCarController
+  speed: 10
+  destroyDistance: 300
