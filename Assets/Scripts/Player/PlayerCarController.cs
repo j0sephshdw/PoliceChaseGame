@@ -22,6 +22,14 @@ public class PlayerCarController : MonoBehaviour
     private bool isHandbrakeActive = false;
     private float handbrakeDirection = 0f;
 
+    [Header("Patlama Fizik Ayarları")]
+    public float patlamaGucu = 10f;      // Parçaların uzağa fırlama şiddeti
+    public float patlamaYaricapi = 8f;     // Patlamanın etki alanı
+    public float havayaFirlatmaGucu = 0.5f; // Parçaların yukarı kalkma oranı
+
+    [Header("Görsel Efektler")]
+    public GameObject explosionVFX; // Patlama efektini Inspector'dan buraya at
+
     [Header("Araç Özellikleri")]
     public CarData currentCarData;
     public Transform carMesh;
@@ -275,6 +283,7 @@ public class PlayerCarController : MonoBehaviour
         }
     }
 
+    
     // Araç canı sıfırlandığında çağrılan parçalanma fonksiyonu
     public void Explode()
     {
@@ -284,14 +293,14 @@ public class PlayerCarController : MonoBehaviour
         // 2. Patlama sesini çal
         if (globalExplosionSound != null) AudioSource.PlayClipAtPoint(globalExplosionSound, transform.position);
 
-        // 3. Cinemachine kameranın bizi takip etmeyi bırakmasını sağla (Hata vermemesi için)
+        // 3. Cinemachine kameranın bizi takip etmeyi bırakmasını sağla
         var vcam = FindObjectOfType<Unity.Cinemachine.CinemachineCamera>();
         if (vcam != null)
         {
             vcam.Target.TrackingTarget = null;
         }
 
-        // 4. Görsel parçalanma fiziği
+        // 4. Görsel parçalanma fiziği (Dışarı doğru patlama kuvveti)
         if (carMesh != null)
         {
             MeshRenderer[] allParts = carMesh.GetComponentsInChildren<MeshRenderer>();
@@ -304,24 +313,28 @@ public class PlayerCarController : MonoBehaviour
                 part.gameObject.AddComponent<BoxCollider>();
                 Rigidbody partRb = part.gameObject.AddComponent<Rigidbody>();
 
-                partRb.mass = 3f;
+                // Kütleyi 1.5f yaptım
+                partRb.mass = 1.5f;
                 partRb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
-                Vector3 randomDirection = new Vector3(
-                    UnityEngine.Random.Range(-2f, 2f),
-                    UnityEngine.Random.Range(1f, 3f),
-                    UnityEngine.Random.Range(-2f, 2f)
-                );
+                // MERKEZDEN DIŞARIYA PATLAMA KUVVETİ
+                partRb.AddExplosionForce(patlamaGucu, transform.position, patlamaYaricapi, havayaFirlatmaGucu, ForceMode.Impulse);
 
-                partRb.AddForce(randomDirection, ForceMode.Impulse);
-                partRb.AddTorque(UnityEngine.Random.insideUnitSphere * 5f, ForceMode.Impulse);
+                // Parçaların havada kendi etrafında dönmesi için rastgele tork
+                partRb.AddTorque(UnityEngine.Random.insideUnitSphere * 15f, ForceMode.Impulse);
 
                 Destroy(part.gameObject, 5f);
             }
         }
 
-        // 5. Ana araba objesini hemen yok etmek yerine, gövdeyi kapatıp 5 saniye sonra yok ediyoruz
-        // (Böylece PlayerHealth'teki Invoke sayacı çalışabilsin)
+        // 5. Patlama efekti (VFX)
+        if (explosionVFX != null)
+        {
+            GameObject vfx = Instantiate(explosionVFX, transform.position, Quaternion.identity);
+            Destroy(vfx, 3f);
+        }
+
+        // 6. Gövdeyi kapatıp arabayı 5 saniye sonra imha et
         if (carMesh != null)
         {
             carMesh.gameObject.SetActive(false);
@@ -333,7 +346,6 @@ public class PlayerCarController : MonoBehaviour
             mainCollider.enabled = false;
         }
 
-        // PlayerHealth içindeki Game Over sayacı 4 saniye olduğu için arabanın tamamen silinmesini 5 saniyeye ayarlıyoruz ki script işini bitirebilsin.
         Destroy(gameObject, 5f);
     }
 

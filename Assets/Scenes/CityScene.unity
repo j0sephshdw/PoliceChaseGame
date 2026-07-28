@@ -3593,6 +3593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4309f4b1c02d874cbe2df05633657bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCarController
+  explosionVFX: {fileID: 100006, guid: 42f257b24c959a44794a35d032e9da12, type: 3}
   currentCarData: {fileID: 11400000, guid: 54cbf7d86b8bf0442b84a176a0aca3ba, type: 2}
   carMesh: {fileID: 1396519572}
   globalCrashSound: {fileID: 8300000, guid: 7c18f527990d42340b618f0e5c553205, type: 3}
