@@ -815,6 +815,51 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &227740880
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 227740881}
+  - component: {fileID: 227740882}
+  m_Layer: 0
+  m_Name: CarSelectionPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &227740881
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 227740880}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 2.25, z: -9}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &227740882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 227740880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6d4fe6062c10234ea04c6f67b3f1a63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AutoRotate
+  donusHizi: 40
 --- !u!1 &232930125
 GameObject:
   m_ObjectHideFlags: 0
@@ -2146,7 +2191,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3366,6 +3411,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4309f4b1c02d874cbe2df05633657bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCarController
+  patlamaGucu: 10
+  patlamaYaricapi: 8
+  havayaFirlatmaGucu: 0.5
   explosionVFX: {fileID: 100006, guid: 42f257b24c959a44794a35d032e9da12, type: 3}
   currentCarData: {fileID: 11400000, guid: 54cbf7d86b8bf0442b84a176a0aca3ba, type: 2}
   carMesh: {fileID: 1396519572}
@@ -5000,21 +5048,74 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarSelectionUI
   carSelectionPanel: {fileID: 741029212}
   availableCars:
-  - carData: {fileID: 11400000, guid: afb0a26d589ee7f4e974310fa8fb9df1, type: 2}
-    previewImage: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
-    requiredScore: 0
   - carData: {fileID: 11400000, guid: f65dcbf5fb00aec4e8e0a11d8df2b718, type: 2}
-    previewImage: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-    requiredScore: 61
+    carPrefab: {fileID: 919132149155446097, guid: f4d52184563e17e4a80f7cdd38816077, type: 3}
+    requiredScore: 0
+  - carData: {fileID: 11400000, guid: a263d28a6196dd241b7997c88774497f, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 1a36d48f60534be4083ac36f761e8fa9, type: 3}
+    requiredScore: 0
+  - carData: {fileID: 11400000, guid: 2e5941c24d8e2954e8fa9ae01d4e2da6, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: f7482cac7d7514042ab51447eb5adbab, type: 3}
+    requiredScore: 50
+  - carData: {fileID: 11400000, guid: 0001b9b31b7a28e4b8657be5c26bee46, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 55fd9773dca0533498db478c45c9b629, type: 3}
+    requiredScore: 60
+  - carData: {fileID: 11400000, guid: 3506a189f3c533744b49b991e9733af1, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 460ce92160641af44b6a9abd2f70658d, type: 3}
+    requiredScore: 120
+  - carData: {fileID: 11400000, guid: b8cdcb656a255f4428cf787a577928f6, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 198ac3ee83cde1a46a00b19335dfe3f5, type: 3}
+    requiredScore: 150
+  - carData: {fileID: 11400000, guid: 54cbf7d86b8bf0442b84a176a0aca3ba, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 32e5eca1cba790e40be2505723885ea9, type: 3}
+    requiredScore: 200
+  - carData: {fileID: 11400000, guid: 7e34d998e280d074695bed8695a8cb2e, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: d31c4262f127ead49bda41c0ccd4637d, type: 3}
+    requiredScore: 210
+  - carData: {fileID: 11400000, guid: 7dbd17470d659e14898c370e217fc481, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: bf01b8e32bf60244ab1216b7061a55c5, type: 3}
+    requiredScore: 220
+  - carData: {fileID: 11400000, guid: bfa26055b3c6b7c4dbfbb53a530525d8, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 7fdde701c77d80540927a6758e80ef93, type: 3}
+    requiredScore: 230
+  - carData: {fileID: 11400000, guid: f544ebe99a4eaa1428f9ed8302718e10, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 91261d622c99d9544815e9abe976450d, type: 3}
+    requiredScore: 240
+  - carData: {fileID: 11400000, guid: d25b0ecf51bfc0546abf9e881a53ce9f, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 0d367e1cf1f1bd447bb24ae73e0025ce, type: 3}
+    requiredScore: 250
+  - carData: {fileID: 11400000, guid: ba20d1f5250142c4d887632f4e916756, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 3a4cad23f30eba248a9f2063249ac15d, type: 3}
+    requiredScore: 260
+  - carData: {fileID: 11400000, guid: 333c1f04e4928644084d2b18e6e93948, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: e496521f28ed134408b4b71629928aad, type: 3}
+    requiredScore: 270
+  - carData: {fileID: 11400000, guid: 49805ae234adb674b8264e4a505152dc, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 17afdd2138a5b07449545d2858a9ac89, type: 3}
+    requiredScore: 280
+  - carData: {fileID: 11400000, guid: 36436aababe585a42a84719f24ae1150, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: fe3d2f923d2bef2419e6ec98ad147a69, type: 3}
+    requiredScore: 290
+  - carData: {fileID: 11400000, guid: afb0a26d589ee7f4e974310fa8fb9df1, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 2d204f38df872be4088e097b51c2a2b0, type: 3}
+    requiredScore: 300
+  - carData: {fileID: 11400000, guid: fd164372eef839041af678cac099f944, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 47ef70d02c6f6fd48bcc73ecd1e4d1fe, type: 3}
+    requiredScore: 310
+  - carData: {fileID: 11400000, guid: 2e33c324ed6242c458bdf81bf19fa0d0, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 57647e2cefac9c74c841fccfaf6b78b2, type: 3}
+    requiredScore: 320
+  - carData: {fileID: 11400000, guid: dd0878460c1e33c41b791ada4d50e80a, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 35e4b0030cff6f3478861ebae757c7a5, type: 3}
+    requiredScore: 330
+  carSpawnPoint: {fileID: 227740881}
+  modelOffset: {x: 0, y: 0, z: 0}
   previousButton: {fileID: 548563176}
   nextButton: {fileID: 1383393312}
-  carPreviewImage: {fileID: 563808092}
   carPreviewButton: {fileID: 563808089}
   carNameText: {fileID: 1119674245}
   lockInfoText: {fileID: 897343751}
-  lockIcon: {fileID: 1759012065}
-  lockedColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}
-  unlockedColor: {r: 1, g: 1, b: 1, a: 1}
+  lockIcon: {fileID: 1759012063}
 --- !u!1 &1366657514
 GameObject:
   m_ObjectHideFlags: 0
@@ -8287,3 +8388,4 @@ SceneRoots:
   - {fileID: 1826644943}
   - {fileID: 600481700}
   - {fileID: 1800867487}
+  - {fileID: 227740881}
