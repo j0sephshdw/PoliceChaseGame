@@ -23,9 +23,10 @@ public class CarSelectionUI : MonoBehaviour
     [SerializeField] private Transform carSpawnPoint;
 
     [Tooltip("Araba yalpalanarak dönüyorsa Z eksenini buradan kaydırarak tam merkeze alabilirsiniz (Örn: 0.5 veya -0.5)")]
-    [SerializeField] private Vector3 modelOffset = new Vector3(0, 0, 0); //  Merkez kaydırma ayarı
+    [SerializeField] private Vector3 modelOffset = new Vector3(0, 0, 0); // Merkez kaydırma ayarı
 
-    private GameObject currentCarModel;
+    //  Havuz  Sistemi - Araçları sadece 1 kere üreteceğiz
+    private Dictionary<CarData, GameObject> carModelCache = new Dictionary<CarData, GameObject>();
 
     [Header("UI Elemanları")]
     [SerializeField] private Button previousButton;
@@ -43,7 +44,7 @@ public class CarSelectionUI : MonoBehaviour
         carSelectionPanel.SetActive(true);
         playerCarController = FindAnyObjectByType<PlayerCarController>();
 
-        // 1. ÇÖZÜM: Garaj menüsü açıldığında yoldaki asıl arabayı tamamen görünmez yap!
+        // Garaj menüsü açıldığında yoldaki asıl arabayı tamamen görünmez yap
         if (playerCarController != null)
         {
             playerCarController.gameObject.SetActive(false);
@@ -77,14 +78,30 @@ public class CarSelectionUI : MonoBehaviour
 
         carNameText.text = car.carData.carName;
 
-        if (currentCarModel != null) Destroy(currentCarModel);
+        // 1. Havuzdaki tüm araç modellerini gizle
+        foreach (var kvp in carModelCache)
+        {
+            if (kvp.Value != null) kvp.Value.SetActive(false);
+        }
 
-        currentCarModel = Instantiate(car.carPrefab, carSpawnPoint.position, carSpawnPoint.rotation);
-        currentCarModel.transform.SetParent(carSpawnPoint);
+        // 2. Eğer bu araç daha önce üretildiyse, havuzdan çağır ve aktif et (Performans için)
+        if (carModelCache.ContainsKey(car.carData) && carModelCache[car.carData] != null)
+        {
+            GameObject cachedModel = carModelCache[car.carData];
+            cachedModel.SetActive(true);
+            cachedModel.transform.localPosition = modelOffset;
+            cachedModel.transform.localScale = Vector3.one;
+        }
+        else
+        {
+            // 3. Daha önce hiç üretilmediyse sıfırdan üret ve havuza kaydet
+            GameObject newModel = Instantiate(car.carPrefab, carSpawnPoint.position, carSpawnPoint.rotation);
+            newModel.transform.SetParent(carSpawnPoint);
+            newModel.transform.localPosition = modelOffset;
+            newModel.transform.localScale = Vector3.one;
 
-        //  Arabayı, Inspector'dan verdiğimiz kaydırma (Offset) değeri kadar ileri/geri al
-        currentCarModel.transform.localPosition = modelOffset;
-        currentCarModel.transform.localScale = Vector3.one;
+            carModelCache[car.carData] = newModel;
+        }
 
         if (isUnlocked)
         {
@@ -109,7 +126,7 @@ public class CarSelectionUI : MonoBehaviour
             return;
         }
 
-        //  Oyna tuşuna basıldığında asıl arabayı tekrar yolda görünür hale getir!
+        // Oyna tuşuna basıldığında asıl arabayı tekrar yolda görünür hale getir
         if (playerCarController != null)
         {
             playerCarController.gameObject.SetActive(true);
@@ -118,7 +135,12 @@ public class CarSelectionUI : MonoBehaviour
         playerCarController.currentCarData = car.carData;
         playerCarController.LoadCarModel();
 
-        if (currentCarModel != null) Destroy(currentCarModel);
+        // Oyuna girerken bellek temizliği Garajdaki modelleri yok et
+        foreach (var kvp in carModelCache)
+        {
+            if (kvp.Value != null) Destroy(kvp.Value);
+        }
+        carModelCache.Clear();
 
         carSelectionPanel.SetActive(false);
         GameManager.Instance.SetState(GameState.Playing);
