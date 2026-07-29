@@ -28,6 +28,7 @@ public class MapSelectionUI : MonoBehaviour
     [SerializeField] private Button mapPreviewButton;
     [SerializeField] private TMP_Text mapNameText;
     [SerializeField] private TMP_Text lockInfoText;
+    [SerializeField] private Image lockIcon;
 
     [SerializeField] private Color lockedColor = new Color(0.3f, 0.3f, 0.3f, 1f);
     [SerializeField] private Color unlockedColor = Color.white;
@@ -69,11 +70,13 @@ public class MapSelectionUI : MonoBehaviour
         {
             mapPreviewImage.color = unlockedColor;
             lockInfoText.text = "";
+            lockIcon.gameObject.SetActive(false);
         }
         else
         {
             mapPreviewImage.color = lockedColor;
             lockInfoText.text = "Skor: " + map.requiredScore + " gerekli";
+            lockIcon.gameObject.SetActive(true);
         }
     }
 

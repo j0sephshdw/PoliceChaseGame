@@ -29,6 +29,7 @@ public class CarSelectionUI : MonoBehaviour
     [SerializeField] private Button carPreviewButton;
     [SerializeField] private TMP_Text carNameText;
     [SerializeField] private TMP_Text lockInfoText;
+    [SerializeField] private Image lockIcon;
 
     [SerializeField] private Color lockedColor = new Color(0.3f, 0.3f, 0.3f, 1f);
     [SerializeField] private Color unlockedColor = Color.white;
@@ -83,11 +84,13 @@ public class CarSelectionUI : MonoBehaviour
         {
             carPreviewImage.color = unlockedColor;
             lockInfoText.text = "";
+            lockIcon.gameObject.SetActive(false);
         }
         else
         {
             carPreviewImage.color = lockedColor;
             lockInfoText.text = "Skor: " + car.requiredScore + " gerekli";
+            lockIcon.gameObject.SetActive(true);
         }
     }
 

@@ -20,7 +20,9 @@ public class UIManager : MonoBehaviour
 
     [Header("Diğer UI Elemanları")]
     [SerializeField] private TMP_Text highScoreText;   // MainMenuPanel'deki "En Yüksek Skor: 0" yazısı
-    [SerializeField] private TMP_Text soundToggleText;  // SoundToggleButton'ın üzerindeki yazı
+    [SerializeField] private UnityEngine.UI.Image soundIcon;
+    [SerializeField] private Sprite audioOnSprite;
+    [SerializeField] private Sprite audioOffSprite; 
     [SerializeField] private UnityEngine.UI.Slider musicVolumeSlider;
     [SerializeField] private UnityEngine.UI.Slider sfxVolumeSlider;
     [SerializeField] private UnityEngine.UI.Toggle vibrationToggle;
@@ -41,7 +43,7 @@ public class UIManager : MonoBehaviour
 
         // Daha önce kaydedilmiş bir ses tercihi varsa onu uygula (varsayılan: sessiz değil).
         ApplySavedMuteState();
-        soundToggleText.text = IsMuted() ? "SES KAPALI" : "SES AÇIK";
+        soundIcon.sprite = IsMuted() ? audioOffSprite : audioOnSprite;
 
         musicVolumeSlider.value = PlayerPrefs.GetFloat(MusicVolumeKey, 1f);
         sfxVolumeSlider.value = PlayerPrefs.GetFloat(SFXVolumeKey, 1f);
@@ -106,7 +108,7 @@ public class UIManager : MonoBehaviour
     public void ToggleSound()
     {
         ToggleMute();
-        soundToggleText.text = IsMuted() ? "SES KAPALI" : "SES AÇIK";
+        soundIcon.sprite = IsMuted() ? audioOffSprite : audioOnSprite;
     }
 
     // Ses durumunu gerçekten uygular: AudioListener.volume, sahnedeki TÜM
