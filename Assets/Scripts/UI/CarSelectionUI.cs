@@ -118,6 +118,12 @@ public class CarSelectionUI : MonoBehaviour
         playerCarController.currentCarData = car.carData;
         playerCarController.LoadCarModel();
 
+        PlayerHealth playerHealth = playerCarController.GetComponent<PlayerHealth>();
+        if (playerHealth != null)
+        {
+            playerHealth.RefreshHealthFromCarData();
+        }
+
         if (currentCarModel != null) Destroy(currentCarModel);
 
         carSelectionPanel.SetActive(false);

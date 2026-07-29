@@ -7,9 +7,11 @@ using UnityEngine.InputSystem;
 public class PlayerCarController : MonoBehaviour
 {
     // Temel fizik ve hareket değişkenleri
-    private float originalMaxSpeed;
-    private float currentSpeed = 0f;
+    [SerializeField]private float originalMaxSpeed;
+    [SerializeField]private float currentSpeed = 0f;
     private float turnInput;
+    private float turnSpeedMultiplier = 1f;
+    private float gripMultiplier = 1f;
     private Rigidbody rb;
     private Vector3 currentMoveDirection;
     private BoxCollider boxCollider;
@@ -372,7 +374,7 @@ public class PlayerCarController : MonoBehaviour
     private void MoveCar()
     {
         float accel = currentCarData != null ? currentCarData.acceleration : 5f;
-        float baseGrip = currentCarData != null ? currentCarData.driftGrip : 3f;
+        float baseGrip = (currentCarData != null ? currentCarData.driftGrip : 3f) * gripMultiplier;
 
         // El freni çekiliyse yol tutuşunu düşürerek drift başlat
         float finalGrip = isHandbrakeActive ? (baseGrip * 0.2f) : baseGrip;
@@ -386,7 +388,7 @@ public class PlayerCarController : MonoBehaviour
 
     private void SteerCar()
     {
-        float baseTurnSpeed = currentCarData != null ? currentCarData.turnSpeed : 100f;
+        float baseTurnSpeed = (currentCarData != null ? currentCarData.turnSpeed : 100f) * turnSpeedMultiplier;
 
         // El freni devredeyse dönüş keskinliğini artır
         float finalTurnSpeed = isHandbrakeActive ? (baseTurnSpeed * 1.8f) : baseTurnSpeed;
@@ -450,5 +452,20 @@ public class PlayerCarController : MonoBehaviour
     public bool GetHandbrakeStatus()
     {
         return isHandbrakeActive;
+    }
+
+    // Yetenek kartlarından "Motor Gücü" seçildiğinde çağrılır, hızı kalıcı olarak artırır.
+    // currentCarData'ya değil, çalışma zamanı değerine dokunuyoruz ki paylaşılan
+    // CarData asset dosyası kalıcı olarak değişmesin.
+    public void IncreaseMaxSpeed(float percentage)
+    {
+        originalMaxSpeed *= (1f + percentage);
+    }
+
+    // Yetenek kartlarından "Yol Tutuşu" seçildiğinde çağrılır.
+    public void IncreaseGrip(float percentage)
+    {
+        turnSpeedMultiplier *= (1f + percentage);
+        gripMultiplier *= (1f + percentage);
     }
 }

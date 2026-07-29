@@ -23,6 +23,7 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private Image hudSoundIcon;
     [SerializeField] private Sprite audioOnSprite;
     [SerializeField] private Sprite audioOffSprite;
+    [SerializeField] private TMP_Text healthText;
 
     [Header("Game Over Elemanları")]
     [SerializeField] private TMP_Text finalScoreText;
@@ -90,6 +91,7 @@ public class GameUIManager : MonoBehaviour
         // maxHealth araca göre değişebildiği için (CarData), Slider'ın üst sınırını da her seferinde güncelliyoruz.
         healthBar.maxValue = maxHealth;
         healthBar.value = currentHealth;
+        healthText.text = currentHealth + " / " + maxHealth;
     }
 
     private void UpdateGameOverScreen()

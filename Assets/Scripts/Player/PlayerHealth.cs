@@ -8,7 +8,8 @@ public class PlayerHealth : MonoBehaviour
     private int maxHealth;
     private int currentHealth;
     private bool isShieldActive = false; // Kalkanın o an açık olup olmadığını takip eden değişken
-
+    private float regenPerSecond = 0f;
+    private float regenAccumulator = 0f;
     
     // Bedirhan'ın (UI ve Oyun Döngüsü sorumlusu) kendi sisteminde kullanacağı tetikleyiciler
     public event Action<int, int> OnHealthChanged; // UI barının doğru oranlanması için hem current hem max canı gönderiyoruz
@@ -46,6 +47,22 @@ public class PlayerHealth : MonoBehaviour
         {
             ActivateShield(3f); // E'ye basınca 3 saniyelik kalkan açılmasını sağladım
         }
+
+        if(regenPerSecond > 0f && currentHealth < maxHealth)
+        {
+            regenAccumulator += regenPerSecond * Time.deltaTime;
+            if(regenAccumulator >= 1f)
+            {
+                int healAmount = Mathf.FloorToInt(regenAccumulator);
+                regenAccumulator -= healAmount;
+                currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
+                OnHealthChanged?.Invoke(currentHealth,maxHealth);
+            }
+        }
+    }
+    public void IncreaseRegen(float amountPerSecond)
+    {
+        regenPerSecond += amountPerSecond;
     }
 
     // Bedirhan'ın UI'dan (veya yetenek sisteminden) çağıracağı Kalkan Fonksiyonu
@@ -129,4 +146,29 @@ public class PlayerHealth : MonoBehaviour
             TakeDamage(25); // Çarpınca şimdilik 25 hasar almasını ayarladım (4 vuruşta ölür)
         }
     } 
+
+    public void IncreaseMaxHealth(float percentage)
+    {
+        int increase = Mathf.RoundToInt(maxHealth * percentage);
+        maxHealth += increase;
+        currentHealth += increase; // mevcut canı da artırmazsak, can barındaki oran aniden düşmüş gibi görünür
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
+    }
+
+    // Araç Seçim ekranında farklı bir araç seçildiğinde, can değerlerini
+    // o aracın CarData'sına göre yeniden hesaplamak için çağrılır.
+    public void RefreshHealthFromCarData()
+    {
+        if (carController != null && carController.currentCarData != null)
+        {
+            maxHealth = carController.currentCarData.maxHealth;
+        }
+        else
+        {
+            maxHealth = 100;
+        }
+
+        currentHealth = maxHealth;
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
+    }
 }
