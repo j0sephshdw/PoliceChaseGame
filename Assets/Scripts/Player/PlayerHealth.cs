@@ -10,6 +10,7 @@ public class PlayerHealth : MonoBehaviour
     private bool isShieldActive = false; // Kalkanın o an açık olup olmadığını takip eden değişken
     private float regenPerSecond = 0f;
     private float regenAccumulator = 0f;
+    private float damageReduction = 0f; 
     
     // Bedirhan'ın (UI ve Oyun Döngüsü sorumlusu) kendi sisteminde kullanacağı tetikleyiciler
     public event Action<int, int> OnHealthChanged; // UI barının doğru oranlanması için hem current hem max canı gönderiyoruz
@@ -96,7 +97,8 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
-        currentHealth -= damageAmount;
+        int reducedDamage = Mathf.RoundToInt(damageAmount * (1f - damageReduction));
+        currentHealth -= reducedDamage;
 
         // Can sıfırın altına düşmesin diye sınırlandırdım
         currentHealth = Mathf.Max(currentHealth, 0);
@@ -110,6 +112,12 @@ public class PlayerHealth : MonoBehaviour
         {
             Die();
         }
+    }
+
+    public void IncreaseDamageReduction(float percentage)
+    {
+        // %90'ı geçmesin diye sınırladık — tamamen hasarsız (ölümsüz) hale gelmesin
+        damageReduction = Mathf.Min(damageReduction + percentage, 0.5f);
     }
 
     private void Die()
