@@ -5,13 +5,16 @@ public class DynamicDriftSmoke : MonoBehaviour
     [Header("Bileşenler")]
     public ParticleSystem leftSmoke;
     public ParticleSystem rightSmoke;
+
+    [Header("Lastik İzleri (Trail)")]
+    public TrailRenderer leftTrail;
+    public TrailRenderer rightTrail;
+
     public BoxCollider carCollider;
 
     [Header("Ayarlar")]
-    [Tooltip("Dumanın çıkması için arabanın ne kadar hızlı hareket etmesi gerektiği (Duran arabada direksiyonu çevirince duman çıkmasın diye).")]
-    public float minimumSpeedForSmoke = 1.0f; // Sadece hız kontrolü için bir eşik
+    public float minimumSpeedForSmoke = 1.0f;
 
-    // Play/Stop yerine sadece vanayı açıp kapatmak için Emission modüllerini alıyoruz
     private ParticleSystem.EmissionModule leftEmission;
     private ParticleSystem.EmissionModule rightEmission;
 
@@ -23,57 +26,68 @@ public class DynamicDriftSmoke : MonoBehaviour
     {
         lastPosition = transform.position;
 
-        // Modülleri koda bağlıyoruz
-        leftEmission = leftSmoke.emission;
-        rightEmission = rightSmoke.emission;
+        if (leftSmoke != null) leftEmission = leftSmoke.emission;
+        if (rightSmoke != null) rightEmission = rightSmoke.emission;
 
-        // Duman sistemini baştan başlat ve hiç durdurma
-        if (!leftSmoke.isPlaying) leftSmoke.Play();
-        if (!rightSmoke.isPlaying) rightSmoke.Play();
-
-        // Sadece vanaları (emission) kapalı tut
         leftEmission.enabled = false;
         rightEmission.enabled = false;
 
-        // Dönüş girdisini okuyabilmek için PlayerCarController'ı alıyoruz
-        carController = GetComponentInParent<PlayerCarController>();
+        if (leftTrail != null) leftTrail.emitting = false;
+        if (rightTrail != null) rightTrail.emitting = false;
+    }
+
+    void OnEnable()
+    {
+        if (leftSmoke != null && !leftSmoke.isPlaying) leftSmoke.Play();
+        if (rightSmoke != null && !rightSmoke.isPlaying) rightSmoke.Play();
     }
 
     void FixedUpdate()
     {
-        if (carCollider == null || Time.fixedDeltaTime == 0) return;
+        if (carCollider == null) return;
 
-        // 1. Dumanların Yerini Otomatik Ayarla (Jant hizası)
+        if (leftSmoke != null && !leftSmoke.isPlaying) leftSmoke.Play();
+        if (rightSmoke != null && !rightSmoke.isPlaying) rightSmoke.Play();
+
+        if (carController == null)
+        {
+            carController = GetComponent<PlayerCarController>();
+            if (carController == null) carController = GetComponentInParent<PlayerCarController>();
+        }
+
+        // 1. Dumanların ve İzlerin Yerini Otomatik Ayarla (Tekerlek hizası)
         Vector3 center = carCollider.center;
         Vector3 size = carCollider.size;
-        float smokeHeight = center.y - (size.y / 2) + 0.3f;
+        float groundHeight = center.y - (size.y / 2) + 0.1f; // Yere çok yakın olsun ki havada çizilmesin
 
-        leftSmoke.transform.localPosition = new Vector3(center.x - (size.x / 2), smokeHeight, center.z - (size.z / 2));
-        rightSmoke.transform.localPosition = new Vector3(center.x + (size.x / 2), smokeHeight, center.z - (size.z / 2));
+        if (leftSmoke != null) leftSmoke.transform.localPosition = new Vector3(center.x - (size.x / 2), groundHeight + 0.2f, center.z - (size.z / 2));
+        if (rightSmoke != null) rightSmoke.transform.localPosition = new Vector3(center.x + (size.x / 2), groundHeight + 0.2f, center.z - (size.z / 2));
 
-        // 2. Sadece arabanın ileri doğru hareket edip etmediğini kontrol et (Duran arabada duman çıkmasın)
+        if (leftTrail != null) leftTrail.transform.localPosition = new Vector3(center.x - (size.x / 2), groundHeight, center.z - (size.z / 2));
+        if (rightTrail != null) rightTrail.transform.localPosition = new Vector3(center.x + (size.x / 2), groundHeight, center.z - (size.z / 2));
+
+        // 2. Hız Kontrolü
         currentSpeed = Vector3.Distance(transform.position, lastPosition) / Time.fixedDeltaTime;
         lastPosition = transform.position;
 
-        // 3. Duman Eşiği Kontrolü: 
-        // Eğer araba hareket ediyorsa VE oyuncu sağa/sola dönüyorsa (Input sıfır değilse) duman çıkar.
+        // 3. Eşik Kontrolü
         bool isDrifting = false;
 
         if (carController != null && currentSpeed > minimumSpeedForSmoke)
         {
-            // Input.GetAxisRaw("Horizontal") veya senin koddaki turnInput değerini kontrol ediyoruz.
-            // Eğer oyuncu dönüyorsa (turnInput sıfır değilse) duman çıkar
-            // Unity'nin ham inputu değil, kendi araba yönünü okusun
             float horizontalInput = carController.GetTurnInput();
 
-            // Eğer oyuncu dönüyorsa veyaa el freni aktifse duman çıkar
             if (Mathf.Abs(horizontalInput) > 0.1f || carController.GetHandbrakeStatus())
             {
                 isDrifting = true;
             }
         }
 
+        // Vanaları ve Çizim modunu aç/kapat
         leftEmission.enabled = isDrifting;
         rightEmission.enabled = isDrifting;
+
+        if (leftTrail != null) leftTrail.emitting = isDrifting;
+        if (rightTrail != null) rightTrail.emitting = isDrifting;
     }
 }

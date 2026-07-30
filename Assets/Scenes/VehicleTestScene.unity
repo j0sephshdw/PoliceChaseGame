@@ -391,21 +391,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8390110231832219928, guid: 8c659291cc6058e42bc7387c4af52a36, type: 3}
-      propertyPath: explosionVFX
-      value: 
-      objectReference: {fileID: 100006, guid: 42f257b24c959a44794a35d032e9da12, type: 3}
-    - target: {fileID: 8390110231832219928, guid: 8c659291cc6058e42bc7387c4af52a36, type: 3}
-      propertyPath: currentCarData
-      value: 
-      objectReference: {fileID: 11400000, guid: f65dcbf5fb00aec4e8e0a11d8df2b718, type: 2}
     - target: {fileID: 8520568083609264127, guid: 8c659291cc6058e42bc7387c4af52a36, type: 3}
       propertyPath: m_Name
       value: PlayerCar
-      objectReference: {fileID: 0}
-    - target: {fileID: 8520568083609264127, guid: 8c659291cc6058e42bc7387c4af52a36, type: 3}
-      propertyPath: m_TagString
-      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
