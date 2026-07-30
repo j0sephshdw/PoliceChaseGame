@@ -296,7 +296,7 @@ public class PlayerCarController : MonoBehaviour
         if (globalExplosionSound != null) AudioSource.PlayClipAtPoint(globalExplosionSound, transform.position);
 
         // 3. Cinemachine kameranın bizi takip etmeyi bırakmasını sağla
-        var vcam = FindObjectOfType<Unity.Cinemachine.CinemachineCamera>();
+        var vcam = FindAnyObjectByType<Unity.Cinemachine.CinemachineCamera>();
         if (vcam != null)
         {
             vcam.Target.TrackingTarget = null;
