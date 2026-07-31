@@ -15,6 +15,8 @@ public class ShieldAbilityData : ScriptableObject, IAbility
     public string Description => description;
     public Sprite Icon => icon;
 
+    public int MaxLevel => throw new System.NotImplementedException();
+
     public void Activate(GameObject target)
     {
         // Burada aracın sağlık/hasar scriptine ulaşatım
@@ -27,5 +29,15 @@ public class ShieldAbilityData : ScriptableObject, IAbility
             healthController.ActivateShield(duration);
             Debug.Log($"🛡️ {abilityName} aktif edildi! Süre: {duration}s");
         }
+    }
+
+    public string GetValueAtLevel(int level)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Activate(GameObject target, int currentLevel)
+    {
+        throw new System.NotImplementedException();
     }
 }

@@ -113,7 +113,6 @@ public class PlayerHealth : MonoBehaviour
             Die();
         }
     }
-
     public void IncreaseDamageReduction(float percentage)
     {
         // %90'ı geçmesin diye sınırladık — tamamen hasarsız (ölümsüz) hale gelmesin

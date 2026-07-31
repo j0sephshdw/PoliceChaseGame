@@ -2648,10 +2648,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardSelectionUI
   cardSelectionPanel: {fileID: 1447499315}
   allAbilities:
-  - {fileID: 11400000, guid: 3bbd8d8d8c4493346bf60c9245239fc3, type: 2}
-  - {fileID: 11400000, guid: c79760c2625e50542ae3160f8a970a54, type: 2}
-  - {fileID: 11400000, guid: 4fc1d3b63ab10a24e9df45698e8d94e4, type: 2}
-  - {fileID: 11400000, guid: 92ff49ede21317f419705caeb96f0345, type: 2}
   - {fileID: 11400000, guid: 08206fe902000f247a7868f64500aeed, type: 2}
   - {fileID: 11400000, guid: be15832264b157c4fb844007be0214a9, type: 2}
   - {fileID: 11400000, guid: 10a5200d6df816343a6cb640cc8ff9a5, type: 2}
@@ -2659,6 +2655,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 178acf05f2c990f44b475862c2e2a6b8, type: 2}
   - {fileID: 11400000, guid: e964fb6a6aa69a348a7b98ce712aeae4, type: 2}
   - {fileID: 11400000, guid: 3e958ea75c5c5f145b45fed26ba3a549, type: 2}
+  - {fileID: 11400000, guid: c79760c2625e50542ae3160f8a970a54, type: 2}
   cards:
   - {fileID: 515442696}
   - {fileID: 2112000849}

@@ -17,6 +17,8 @@ public class SpeedBoostAbilityData : ScriptableObject, IAbility
     public string Description => description;
     public Sprite Icon => icon;
 
+    public int MaxLevel => throw new System.NotImplementedException();
+
     // Bedirhan'ın sistemi kart seçildiğinde burayı tetikleyecek
     public void Activate(GameObject target)
     {
@@ -33,5 +35,15 @@ public class SpeedBoostAbilityData : ScriptableObject, IAbility
         {
             Debug.LogWarning("Hedef objede PlayerCarController bulunamadı!");
         }
+    }
+
+    public string GetValueAtLevel(int level)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Activate(GameObject target, int currentLevel)
+    {
+        throw new System.NotImplementedException();
     }
 }

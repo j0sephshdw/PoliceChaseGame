@@ -16,6 +16,8 @@ public class ShockwaveAbilityData : ScriptableObject, IAbility
     public string Description => description;
     public Sprite Icon => icon;
 
+    public int MaxLevel => throw new System.NotImplementedException();
+
     public void Activate(GameObject target)
     {
         PlayerCarController carController = target.GetComponent<PlayerCarController>();
@@ -25,5 +27,15 @@ public class ShockwaveAbilityData : ScriptableObject, IAbility
             carController.ActivateShockwave(radius, explosionForce);
             Debug.Log($"💥 {abilityName} patlatıldı! Yarıçap: {radius}, Güç: {explosionForce}");
         }
+    }
+
+    public string GetValueAtLevel(int level)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Activate(GameObject target, int currentLevel)
+    {
+        throw new System.NotImplementedException();
     }
 }

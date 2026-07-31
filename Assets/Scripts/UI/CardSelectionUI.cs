@@ -14,8 +14,8 @@ public class CardSelectionUI : MonoBehaviour
     [SerializeField] private CardUI[] cards;
 
     private GameObject playerObject;
-
     private IAbility[] currentOptions = new IAbility[3];
+    private Dictionary<IAbility, int> abilityLevels = new Dictionary<IAbility, int>();
 
     private void Start()
     {
@@ -54,10 +54,25 @@ public class CardSelectionUI : MonoBehaviour
 
     private void PickRandomAbilities()
     {
-        List<ScriptableObject> pool = new List<ScriptableObject>(allAbilities);
+        List<ScriptableObject> pool = new List<ScriptableObject>();
+
+        foreach (ScriptableObject abilityObj in allAbilities)
+        {
+            IAbility ability = abilityObj as IAbility;
+            if (GetAbilityLevel(ability) < ability.MaxLevel)
+            {
+                pool.Add(abilityObj);
+            }
+        }
 
         for (int i = 0; i < currentOptions.Length; i++)
         {
+            if (pool.Count == 0)
+            {
+                currentOptions[i] = null; // gösterilecek yetenek kalmadı (hepsi maksimum seviyede)
+                continue;
+            }
+
             int randomIndex = Random.Range(0, pool.Count);
             currentOptions[i] = pool[randomIndex] as IAbility;
             pool.RemoveAt(randomIndex);
@@ -68,16 +83,44 @@ public class CardSelectionUI : MonoBehaviour
     {
         for (int i = 0; i < currentOptions.Length; i++)
         {
-            cards[i].icon.sprite = currentOptions[i].Icon;
-            cards[i].nameText.text = currentOptions[i].AbilityName;
-            cards[i].descriptionText.text = currentOptions[i].Description;
+            IAbility ability = currentOptions[i];
+
+            if (ability == null)
+            {
+                cards[i].nameText.text = "Maksimum Seviye";
+                cards[i].descriptionText.text = "";
+                continue;
+            }
+
+            int currentLevel = GetAbilityLevel(ability);
+            int nextLevel = currentLevel + 1;
+
+            cards[i].icon.sprite = ability.Icon;
+            cards[i].nameText.text = ability.AbilityName + " (Seviye " + nextLevel + ")";
+            cards[i].descriptionText.text = ability.Description + "\n" +
+                ability.GetValueAtLevel(currentLevel) + " → " + ability.GetValueAtLevel(nextLevel);
         }
     }
 
     private void SelectCard(int index)
     {
-        currentOptions[index].Activate(playerObject);
+        IAbility selected = currentOptions[index];
+        if (selected == null) return; // "Maksimum Seviye" kartına tıklanırsa hiçbir şey yapma
+
+        int currentLevel = GetAbilityLevel(selected);
+        selected.Activate(playerObject, currentLevel);
+
+        if (abilityLevels.ContainsKey(selected))
+            abilityLevels[selected]++;
+        else
+            abilityLevels[selected] = 1;
+
         cardSelectionPanel.SetActive(false);
         GameManager.Instance.SetState(GameState.Playing);
+    }
+
+    private int GetAbilityLevel(IAbility ability)
+    {
+        return abilityLevels.ContainsKey(ability) ? abilityLevels[ability] : 0;
     }
 }
