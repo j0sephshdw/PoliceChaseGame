@@ -9,7 +9,12 @@ public class WorldGenerator : MonoBehaviour
 
     [Header("Settings")]
     public int tileSize = 25;
-    public int renderDistance = 1;
+
+    // Aktif alan (4x4)
+    public int renderSize = 4;
+
+    // Silinme mesafesi
+    public int unloadDistance = 6;
 
     private Dictionary<Vector2Int, GameObject> spawnedTiles = new();
 
@@ -28,41 +33,49 @@ public class WorldGenerator : MonoBehaviour
         int playerTileX = Mathf.FloorToInt(player.position.x / tileSize);
         int playerTileZ = Mathf.FloorToInt(player.position.z / tileSize);
 
-        // Oyuncunun etrafındaki tile'ları oluştur
-        for (int x = playerTileX - renderDistance; x <= playerTileX + renderDistance; x++)
+
+        // 4x4 tile oluşturma
+        for (int x = playerTileX; x < playerTileX + renderSize; x++)
         {
-            for (int z = playerTileZ - renderDistance; z <= playerTileZ + renderDistance; z++)
+            for (int z = playerTileZ; z < playerTileZ + renderSize; z++)
             {
                 Vector2Int coord = new Vector2Int(x, z);
 
                 if (!spawnedTiles.ContainsKey(coord))
                 {
-                    Vector3 pos = new Vector3(x * tileSize, 0, z * tileSize);
+                    Vector3 pos = new Vector3(
+                        x * tileSize,
+                        0,
+                        z * tileSize
+                    );
 
                     GameObject tile = Instantiate(
                         groundTilePrefab,
                         pos,
-                        Quaternion.identity);
+                        Quaternion.identity
+                    );
 
                     spawnedTiles.Add(coord, tile);
                 }
             }
         }
 
-        // Oyuncudan uzak tile'ları sil
-        List<Vector2Int> tilesToRemove = new List<Vector2Int>();
+
+        // Uzak tile silme
+        List<Vector2Int> tilesToRemove = new();
 
         foreach (var tile in spawnedTiles)
         {
             int distanceX = Mathf.Abs(tile.Key.x - playerTileX);
             int distanceZ = Mathf.Abs(tile.Key.y - playerTileZ);
 
-            if (distanceX > renderDistance || distanceZ > renderDistance)
+            if (distanceX > unloadDistance || distanceZ > unloadDistance)
             {
                 Destroy(tile.Value);
                 tilesToRemove.Add(tile.Key);
             }
         }
+
 
         foreach (var coord in tilesToRemove)
         {
