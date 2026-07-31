@@ -1,15 +1,15 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewEnginePowerAbility", menuName = "Oyun Verileri/Yetenekler/Motor Gücü")]
-public class EnginePowerAbilityData : ScriptableObject, IAbility
+[CreateAssetMenu(fileName = "NewAccelerationAbility", menuName = "Oyun Verileri/Yetenekler/İvme Artışı")]
+public class AccelerationAbilityData : ScriptableObject, IAbility
 {
-    public string AbilityName => "Motor Gücü";
-    public string Description => "Maksimum hızını kalıcı olarak artırır.";
+    public string AbilityName => "İvme Artışı";
+    public string Description => "Aracın ivmelenmesini (hıza ulaşma süresini) kalıcı olarak artırır.";
     public Sprite Icon => icon;
     public int MaxLevel => maxLevel;
 
     [SerializeField] private Sprite icon;
-    [SerializeField] [Range(0f, 1f)] private float percentageIncrease = 0.05f;
+    [SerializeField] [Range(0f, 1f)] private float percentageIncrease = 0.08f;
     [SerializeField] [Range(0f, 1f)] private float diminishingFactor = 0.7f;
     [SerializeField] private int maxLevel = 5;
 
@@ -38,7 +38,7 @@ public class EnginePowerAbilityData : ScriptableObject, IAbility
         PlayerCarController car = target.GetComponent<PlayerCarController>();
         if (car != null)
         {
-            car.IncreaseMaxSpeed(delta);
+            car.IncreaseAcceleration(delta);
         }
     }
 }

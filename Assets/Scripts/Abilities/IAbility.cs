@@ -13,9 +13,11 @@ public interface IAbility
     string AbilityName { get; }  // Kartta gösterilecek isim (örn. "Kalkan")
     string Description { get; }  // Kartta gösterilecek açıklama metni
     Sprite Icon { get; }         // Kartta gösterilecek ikon
+    int MaxLevel { get; }
 
     // "target", yeteneği tetikleyen oyuncu objesi (örn. PlayerCar).
     // İçeride ne olacağına (kendi canını mı etkiler, çevredeki
     // düşmanları mı etkiler vb.) her ability kendi karar verir.
-    void Activate(GameObject target);
+    void Activate(GameObject target, int currentLevel);
+    string GetValueAtLevel(int level);
 }

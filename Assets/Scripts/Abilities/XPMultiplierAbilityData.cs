@@ -1,10 +1,10 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewEnginePowerAbility", menuName = "Oyun Verileri/Yetenekler/Motor Gücü")]
-public class EnginePowerAbilityData : ScriptableObject, IAbility
+[CreateAssetMenu(fileName = "NewXPMultiplierAbility", menuName = "Oyun Verileri/Yetenekler/XP Çarpanı")]
+public class XPMultiplierAbilityData : ScriptableObject, IAbility
 {
-    public string AbilityName => "Motor Gücü";
-    public string Description => "Maksimum hızını kalıcı olarak artırır.";
+    public string AbilityName => "XP Çarpanı";
+    public string Description => "Kazandığın deneyim puanını (XP) kalıcı olarak artırır.";
     public Sprite Icon => icon;
     public int MaxLevel => maxLevel;
 
@@ -34,11 +34,6 @@ public class EnginePowerAbilityData : ScriptableObject, IAbility
     public void Activate(GameObject target, int currentLevel)
     {
         float delta = GetTotalIncreaseAtLevel(currentLevel + 1) - GetTotalIncreaseAtLevel(currentLevel);
-
-        PlayerCarController car = target.GetComponent<PlayerCarController>();
-        if (car != null)
-        {
-            car.IncreaseMaxSpeed(delta);
-        }
+        ScoreManager.Instance.IncreaseXPMultiplier(delta);
     }
 }

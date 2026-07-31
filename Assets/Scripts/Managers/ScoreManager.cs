@@ -24,6 +24,9 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private int level = 1;              // Oyuncunun mevcut seviyesi, 1'den başlar
     [SerializeField] private int currentXP = 0;           // Mevcut seviyede biriken XP
     [SerializeField] private int baseXPToLevelUp = 100;   // Seviye başı gereken XP çarpanı (dengelemek istersen buradan oyna)
+    [SerializeField] private float scoreMultiplier = 1f;
+    [SerializeField] private float xpMultiplier = 1f;
+    private float scoreTimer = 0f;
 
     // Dışarıya SADECE okuma izni veren property'ler.
     // Skoru/XP'yi değiştirmenin tek yolu AddScore()/AddXP() — böylece başka bir
@@ -60,14 +63,33 @@ public class ScoreManager : MonoBehaviour
     }
 
     private void Update()
-{
-    // GEÇİCİ TEST KODU: T tuşuna basınca 50 XP kazanılır (kart seçim ekranını test etmek için).
-    // Gerçek XP kazanımı ileride Kişi 2'nin (Berat) engel/polis sisteminden gelecek, o zaman bu kaldırılacak.
-    if (Input.GetKeyDown(KeyCode.T))
     {
-        AddXP(50);
+        HandleSurvivalScore();
+        // GEÇİCİ TEST KODU: T tuşuna basınca 50 XP kazanılır (kart seçim ekranını test etmek için).
+        // Gerçek XP kazanımı ileride Kişi 2'nin (Berat) engel/polis sisteminden gelecek, o zaman bu kaldırılacak.
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            AddXP(50);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            AddScore(10);
+        }
     }
-}
+
+    private void HandleSurvivalScore()
+    {
+        if(GameManager.Instance.CurrentState == GameState.Playing)
+        {
+            scoreTimer += Time.deltaTime;
+            if(scoreTimer >= 1f)
+            {
+                scoreTimer -= 1f;
+                AddScore(1);
+            }
+        }
+    }
 
     // --- KİŞİ 2 (Berat — Çevre/Engel/AI sorumlusu) İÇİN NOT ---
     // Bir polis arabası etkisiz hale getirildiğinde, bir engel başarıyla aşıldığında
@@ -76,8 +98,13 @@ public class ScoreManager : MonoBehaviour
     // (Miktarı olayın önemine göre sen belirleyebilirsin, dengeleme konusunu birlikte konuşuruz.)
     public void AddScore(int amount)
     {
-        score += amount;
+        score += Mathf.RoundToInt(amount * scoreMultiplier);
         OnScoreChanged?.Invoke(score);
+    }
+
+    public void IncreaseScoreMultiplier(float percentage)
+    {
+        scoreMultiplier += percentage;
     }
 
     // --- KİŞİ 2 (Berat) İÇİN NOT ---
@@ -86,7 +113,8 @@ public class ScoreManager : MonoBehaviour
     // skor ise sadece Game Over ekranı ve Ana Menü'de gösterilen "başarı" sayısıdır.
     public void AddXP(int amount)
     {
-        currentXP += amount;
+        int boostedAmount = Mathf.RoundToInt(amount * xpMultiplier);
+        currentXP += boostedAmount;
 
         // if değil while kullanıyorum çünkü tek seferde büyük XP kazanılırsa
         // (örn. 250 XP) oyuncu birden fazla seviye birden atlayabilmeli.
@@ -97,6 +125,11 @@ public class ScoreManager : MonoBehaviour
         }
 
         OnXPChanged?.Invoke(currentXP, XPToNextLevel);
+    }
+
+    public void IncreaseXPMultiplier(float percentage)
+    {
+        xpMultiplier += percentage;
     }
 
     private void LevelUp()

@@ -1,15 +1,15 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewEnginePowerAbility", menuName = "Oyun Verileri/Yetenekler/Motor Gücü")]
-public class EnginePowerAbilityData : ScriptableObject, IAbility
+[CreateAssetMenu(fileName = "NewDamageReductionAbility", menuName = "Oyun Verileri/Yetenekler/Hasar Azaltma")]
+public class DamageReductionAbilityData : ScriptableObject, IAbility
 {
-    public string AbilityName => "Motor Gücü";
-    public string Description => "Maksimum hızını kalıcı olarak artırır.";
+    public string AbilityName => "Hasar Azaltma";
+    public string Description => "Aldığın hasarı kalıcı olarak azaltır.";
     public Sprite Icon => icon;
     public int MaxLevel => maxLevel;
 
     [SerializeField] private Sprite icon;
-    [SerializeField] [Range(0f, 1f)] private float percentageIncrease = 0.05f;
+    [SerializeField] [Range(0f, 1f)] private float percentageIncrease = 0.08f;
     [SerializeField] [Range(0f, 1f)] private float diminishingFactor = 0.7f;
     [SerializeField] private int maxLevel = 5;
 
@@ -35,10 +35,10 @@ public class EnginePowerAbilityData : ScriptableObject, IAbility
     {
         float delta = GetTotalIncreaseAtLevel(currentLevel + 1) - GetTotalIncreaseAtLevel(currentLevel);
 
-        PlayerCarController car = target.GetComponent<PlayerCarController>();
-        if (car != null)
+        PlayerHealth health = target.GetComponent<PlayerHealth>();
+        if (health != null)
         {
-            car.IncreaseMaxSpeed(delta);
+            health.IncreaseDamageReduction(delta);
         }
     }
 }

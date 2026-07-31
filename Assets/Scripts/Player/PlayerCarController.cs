@@ -16,6 +16,7 @@ public class PlayerCarController : MonoBehaviour
     private Vector3 currentMoveDirection;
     private BoxCollider boxCollider;
     private List<Transform> wheels = new List<Transform>();
+    private float accelerationMultiplier = 1f;
 
     // Yeni Input Sistemi
     private PlayerInputActions inputActions;
@@ -296,7 +297,7 @@ public class PlayerCarController : MonoBehaviour
         if (globalExplosionSound != null) AudioSource.PlayClipAtPoint(globalExplosionSound, transform.position);
 
         // 3. Cinemachine kameranın bizi takip etmeyi bırakmasını sağla
-        var vcam = FindObjectOfType<Unity.Cinemachine.CinemachineCamera>();
+        var vcam = FindAnyObjectByType<Unity.Cinemachine.CinemachineCamera>();
         if (vcam != null)
         {
             vcam.Target.TrackingTarget = null;
@@ -373,7 +374,7 @@ public class PlayerCarController : MonoBehaviour
 
     private void MoveCar()
     {
-        float accel = currentCarData != null ? currentCarData.acceleration : 5f;
+        float accel = (currentCarData != null ? currentCarData.acceleration : 5f) * accelerationMultiplier;
         float baseGrip = (currentCarData != null ? currentCarData.driftGrip : 3f) * gripMultiplier;
 
         // El freni çekiliyse yol tutuşunu düşürerek drift başlat
@@ -384,6 +385,11 @@ public class PlayerCarController : MonoBehaviour
 
         Vector3 movement = currentMoveDirection * currentSpeed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + movement);
+    }
+    
+    public void IncreaseAcceleration(float percentage)
+    {
+        accelerationMultiplier *= (1f + percentage);
     }
 
     private void SteerCar()
