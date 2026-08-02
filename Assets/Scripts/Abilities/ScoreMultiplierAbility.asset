@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e39cb6197228cd54cb0ea58226e4add3, type: 3}
   m_Name: ScoreMultiplierAbility
   m_EditorClassIdentifier: Assembly-CSharp::ScoreMultiplierAbilityData
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 00527fe35b48e114aad39c0f2699a0d2, type: 3}
   percentageIncrease: 0.1
+  diminishingFactor: 0.7
+  maxLevel: 5

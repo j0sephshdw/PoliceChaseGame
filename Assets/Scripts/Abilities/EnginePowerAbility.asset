@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fb03942f5e2972479fe32b890e9a3c5, type: 3}
   m_Name: EnginePowerAbility
   m_EditorClassIdentifier: Assembly-CSharp::EnginePowerAbilityData
-  icon: {fileID: 21300000, guid: 67606e82d11405a44a70ef2795d78944, type: 3}
+  icon: {fileID: 21300000, guid: 88185da32c539944a80d31d272a156fa, type: 3}
   percentageIncrease: 0.1
+  diminishingFactor: 0.7
+  maxLevel: 5

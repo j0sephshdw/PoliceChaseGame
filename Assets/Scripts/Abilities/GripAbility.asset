@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d39a0ff765c61bd4f9f2bbab58208ca5, type: 3}
   m_Name: GripAbility
   m_EditorClassIdentifier: Assembly-CSharp::GripAbilityData
-  icon: {fileID: 21300000, guid: 8fb97afe5792c2d47a7e12fca934a5fb, type: 3}
+  icon: {fileID: 21300000, guid: 0adc9bb147845394894033cf98f67a31, type: 3}
   percentageIncrease: 0.15
+  diminishingFactor: 0.7
+  maxLevel: 5

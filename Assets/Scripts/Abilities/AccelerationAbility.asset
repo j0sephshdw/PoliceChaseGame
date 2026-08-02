@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6f05161f4e454b42be773b2d4a25910, type: 3}
   m_Name: AccelerationAbility
   m_EditorClassIdentifier: Assembly-CSharp::AccelerationAbilityData
-  icon: {fileID: 21300000, guid: 6ca93523b0317c242b05932fedb07cb3, type: 3}
+  icon: {fileID: 21300000, guid: b4bf3c7eefac5b845979bc08647a1f2a, type: 3}
   percentageIncrease: 0.15
+  diminishingFactor: 0.7
+  maxLevel: 5
