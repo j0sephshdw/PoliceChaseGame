@@ -1,6 +1,7 @@
 using System;
+using System.Collections;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 // ============================================================
 // SCORE MANAGER — Oyun Döngüsü ve UI (Bedirhan) sorumluluğunda.
 // Skor, XP ve seviye sistemini TEK bir yerden yönetir.
@@ -67,12 +68,12 @@ public class ScoreManager : MonoBehaviour
         HandleSurvivalScore();
         // GEÇİCİ TEST KODU: T tuşuna basınca 50 XP kazanılır (kart seçim ekranını test etmek için).
         // Gerçek XP kazanımı ileride Kişi 2'nin (Berat) engel/polis sisteminden gelecek, o zaman bu kaldırılacak.
-        if (Input.GetKeyDown(KeyCode.T))
+        if (Keyboard.current != null && Keyboard.current.tKey.wasPressedThisFrame)
         {
             AddXP(50);
         }
 
-        if (Input.GetKeyDown(KeyCode.Y))
+        if (Keyboard.current != null && Keyboard.current.yKey.wasPressedThisFrame)
         {
             AddScore(10);
         }
