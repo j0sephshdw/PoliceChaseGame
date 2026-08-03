@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections;
-
+using UnityEngine.InputSystem;
 public class PlayerHealth : MonoBehaviour
 {
     // Kapsülleme (Encapsulation): Dışarıdan müdahaleye kapalı özel değişkenler
@@ -44,10 +44,10 @@ public class PlayerHealth : MonoBehaviour
     private void Update()
     {
         // Bedirhan UI kısmını yapana kadar E tuşu ile kalkanı test edebilmek için geçici olarak yazdım
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            ActivateShield(3f); // E'ye basınca 3 saniyelik kalkan açılmasını sağladım
+        if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame){
+            ActivateShield(5f); // 5 saniye boyunca kalkanı aktif et
         }
+
 
         if(regenPerSecond > 0f && currentHealth < maxHealth)
         {
