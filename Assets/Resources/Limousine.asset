@@ -19,7 +19,7 @@ MonoBehaviour:
   colliderCenter: {x: 0, y: -0.9, z: 0.5}
   colliderSize: {x: 2.3, y: 1.8, z: 10}
   maxSpeed: 5
-  acceleration: 1.5
+  acceleration: 1.2
   turnSpeed: 70
   driftGrip: 5
   maxLeanAngle: 7

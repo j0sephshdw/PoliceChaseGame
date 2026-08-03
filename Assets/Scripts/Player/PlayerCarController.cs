@@ -61,7 +61,7 @@ public class PlayerCarController : MonoBehaviour
         rb.constraints = RigidbodyConstraints.None;
 
         // Ağırlık merkezini arabanın 1.5 metre altına çek
-        rb.centerOfMass = new Vector3(0f, -1.5f, 0f);
+        rb.centerOfMass = new Vector3(0f, -0.4f, 0f);
 
         // Efektler için AudioSource ayarları
         effectsAudioSource = gameObject.AddComponent<AudioSource>();
@@ -237,21 +237,42 @@ public class PlayerCarController : MonoBehaviour
         {
             if (globalCrashSound != null) effectsAudioSource.PlayOneShot(globalCrashSound);
 
-            // 1. Anında hızı ve fiziksel ivmeyi SIFIRLA
-            currentSpeed = 0f;
+            // Fiziksel motor ivmelerini sıfırla (burnu havaya kalkmasın)
             rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero; // Arabanın burnunun havaya kalkmasını (torku) iptal et
+            rb.angularVelocity = Vector3.zero; 
 
-            // 2. Çarpma yönünü al ama Y (Yukarı) eksenini KESİNLİKLE sıfırla!
             Vector3 wallNormal = collision.contacts[0].normal;
-            Vector3 flatPushBack = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
+            float hitAngle = Vector3.Dot(transform.forward, -wallNormal);
 
-            // 3. Arabayı YUKARI değil, SADECE yatayda (X ve Z ekseninde) geriye it
-            rb.AddForce(flatPushBack * 10f, ForceMode.Impulse);
+            // 1. DURUM: Kafa kafaya veya sert bir açıyla çarpıldıysa
+            if (hitAngle > 0.4f) 
+            {
+                // Toparlanma sistemini eklediğimiz için bu değeri -6f'e çıkardık.
+                // Artık sündürerek değil, sert bir tokat gibi sekip anında ileri atılacak.
+                currentSpeed = -2f; 
+                currentMoveDirection = transform.forward; 
 
-            // 4. Aracın yönünü duvardan uzağa kır (Yine Y eksenini sıfırlayarak)
-            Vector3 flatForward = new Vector3(currentMoveDirection.x, 0f, currentMoveDirection.z);
-            currentMoveDirection = Vector3.Reflect(flatForward, flatPushBack).normalized;
+                // GELİŞTİRME 2: Eğer çarptığımız şey bir Polis ise beton duvar gibi davranmasın!
+                // Bizim aracın kütlesiyle ona da bir darbe uygulayalım ki o da savrulsun.
+                if (collision.gameObject.CompareTag("Police"))
+                {
+                    Rigidbody policeRb = collision.gameObject.GetComponent<Rigidbody>();
+                    if (policeRb != null)
+                    {
+                        // Polisi aracımızın baktığı yöne doğru şiddetle fırlat (ForceMode.Impulse = Anlık Darbe)
+                        policeRb.AddForce(transform.forward * 20f, ForceMode.Impulse);
+                    }
+                }
+            }
+            // 2. DURUM: Yandan sıyırma / Sürtme durumu
+            else 
+            {
+                currentSpeed *= 0.5f; 
+                
+                Vector3 flatPushBack = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
+                Vector3 flatForward = new Vector3(currentMoveDirection.x, 0f, currentMoveDirection.z);
+                currentMoveDirection = Vector3.Reflect(flatForward, flatPushBack).normalized;
+            }
         }
     }
 
@@ -262,18 +283,18 @@ public class PlayerCarController : MonoBehaviour
             if (collision.contacts.Length > 0)
             {
                 Vector3 wallNormal = collision.contacts[0].normal;
-
-                // Araba duvara ne kadar dik (kafa kafaya) çarpıyor? (1 = tam dik, 0 = paralel sürtünme)
                 float hitAngle = Vector3.Dot(transform.forward, -wallNormal);
 
-                // Eğer kafa kafaya giriyorsak hızı sıfırda tut ki ileri doğru (duvara) tırmanma gücü üretmesin
-                if (hitAngle > 0.8f)
+                // DİKKAT (SEKME DÜZELTMESİ): 
+                // Eğer araba şu an geri sekiyorsa (hız negatifse) müdahale etme, bırak seksin!
+                // Sadece inatla ileri gitmeye (hız pozitifken duvara tırmanmaya) çalışıyorsa hızı sıfırla.
+                if (hitAngle > 0.8f && currentSpeed > 0f)
                 {
                     currentSpeed = 0f;
                 }
                 else
                 {
-                    // Yandan sürtüyorsa duvar boyunca kaydır ama yukarı çıkmasını YASAKLA
+                    // Yandan sürtüyorsa duvar boyunca kaydır
                     Vector3 slideDirection = Vector3.ProjectOnPlane(transform.forward, wallNormal);
                     slideDirection.y = 0f; // Tırmanmayı kesin olarak engelle
 
@@ -375,12 +396,24 @@ public class PlayerCarController : MonoBehaviour
     private void MoveCar()
     {
         float accel = (currentCarData != null ? currentCarData.acceleration : 5f) * accelerationMultiplier;
+        
+        // Çarpışma sonrası toparlanma (Recovery) sistemi.
+        if (currentSpeed < 0)
+        {
+            accel *= 4f; 
+        }
+
         float baseGrip = (currentCarData != null ? currentCarData.driftGrip : 3f) * gripMultiplier;
 
         // El freni çekiliyse yol tutuşunu düşürerek drift başlat
         float finalGrip = isHandbrakeActive ? (baseGrip * 0.2f) : baseGrip;
 
-        currentSpeed = Mathf.MoveTowards(currentSpeed, originalMaxSpeed, accel * Time.fixedDeltaTime);
+        // GELİŞTİRME: El freni çekiliyken motorun kesicide kalmaması için hedef hızı %40'a düşür.
+        // Ayrıca fren yapıldığı için ivmeyi (yavaşlama hızını) 2 katına çıkar.
+        float targetSpeed = isHandbrakeActive ? (originalMaxSpeed * 0.4f) : originalMaxSpeed;
+        float currentAccel = isHandbrakeActive ? (accel * 2f) : accel;
+
+        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, currentAccel * Time.fixedDeltaTime);
         currentMoveDirection = Vector3.Lerp(currentMoveDirection, transform.forward, finalGrip * Time.fixedDeltaTime);
 
         Vector3 movement = currentMoveDirection * currentSpeed * Time.fixedDeltaTime;
@@ -395,11 +428,13 @@ public class PlayerCarController : MonoBehaviour
     private void SteerCar()
     {
         float baseTurnSpeed = (currentCarData != null ? currentCarData.turnSpeed : 100f) * turnSpeedMultiplier;
-
-        // El freni devredeyse dönüş keskinliğini artır
         float finalTurnSpeed = isHandbrakeActive ? (baseTurnSpeed * 1.8f) : baseTurnSpeed;
 
-        float turn = turnInput * finalTurnSpeed * Time.fixedDeltaTime;
+        // İYİLEŞTİRME: Araç hızlandıkça direksiyon hassasiyetini yumuşat (Yüksek hızda stabilite sağlasın diye)
+        float speedFactor = Mathf.Clamp01(Mathf.Abs(currentSpeed) / originalMaxSpeed);
+        float speedSensitiveTurn = Mathf.Lerp(finalTurnSpeed, finalTurnSpeed * 0.8f, speedFactor); // Son hızda dönüş %20 zorlaşır
+
+        float turn = turnInput * speedSensitiveTurn * Time.fixedDeltaTime;
         Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
         rb.MoveRotation(rb.rotation * turnRotation);
     }
@@ -410,7 +445,11 @@ public class PlayerCarController : MonoBehaviour
         if (carMesh != null && carMesh.childCount > 0)
         {
             float maxLean = currentCarData != null ? currentCarData.maxLeanAngle : 15f;
-            float targetLean = turnInput * maxLean;
+            
+            // İYİLEŞTİRME: Kasa sadece araç hareket halindeyken ve hıza oranla yana yatsın
+            float speedFactor = Mathf.Clamp01(Mathf.Abs(currentSpeed) / 15f)* 2.2f; 
+            float targetLean = turnInput * maxLean * speedFactor;
+            
             Quaternion targetRotation = Quaternion.Euler(0f, 0f, targetLean);
             carMesh.localRotation = Quaternion.Lerp(carMesh.localRotation, targetRotation, 10f * Time.fixedDeltaTime);
         }
