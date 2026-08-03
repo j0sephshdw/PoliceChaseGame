@@ -18,6 +18,10 @@ public class PlayerCarController : MonoBehaviour
     private List<Transform> wheels = new List<Transform>();
     private float accelerationMultiplier = 1f;
 
+    private bool isSpeedBoostActive = false;
+    private float activeSpeedBoostMultiplier = 1f;
+    private Coroutine speedBoostCoroutine;
+
     // Yeni Input Sistemi
     private PlayerInputActions inputActions;
 
@@ -373,17 +377,30 @@ public class PlayerCarController : MonoBehaviour
         Destroy(gameObject, 5f);
     }
 
-    // Yetenek sistemi (Kartlar vb.) için geçici hız artışı
+    // Harita üzerindeki Hızlanma pickup'ı alındığında çağrılır (PickupItem.cs üzerinden)
     public void ActivateSpeedBoost(float multiplier, float duration)
     {
-        StartCoroutine(SpeedBoostRoutine(multiplier, duration));
+        if (isSpeedBoostActive)
+        {
+            // Zaten aktifken tekrar toplandıysa: çarpanı TEKRAR uygulamıyoruz (üst üste binmesin),
+            // sadece eski sayacı iptal edip süresi sıfırlanmış yeni bir coroutine başlatıyoruz.
+            StopCoroutine(speedBoostCoroutine);
+            speedBoostCoroutine = StartCoroutine(SpeedBoostRoutine(duration));
+            return;
+        }
+
+        isSpeedBoostActive = true;
+        activeSpeedBoostMultiplier = multiplier; // süre bitince tam olarak bu çarpanı geri böleceğiz
+        originalMaxSpeed *= multiplier;
+        currentSpeed *= multiplier;
+        speedBoostCoroutine = StartCoroutine(SpeedBoostRoutine(duration));
     }
 
-    private IEnumerator SpeedBoostRoutine(float multiplier, float duration)
+    private IEnumerator SpeedBoostRoutine(float duration)
     {
-        originalMaxSpeed *= multiplier;
         yield return new WaitForSeconds(duration);
-        originalMaxSpeed /= multiplier;
+        originalMaxSpeed /= activeSpeedBoostMultiplier;
+        isSpeedBoostActive = false;
     }
 
     private void FixedUpdate()

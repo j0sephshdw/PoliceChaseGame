@@ -43,12 +43,6 @@ public class PlayerHealth : MonoBehaviour
 
     private void Update()
     {
-        // Bedirhan UI kısmını yapana kadar E tuşu ile kalkanı test edebilmek için geçici olarak yazdım
-        if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame){
-            ActivateShield(5f); // 5 saniye boyunca kalkanı aktif et
-        }
-
-
         if(regenPerSecond > 0f && currentHealth < maxHealth)
         {
             regenAccumulator += regenPerSecond * Time.deltaTime;
@@ -176,6 +170,12 @@ public class PlayerHealth : MonoBehaviour
         }
 
         currentHealth = maxHealth;
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
+    }
+
+    public void Heal(int amount)
+    {
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 }
