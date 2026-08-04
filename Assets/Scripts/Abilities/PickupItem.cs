@@ -8,6 +8,7 @@ public class PickupItem : MonoBehaviour
     [SerializeField] private float effectDuration = 3f; //efekt süresi
     [SerializeField] private float speedMultiplier = 1.5f; //hızlanma yüzdesi
     [SerializeField] private int healAmount = 10; //can miktarı
+    [HideInInspector] public GameObject SourcePrefab; // PickupSpawner tarafından spawn edilirken atanır
 
     private void OnTriggerEnter(Collider other)
     {
@@ -35,9 +36,7 @@ public class PickupItem : MonoBehaviour
             }
         }
         UISoundPlayer.PlayCardSelect();
-        Destroy(gameObject);
-            
-        
+        PickupSpawner.ReturnToPool(SourcePrefab, gameObject); 
     }
 }
 
