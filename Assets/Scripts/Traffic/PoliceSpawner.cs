@@ -67,20 +67,28 @@ public class PoliceSpawner : MonoBehaviour
         GameObject selectedPrefab = SecilecekPolisAraci();
         if (selectedPrefab == null) return;
 
-        // 4. Doğma noktasını ayarla (Oyuncunun arkasında, oyuncunun baktığı yönde)
-        Vector3 spawnPos = player.position - (player.forward * spawnDistanceBehind);
-        spawnPos.y = 0.5f; // Arabanın yerin altına düşmemesi için hafif yukarıdan bırak
-        
+        // 1. Çapraz Kovalama: Biri sağ şeride (+), diğeri sol şeride (-) kaydırılır
+        float sideSign = (activePoliceCars.Count % 2 == 0) ? 1f : -1f;
+        float offsetRight = sideSign * Random.Range(2.0f, 3.5f);
+
+        // 4. Doğma noktasını ayarla (Oyuncunun arkasında ve sağ/sol şeride kaymış olarak)
+        Vector3 spawnPos = player.position - (player.forward * spawnDistanceBehind) + (player.right * offsetRight);
+        spawnPos.y = 0.5f;
+
         Quaternion spawnRot = Quaternion.LookRotation(player.forward);
 
         // 5. Polisi sahneye ekle
         GameObject newPolice = Instantiate(selectedPrefab, spawnPos, spawnRot);
-        
-        // 6. Berat'ın AI koduna hedefin "Player" olduğunu otomatik söyle
+
+        // 6. Berat'ın AI koduna hedefin "Player" olduğunu söyle ve takip mesafelerini farklılaştır
         PoliceCarAI ai = newPolice.GetComponent<PoliceCarAI>();
         if (ai != null)
         {
             ai.SetTarget(player);
+
+            // Takip ve frenleme mesafelerini çeşitleyerek üst üste binmelerini önle
+            ai.followBufferDistance = Random.Range(0.6f, 2.5f);
+            ai.minSafeDistance = Random.Range(0.4f, 1.2f);
         }
 
         // Polisi takip listesine ekle
