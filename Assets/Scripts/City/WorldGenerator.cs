@@ -30,6 +30,8 @@ public class WorldGenerator : MonoBehaviour
 
     void UpdateWorld()
     {
+        // Oyuncu öldüyse/yoksa yol oluşturmayı durdur!
+        if (player == null) return;
         int playerTileX = Mathf.FloorToInt(player.position.x / tileSize);
         int playerTileZ = Mathf.FloorToInt(player.position.z / tileSize);
 

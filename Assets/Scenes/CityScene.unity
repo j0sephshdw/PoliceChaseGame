@@ -560,6 +560,143 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 86277287}
   m_CullTransparentMesh: 1
+--- !u!1 &89640807
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 89640810}
+  - component: {fileID: 89640809}
+  - component: {fileID: 89640808}
+  m_Layer: 5
+  m_Name: WantedStarsText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &89640808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 89640807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: "\u2605 \u2606 \u2606 \u2606 \u2606"
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 28f31670ed72fc44f86d320f980d1e86, type: 2}
+  m_sharedMaterial: {fileID: -8904413297195951109, guid: 28f31670ed72fc44f86d320f980d1e86, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4278512639
+  m_fontColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 90
+  m_fontSizeBase: 90
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 256
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &89640809
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 89640807}
+  m_CullTransparentMesh: 1
+--- !u!224 &89640810
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 89640807}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 288008793}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 600, y: 150}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &101796032
 GameObject:
   m_ObjectHideFlags: 0
@@ -1223,6 +1360,7 @@ GameObject:
   - component: {fileID: 288008796}
   - component: {fileID: 288008795}
   - component: {fileID: 288008794}
+  - component: {fileID: 288008797}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1249,6 +1387,7 @@ RectTransform:
   - {fileID: 758222658}
   - {fileID: 741029215}
   - {fileID: 1357147908}
+  - {fileID: 89640810}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1320,6 +1459,23 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &288008797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 288008792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 025fadd608ad165489b38f1dc3af649f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WantedManager
+  wantedText: {fileID: 89640808}
+  suvSkor: 50
+  muscleSkor: 100
+  sportsSkor: 150
+  maxSkor: 200
 --- !u!1 &318709050
 GameObject:
   m_ObjectHideFlags: 0
@@ -2669,6 +2825,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5535937312576898585, guid: e8c7b54e4597af84992902f2ecb2df14, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 269937355}
     - target: {fileID: 7037748275423215755, guid: e8c7b54e4597af84992902f2ecb2df14, type: 3}
       propertyPath: m_Name
       value: Police Muscle
@@ -2716,13 +2876,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7037748275423215755, guid: e8c7b54e4597af84992902f2ecb2df14, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1899379224}
-    - targetCorrespondingSourceObject: {fileID: 7037748275423215755, guid: e8c7b54e4597af84992902f2ecb2df14, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1899379227}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e8c7b54e4597af84992902f2ecb2df14, type: 3}
 --- !u!1 &808004075
 GameObject:
@@ -5703,6 +5857,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1653235708}
   m_CullTransparentMesh: 1
+--- !u!1 &1670362413
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1670362415}
+  - component: {fileID: 1670362414}
+  m_Layer: 0
+  m_Name: PoliceSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1670362414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1670362413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7355828c39e650c4f8504f7e4b79b1cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PoliceSpawner
+  sedanPrefab: {fileID: 5815567619410042053, guid: 51777ee0bd402184b83f52f535977b77, type: 3}
+  suvPrefab: {fileID: 2420899887257807162, guid: 450d1f7718b4b1947a6eac574db2f370, type: 3}
+  musclePrefab: {fileID: 7037748275423215755, guid: e8c7b54e4597af84992902f2ecb2df14, type: 3}
+  sportsPrefab: {fileID: 7467584649455726018, guid: 2955c9fd024caf944be78415a1458a3a, type: 3}
+  suvSkorSiniri: 50
+  muscleSkorSiniri: 100
+  sportsSkorSiniri: 150
+  spawnInterval: 6
+  maxPoliceCount: 3
+  spawnDistanceBehind: 35
+--- !u!4 &1670362415
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1670362413}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -12.77488, y: 0, z: -9.21995}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1677345356
 GameObject:
   m_ObjectHideFlags: 0
@@ -6608,79 +6816,6 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
---- !u!1 &1899379223 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7037748275423215755, guid: e8c7b54e4597af84992902f2ecb2df14, type: 3}
-  m_PrefabInstance: {fileID: 777056558}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1899379224
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1899379223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f106b17f638cd1148852deb74d72f5a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PoliceAI
-  target: {fileID: 269937355}
-  followBufferDistance: 0.5
-  catchUpGain: 2
-  predictionTime: 0.5
-  predictionFadeStart: 6
-  predictionFadeEnd: 16
-  maxSpeed: 14
-  acceleration: 8
-  minSafeDistance: 0.5
-  emergencyStopDistance: 0.1
-  turnSpeed: 300
-  turnResponsiveness: 3
-  turnSmoothing: 8
-  fullTurnSpeedThreshold: 3
-  driftAngleThreshold: 20
-  driftMinSpeed: 6
-  normalGrip: 6
-  driftGrip: 1.2
-  driftTurnSpeedMultiplier: 1.7
-  driftTurnResponsivenessMultiplier: 1.4
-  playerDriftDetectAngle: 15
-  playerDriftMinSpeed: 3
-  driftSpeedFloorFactor: 0.75
-  driftAccelerationMultiplier: 2.2
-  obstacleCheckDistance: 4
-  obstacleLayerMask:
-    serializedVersion: 2
-    m_Bits: 0
-  sirenSound: {fileID: 0}
---- !u!54 &1899379227
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1899379223}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &1938542574
 GameObject:
   m_ObjectHideFlags: 0
@@ -7920,3 +8055,4 @@ SceneRoots:
   - {fileID: 227740881}
   - {fileID: 2057342794}
   - {fileID: 777056558}
+  - {fileID: 1670362415}
