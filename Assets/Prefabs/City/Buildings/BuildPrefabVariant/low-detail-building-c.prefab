@@ -53,6 +53,10 @@ PrefabInstance:
       value: low-detail-building-c
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ae9c482101a4c724fb1e304dd7c82f78, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: ae9c482101a4c724fb1e304dd7c82f78, type: 3}
       propertyPath: m_TagString
       value: Obstacle
       objectReference: {fileID: 0}
