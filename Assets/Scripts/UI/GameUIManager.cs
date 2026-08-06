@@ -24,6 +24,7 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private Sprite audioOnSprite;
     [SerializeField] private Sprite audioOffSprite;
     [SerializeField] private TMP_Text healthText;
+    [SerializeField] private GameObject wantedStarsText; // Sadece Playing durumunda gösterilecek
 
     [Header("Game Over Elemanları")]
     [SerializeField] private TMP_Text finalScoreText;
@@ -44,6 +45,7 @@ public class GameUIManager : MonoBehaviour
         hudSoundIcon.sprite = UIManager.IsMuted() ? audioOffSprite : audioOnSprite;
         pausePanel.SetActive(false);
         gameOverPanel.SetActive(false);
+        wantedStarsText.SetActive(GameManager.Instance.CurrentState == GameState.Playing);
     }
 
     private void OnDestroy()
@@ -68,6 +70,7 @@ public class GameUIManager : MonoBehaviour
     {
         pausePanel.SetActive(newState == GameState.Paused);
         gameOverPanel.SetActive(newState == GameState.GameOver);
+        wantedStarsText.SetActive(newState == GameState.Playing);
 
         if (newState == GameState.GameOver)
         {

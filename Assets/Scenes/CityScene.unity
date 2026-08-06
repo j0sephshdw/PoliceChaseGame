@@ -687,14 +687,14 @@ RectTransform:
   m_GameObject: {fileID: 89640807}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.64649, y: 0.64649, z: 0.64649}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 288008793}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -16}
   m_SizeDelta: {x: 600, y: 150}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &101796032
@@ -1307,8 +1307,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 3, y: -83}
-  m_SizeDelta: {x: 220, y: 170}
+  m_AnchoredPosition: {x: 3, y: -72}
+  m_SizeDelta: {x: 180, y: 180}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &276646720
 MonoBehaviour:
@@ -2436,6 +2436,7 @@ MonoBehaviour:
   audioOnSprite: {fileID: 21300000, guid: 04e82f0c78c5a7c46a4d387e02652d51, type: 3}
   audioOffSprite: {fileID: 21300000, guid: 300785535542a524db8223518978143f, type: 3}
   healthText: {fileID: 812939794}
+  wantedStarsText: {fileID: 89640807}
   finalScoreText: {fileID: 1252449515}
   highScoreText: {fileID: 1612741776}
   mainMenuSceneName: MainMenu
@@ -4684,8 +4685,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 3, y: -83.00003}
-  m_SizeDelta: {x: 220, y: 170}
+  m_AnchoredPosition: {x: 3, y: -72.00006}
+  m_SizeDelta: {x: 180, y: 180}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &1326956126
 CanvasRenderer:
@@ -7274,8 +7275,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 3, y: -83.00003}
-  m_SizeDelta: {x: 220, y: 170}
+  m_AnchoredPosition: {x: 3, y: -72.00006}
+  m_SizeDelta: {x: 180, y: 180}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1986839703
 MonoBehaviour:
@@ -8391,7 +8392,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5787238577119049162, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8535533592082976966, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8436,13 +8437,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 9157403018796256022, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 4559586507711282857, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
