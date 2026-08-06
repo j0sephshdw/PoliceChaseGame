@@ -53,6 +53,10 @@ PrefabInstance:
       value: building-h
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 463b02fe8396d1e49b99ef7d346f7fc6, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 463b02fe8396d1e49b99ef7d346f7fc6, type: 3}
       propertyPath: m_TagString
       value: Obstacle
       objectReference: {fileID: 0}
