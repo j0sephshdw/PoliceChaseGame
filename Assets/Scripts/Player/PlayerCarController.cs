@@ -8,6 +8,10 @@ public class PlayerCarController : MonoBehaviour
 {
     // Temel fizik ve hareket değişkenleri
     [SerializeField] private float originalMaxSpeed;
+
+    [Range(0f, 1f)]
+    [SerializeField] private float engineBaseVolume = 0.4f; // motor sesi diğer seslere göre çok baskın geldiği için düşürüldü
+    
     [SerializeField] private float currentSpeed = 0f;
     private float turnInput;
     private float turnSpeedMultiplier = 1f;
@@ -196,6 +200,8 @@ public class PlayerCarController : MonoBehaviour
     {
         if (engineAudioSource == null || currentCarData == null) return;
 
+        engineAudioSource.volume = engineBaseVolume * GameUIManager.GetGameVolume();
+
         // Oyun duraklatıldığında motor sesini durdur
         if (Time.timeScale == 0f)
         {
@@ -239,7 +245,7 @@ public class PlayerCarController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police") || collision.gameObject.CompareTag("Traffic"))
         {
-            if (globalCrashSound != null) effectsAudioSource.PlayOneShot(globalCrashSound);
+            if (globalCrashSound != null) effectsAudioSource.PlayOneShot(globalCrashSound,GameUIManager.GetGameVolume());
 
             // Fiziksel motor ivmelerini sıfırla (burnu havaya kalkmasın)
             rb.linearVelocity = Vector3.zero;
@@ -319,7 +325,7 @@ public class PlayerCarController : MonoBehaviour
         StopEngineSound();
 
         // 2. Patlama sesini çal
-        if (globalExplosionSound != null) AudioSource.PlayClipAtPoint(globalExplosionSound, transform.position);
+        if (globalExplosionSound != null) AudioSource.PlayClipAtPoint(globalExplosionSound, transform.position, GameUIManager.GetGameVolume());
 
         // 3. Cinemachine kameranın bizi takip etmeyi bırakmasını sağla
         var vcam = FindAnyObjectByType<Unity.Cinemachine.CinemachineCamera>();

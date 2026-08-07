@@ -103,7 +103,16 @@ public class PoliceCarAI : MonoBehaviour
         if (sirenSound != null)
         {
             audioSource.clip = sirenSound;
+            audioSource.volume = GameUIManager.GetGameVolume();
             audioSource.Play();
+        }
+    }
+
+    void Update()
+    {
+        if (audioSource != null)
+        {
+            audioSource.volume = GameUIManager.GetGameVolume();
         }
     }
 

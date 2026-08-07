@@ -33,6 +33,11 @@ public class GameUIManager : MonoBehaviour
     [Header("Sahne Ayarları")]
     [SerializeField] private string mainMenuSceneName = "MainMenu";
 
+    [Header("Pause Menü Elemanları")]
+    [SerializeField] private Slider gameVolumeSlider;
+
+    private const string GameVolumeKey = "GameVolume";
+
     private void Start()
     {
         GameManager.Instance.OnGameStateChanged += HandleGameStateChanged;
@@ -44,6 +49,8 @@ public class GameUIManager : MonoBehaviour
         UIManager.ApplySavedMuteState();
         hudSoundIcon.sprite = UIManager.IsMuted() ? audioOffSprite : audioOnSprite;
         pausePanel.SetActive(false);
+        gameVolumeSlider.value = PlayerPrefs.GetFloat(GameVolumeKey, 1f);
+        gameVolumeSlider.onValueChanged.AddListener(OnGameVolumeChanged);
         gameOverPanel.SetActive(false);
         wantedStarsText.SetActive(GameManager.Instance.CurrentState == GameState.Playing);
     }
@@ -95,6 +102,16 @@ public class GameUIManager : MonoBehaviour
         healthBar.maxValue = maxHealth;
         healthBar.value = currentHealth;
         healthText.text = currentHealth + " / " + maxHealth;
+    }
+
+    private void OnGameVolumeChanged(float value)
+    {
+        PlayerPrefs.SetFloat(GameVolumeKey, value);
+    }
+
+    public static float GetGameVolume()
+    {
+        return PlayerPrefs.GetFloat(GameVolumeKey, 1f);
     }
 
     private void UpdateGameOverScreen()
