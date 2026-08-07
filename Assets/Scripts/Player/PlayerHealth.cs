@@ -10,8 +10,11 @@ public class PlayerHealth : MonoBehaviour
     private bool isShieldActive = false; // Kalkanın o an açık olup olmadığını takip eden değişken
     private float regenPerSecond = 0f;
     private float regenAccumulator = 0f;
-    private float damageReduction = 0f; 
-    
+    private float damageReduction = 0f;
+    // --- HASAR COOLDOWN (DOKUNULMAZLIK) SİSTEMİ ---
+    public float damageCooldown = 1.5f; // Hasar aldıktan sonra 1.5 saniye dokunulmaz olur
+    private float lastDamageTime = -9999f;
+
     // Bedirhan'ın (UI ve Oyun Döngüsü sorumlusu) kendi sisteminde kullanacağı tetikleyiciler
     public event Action<int, int> OnHealthChanged; // UI barının doğru oranlanması için hem current hem max canı gönderiyoruz
     public event Action OnPlayerDeath; // Ölüm anında fırlatılacak olay
@@ -84,13 +87,24 @@ public class PlayerHealth : MonoBehaviour
     // Dışarıdan veya engellerden hasar alınca çalışacak olan fonksiyon
     public void TakeDamage(int damageAmount)
     {
-        // KALKAN FIX: Kalkan açıksa hasar almadan fonksiyondan çıkılıyor
+        // 1. KALKAN KONTROLÜ
         if (isShieldActive)
         {
-            Debug.Log("Bloklandı! Kalkan hasarı emdi."); 
+            Debug.Log("Bloklandı! Kalkan hasarı emdi.");
             return;
         }
 
+        // 2. COOLDOWN KONTROLÜ (Peş peşe hasar almayı engeller)
+        if (Time.time < lastDamageTime + damageCooldown)
+        {
+            // Cooldown dolmadıysa hasarı iptal et ve fonksiyondan çık
+            return;
+        }
+
+        // Hasar almayı kabul ettik, sayacı şu anki zamana kuruyoruz
+        lastDamageTime = Time.time;
+
+        // Hasar hesaplaması
         int reducedDamage = Mathf.RoundToInt(damageAmount * (1f - damageReduction));
         currentHealth -= reducedDamage;
 
@@ -100,7 +114,7 @@ public class PlayerHealth : MonoBehaviour
         // Bedirhan'ın UI sistemine haber verdim: "Can değişti, can barını güncelle"
         OnHealthChanged?.Invoke(currentHealth, maxHealth);
 
-        Debug.Log("Araç Hasar Aldı! Kalan Can: " + currentHealth); 
+        Debug.Log("Araç Hasar Aldı! Kalan Can: " + currentHealth);
 
         if (currentHealth <= 0)
         {
