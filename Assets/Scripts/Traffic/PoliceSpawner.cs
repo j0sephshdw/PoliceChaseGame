@@ -16,88 +16,206 @@ public class PoliceSpawner : MonoBehaviour
     public int sportsSkorSiniri = 600;
 
     [Header("Spawn Ayarları")]
-    public float spawnInterval = 6f; // Kaç saniyede bir polis eklenecek?
-    public int maxPoliceCount = 3;   // Aynı anda sahnede en fazla kaç polis kovalayabilir?
-    public float spawnDistanceBehind = 35f; // Oyuncunun ne kadar gerisinde doğacaklar?
+    public float spawnInterval = 6f;
+    public int maxPoliceCount = 3;
+    public float spawnDistanceBehind = 35f;
+
+    [Header("Zorluk (Dinamik Polis Limiti)")]
+    public bool dinamikZorlukAktif = true;
+    public int baslangicPolisSayisi = 2;
+    public int mutlakMaxPolisLimiti = 6;
+    public int kacSkordaBirPolisArtsin = 150;
+
+    [Header("Barikat (Roadblock) Ayarları")]
+    public bool enableBarricades = true;
+    public int barricadeScoreThreshold = 150;
+    public float barricadeInterval = 25f;
+    public float barricadeDistanceAhead = 80f;
 
     private Transform player;
     private List<GameObject> activePoliceCars = new List<GameObject>();
 
+    // OBJECT POOLING DEĞİŞKENLERİ
+    private static Dictionary<GameObject, Queue<GameObject>> pool = new Dictionary<GameObject, Queue<GameObject>>();
+    private static Transform poolHolder;
+
     void Start()
     {
+        if (poolHolder == null) poolHolder = new GameObject("PolicePool").transform;
+
         StartCoroutine(SpawnRoutine());
+        StartCoroutine(BarricadeRoutine());
     }
 
     IEnumerator SpawnRoutine()
     {
-        // 1. Oyuncuyu bulana kadar bekle (Oyun başlar başlamaz hata vermesini önler)
         while (player == null)
         {
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null)
-            {
-                player = playerObj.transform;
-            }
+            if (playerObj != null) player = playerObj.transform;
             yield return null;
         }
 
-        // 2. Sonsuz Aksiyon Döngüsü
         while (true)
         {
-            // Eğer oyuncu öldüyse/silindiyse döngüyü durdur (MissingReference hatasını çözer!)
             if (player == null) yield break;
 
-            // Listeyi temizle (Patlayan, duvara çarpıp yok olan polisleri listeden çıkar)
-            activePoliceCars.RemoveAll(p => p == null);
+            activePoliceCars.RemoveAll(p => p == null || !p.activeInHierarchy);
 
-            // Eğer sahnede maksimum polis sayısına henüz ulaşılmadıysa yeni polis üret
-            if (activePoliceCars.Count < maxPoliceCount)
+            int currentLimit = maxPoliceCount;
+            if (dinamikZorlukAktif)
+            {
+                int currentScore = (ScoreManager.Instance != null) ? ScoreManager.Instance.Score : 0;
+                currentLimit = Mathf.Clamp(baslangicPolisSayisi + (currentScore / kacSkordaBirPolisArtsin), baslangicPolisSayisi, mutlakMaxPolisLimiti);
+            }
+
+            if (activePoliceCars.Count < currentLimit)
             {
                 SpawnPolice();
             }
 
-            // Belirlenen süre kadar bekle ve tekrar kontrol et
             yield return new WaitForSeconds(spawnInterval);
+        }
+    }
+
+    IEnumerator BarricadeRoutine()
+    {
+        while (player == null) yield return null;
+
+        while (true)
+        {
+            yield return new WaitForSeconds(barricadeInterval);
+
+            if (!enableBarricades || player == null) continue;
+
+            int currentScore = (ScoreManager.Instance != null) ? ScoreManager.Instance.Score : 0;
+            if (currentScore >= barricadeScoreThreshold)
+            {
+                SpawnBarricade();
+            }
         }
     }
 
     private void SpawnPolice()
     {
-        // 3. Skora göre doğru aracı seç
         GameObject selectedPrefab = SecilecekPolisAraci();
         if (selectedPrefab == null) return;
 
-        // 1. Çapraz Kovalama: Biri sağ şeride (+), diğeri sol şeride (-) kaydırılır
         float sideSign = (activePoliceCars.Count % 2 == 0) ? 1f : -1f;
         float offsetRight = sideSign * Random.Range(2.0f, 3.5f);
 
-        // 4. Doğma noktasını ayarla (Oyuncunun arkasında ve sağ/sol şeride kaymış olarak)
         Vector3 spawnPos = player.position - (player.forward * spawnDistanceBehind) + (player.right * offsetRight);
         spawnPos.y = 0.5f;
 
         Quaternion spawnRot = Quaternion.LookRotation(player.forward);
 
-        // 5. Polisi sahneye ekle
-        GameObject newPolice = Instantiate(selectedPrefab, spawnPos, spawnRot);
+        GameObject newPolice = GetFromPool(selectedPrefab);
+        newPolice.transform.SetPositionAndRotation(spawnPos, spawnRot);
+        newPolice.SetActive(true);
 
-        // 6. Berat'ın AI koduna hedefin "Player" olduğunu söyle ve takip mesafelerini farklılaştır
         PoliceCarAI ai = newPolice.GetComponent<PoliceCarAI>();
         if (ai != null)
         {
+            ai.enabled = true;
             ai.SetTarget(player);
-
-            // Takip ve frenleme mesafelerini çeşitleyerek üst üste binmelerini önle
             ai.followBufferDistance = Random.Range(0.6f, 2.5f);
             ai.minSafeDistance = Random.Range(0.4f, 1.2f);
         }
 
-        // Polisi takip listesine ekle
+        Rigidbody rb = newPolice.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.mass = ai != null ? ai.collisionMass : 400f;
+        }
+
         activePoliceCars.Add(newPolice);
+    }
+
+    // ==========================================
+    //  BARİKAT FONKSİYONU
+    // ==========================================
+    private void SpawnBarricade()
+    {
+        Vector3 pDir = player.forward;
+
+        // Yolun hangi eksende uzandığını buluyoruz (X mi, Z mi?)
+        bool yolX_Ekseninde = Mathf.Abs(pDir.x) > Mathf.Abs(pDir.z);
+
+        // İleriye doğru barikat merkez noktasını belirliyoruz
+        Vector3 cardinalForward;
+        if (yolX_Ekseninde)
+            cardinalForward = new Vector3(Mathf.Sign(pDir.x), 0, 0);
+        else
+            cardinalForward = new Vector3(0, 0, Mathf.Sign(pDir.z));
+
+        Vector3 spawnCenter = player.position + (cardinalForward * barricadeDistanceAhead);
+        spawnCenter.y = 0.5f;
+
+        // Sensör ile yolu bul ve tam merkeze hizala
+        Vector3 rayOrigin = spawnCenter + (Vector3.up * 10f);
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 20f))
+        {
+            if (!hit.collider.gameObject.name.Contains("Road")) return;
+
+            // Hangi eksende ilerliyorsak, diğer ekseni yolun merkezine kilitliyoruz
+            if (yolX_Ekseninde)
+                spawnCenter.z = hit.transform.position.z;
+            else
+                spawnCenter.x = hit.transform.position.x;
+        }
+        else return;
+
+        // KESİN ROTASYON (İstediğin gibi sadece 0, 0, 0)
+        Quaternion fixedRotation = Quaternion.Euler(0f, 0f, 0f);
+
+        // KRİTİK DÜZELTME: Yolun toplam genişliği (Z ekseninde) sadece 1.31 birim!
+        // 0.35f değeri, araçların yola tampon tampona sığmasını sağlayacaktır.
+        float arabaGenisligi = 0.35f;
+
+        // --- 2 İLE 4 ARAÇ ARASINDA DEĞİŞEN SİSTEM ---
+        int arabaSayisi = Random.Range(2, 5); // 2, 3 veya 4 araba seçer
+        int toplamSlot = arabaSayisi + 1;     // 1 tane de kaçış boşluğu ekliyoruz
+        int emptySlot = Random.Range(0, toplamSlot);
+
+        GameObject secilenBarikatAraci = SecilecekPolisAraci();
+
+        for (int i = 0; i < toplamSlot; i++)
+        {
+            if (i == emptySlot) continue;
+
+            Vector3 pos = spawnCenter;
+
+            // Araç sayısına göre şeritleri yolun tam merkezine ortalayan dinamik formül
+            float offsetZ = (i - (toplamSlot - 1) / 2f) * arabaGenisligi;
+            pos.z += offsetZ;
+
+            GameObject barricadeCar = GetFromPool(secilenBarikatAraci);
+
+            // AI kapat
+            PoliceCarAI ai = barricadeCar.GetComponent<PoliceCarAI>();
+            if (ai != null) ai.enabled = false;
+
+            Rigidbody rb = barricadeCar.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.position = pos;
+                rb.rotation = fixedRotation; // Zorla 0, 0, 0
+                rb.mass = 5000f;
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+
+            barricadeCar.transform.SetPositionAndRotation(pos, fixedRotation);
+            barricadeCar.SetActive(true);
+
+            StartCoroutine(ReturnToPoolAfterDelay(secilenBarikatAraci, barricadeCar, 15f));
+        }
+
+        Debug.Log("<color=green>🚨 BARİKAT YOLA SIĞACAK ÖLÇEKTE KURULDU! 🚨</color>");
     }
 
     private GameObject SecilecekPolisAraci()
     {
-        // Bedirhan'ın yazdığı ScoreManager Singleton olduğu için her yerden direkt erişebiliyoruz
         if (ScoreManager.Instance == null) return sedanPrefab;
 
         int anlikSkor = ScoreManager.Instance.Score;
@@ -106,6 +224,45 @@ public class PoliceSpawner : MonoBehaviour
         if (anlikSkor >= muscleSkorSiniri) return musclePrefab;
         if (anlikSkor >= suvSkorSiniri) return suvPrefab;
 
-        return sedanPrefab; // Skor düşükse standart Sedan
+        return sedanPrefab;
+    }
+
+    // ==========================================
+    // OBJECT POOLING FONKSİYONLARI
+    // ==========================================
+    private static GameObject GetFromPool(GameObject prefab)
+    {
+        if (!pool.ContainsKey(prefab)) pool[prefab] = new Queue<GameObject>();
+
+        Queue<GameObject> queue = pool[prefab];
+
+        // GÜVENLİK: Silinmiş (Missing) objeleri atla!
+        while (queue.Count > 0)
+        {
+            GameObject obj = queue.Dequeue();
+            if (obj != null) return obj;
+        }
+
+        return Instantiate(prefab, poolHolder);
+    }
+
+    public static void ReturnToPool(GameObject prefab, GameObject instance)
+    {
+        if (instance == null) return;
+        instance.SetActive(false);
+        instance.transform.SetParent(poolHolder);
+
+        if (!pool.ContainsKey(prefab)) pool[prefab] = new Queue<GameObject>();
+        pool[prefab].Enqueue(instance);
+    }
+
+    private IEnumerator ReturnToPoolAfterDelay(GameObject prefab, GameObject instance, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        // GÜVENLİK: Obje o 15 saniye içinde başka bir sebeple silindiyse havuza atmaya çalışma
+        if (instance != null)
+        {
+            ReturnToPool(prefab, instance);
+        }
     }
 }
