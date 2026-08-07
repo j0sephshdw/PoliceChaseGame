@@ -6699,6 +6699,14 @@ MonoBehaviour:
   spawnInterval: 6
   maxPoliceCount: 3
   spawnDistanceBehind: 35
+  dinamikZorlukAktif: 1
+  baslangicPolisSayisi: 2
+  mutlakMaxPolisLimiti: 6
+  kacSkordaBirPolisArtsin: 150
+  enableBarricades: 1
+  barricadeScoreThreshold: 0
+  barricadeInterval: 5
+  barricadeDistanceAhead: 20
 --- !u!4 &1670362415
 Transform:
   m_ObjectHideFlags: 0
