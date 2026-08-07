@@ -6164,9 +6164,9 @@ MonoBehaviour:
   suvPrefab: {fileID: 2420899887257807162, guid: 450d1f7718b4b1947a6eac574db2f370, type: 3}
   musclePrefab: {fileID: 7037748275423215755, guid: e8c7b54e4597af84992902f2ecb2df14, type: 3}
   sportsPrefab: {fileID: 7467584649455726018, guid: 2955c9fd024caf944be78415a1458a3a, type: 3}
-  suvSkorSiniri: 50
-  muscleSkorSiniri: 100
-  sportsSkorSiniri: 150
+  suvSkorSiniri: 100
+  muscleSkorSiniri: 300
+  sportsSkorSiniri: 600
   spawnInterval: 6
   maxPoliceCount: 3
   spawnDistanceBehind: 35

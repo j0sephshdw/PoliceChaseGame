@@ -7,8 +7,8 @@ using UnityEngine.InputSystem;
 public class PlayerCarController : MonoBehaviour
 {
     // Temel fizik ve hareket değişkenleri
-    [SerializeField]private float originalMaxSpeed;
-    [SerializeField]private float currentSpeed = 0f;
+    [SerializeField] private float originalMaxSpeed;
+    [SerializeField] private float currentSpeed = 0f;
     private float turnInput;
     private float turnSpeedMultiplier = 1f;
     private float gripMultiplier = 1f;
@@ -61,7 +61,7 @@ public class PlayerCarController : MonoBehaviour
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
 
-        
+
         rb.constraints = RigidbodyConstraints.None;
 
         // Ağırlık merkezini arabanın 1.5 metre altına çek
@@ -243,18 +243,18 @@ public class PlayerCarController : MonoBehaviour
 
             // Fiziksel motor ivmelerini sıfırla (burnu havaya kalkmasın)
             rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero; 
+            rb.angularVelocity = Vector3.zero;
 
             Vector3 wallNormal = collision.contacts[0].normal;
             float hitAngle = Vector3.Dot(transform.forward, -wallNormal);
 
             // 1. DURUM: Kafa kafaya veya sert bir açıyla çarpıldıysa
-            if (hitAngle > 0.4f) 
+            if (hitAngle > 0.4f)
             {
                 // Toparlanma sistemini eklediğimiz için bu değeri -6f'e çıkardık.
                 // Artık sündürerek değil, sert bir tokat gibi sekip anında ileri atılacak.
-                currentSpeed = -2f; 
-                currentMoveDirection = transform.forward; 
+                currentSpeed = -2f;
+                currentMoveDirection = transform.forward;
 
                 // GELİŞTİRME 2: Eğer çarptığımız şey bir Polis ise beton duvar gibi davranmasın!
                 // Bizim aracın kütlesiyle ona da bir darbe uygulayalım ki o da savrulsun.
@@ -269,10 +269,10 @@ public class PlayerCarController : MonoBehaviour
                 }
             }
             // 2. DURUM: Yandan sıyırma / Sürtme durumu
-            else 
+            else
             {
-                currentSpeed *= 0.5f; 
-                
+                currentSpeed *= 0.5f;
+
                 Vector3 flatPushBack = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
                 Vector3 flatForward = new Vector3(currentMoveDirection.x, 0f, currentMoveDirection.z);
                 currentMoveDirection = Vector3.Reflect(flatForward, flatPushBack).normalized;
@@ -311,7 +311,7 @@ public class PlayerCarController : MonoBehaviour
         }
     }
 
-    
+
     // Araç canı sıfırlandığında çağrılan parçalanma fonksiyonu
     public void Explode()
     {
@@ -413,11 +413,11 @@ public class PlayerCarController : MonoBehaviour
     private void MoveCar()
     {
         float accel = (currentCarData != null ? currentCarData.acceleration : 5f) * accelerationMultiplier;
-        
+
         // Çarpışma sonrası toparlanma (Recovery) sistemi.
         if (currentSpeed < 0)
         {
-            accel *= 4f; 
+            accel *= 4f;
         }
 
         float baseGrip = (currentCarData != null ? currentCarData.driftGrip : 3f) * gripMultiplier;
@@ -436,7 +436,7 @@ public class PlayerCarController : MonoBehaviour
         Vector3 movement = currentMoveDirection * currentSpeed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + movement);
     }
-    
+
     public void IncreaseAcceleration(float percentage)
     {
         accelerationMultiplier *= (1f + percentage);
@@ -462,11 +462,11 @@ public class PlayerCarController : MonoBehaviour
         if (carMesh != null && carMesh.childCount > 0)
         {
             float maxLean = currentCarData != null ? currentCarData.maxLeanAngle : 15f;
-            
+
             // İYİLEŞTİRME: Kasa sadece araç hareket halindeyken ve hıza oranla yana yatsın
-            float speedFactor = Mathf.Clamp01(Mathf.Abs(currentSpeed) / 15f)* 2.2f; 
+            float speedFactor = Mathf.Clamp01(Mathf.Abs(currentSpeed) / 15f) * 2.2f;
             float targetLean = turnInput * maxLean * speedFactor;
-            
+
             Quaternion targetRotation = Quaternion.Euler(0f, 0f, targetLean);
             carMesh.localRotation = Quaternion.Lerp(carMesh.localRotation, targetRotation, 10f * Time.fixedDeltaTime);
         }
