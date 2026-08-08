@@ -130,3 +130,6 @@ MonoBehaviour:
   effectDuration: 3
   speedMultiplier: 1.5
   healAmount: 10
+  SourcePrefab: {fileID: 0}
+  shockwavePrefab: {fileID: 0}
+  rotationSpeed: 90

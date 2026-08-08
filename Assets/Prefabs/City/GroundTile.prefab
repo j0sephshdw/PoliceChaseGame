@@ -5403,6 +5403,7 @@ MonoBehaviour:
   - {fileID: 4588600792752247853, guid: 6df380a59cfbed44f9b62a875b9fff78, type: 3}
   - {fileID: 8464716780235105526, guid: dbda80d416ca581469003a2f11714592, type: 3}
   - {fileID: 8614702945418793873, guid: 38b5aadb734fed243b259c937a14583b, type: 3}
+  - {fileID: 4689731187172504469, guid: 040f5b91a3dd1a3489ac8fbacb551f66, type: 3}
   pickupSpawnChance: 20
   pickupSpawnPointsParent: {fileID: 4723073973788808873}
 --- !u!1 &5819204858005215436

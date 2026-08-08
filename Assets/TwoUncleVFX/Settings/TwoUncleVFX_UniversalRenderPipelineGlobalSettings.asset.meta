@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: df3ac9918a100e04da72e7d52f6dabc6
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302142
+  packageName: VFX Graph - Kikoken
+  packageVersion: 1.1
+  assetPath: Assets/TwoUncleVFX/Settings/TwoUncleVFX_UniversalRenderPipelineGlobalSettings.asset
+  uploadId: 760011

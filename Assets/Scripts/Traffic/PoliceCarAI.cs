@@ -72,6 +72,7 @@ public class PoliceCarAI : MonoBehaviour
     // Drift için: aracın GERÇEK hareket yönü, transform.forward'dan bağımsız takip edilir
     private Vector3 currentMoveDir;
     private bool isDrifting = false;
+    private bool isStunned = false;
 
     private void Awake()
     {
@@ -129,6 +130,7 @@ public class PoliceCarAI : MonoBehaviour
         vel.z = 0f;
         rb.linearVelocity = vel;
 
+        if (isStunned) return;
         ChaseTarget();
     }
 
@@ -266,6 +268,20 @@ public class PoliceCarAI : MonoBehaviour
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, effectiveAcceleration * Time.fixedDeltaTime);
 
         MoveForward();
+    }
+
+    public void Stun(float duration)
+    {
+        if (isStunned) return; // zaten durduysa tekrar tetiklenmesin
+        StartCoroutine(StunRoutine(duration));
+    }
+
+    private IEnumerator StunRoutine(float duration)
+    {
+        isStunned = true;
+        currentSpeed = 0f; // aniden dursun
+        yield return new WaitForSeconds(duration);
+        isStunned = false;
     }
 
     private void MoveForward()
