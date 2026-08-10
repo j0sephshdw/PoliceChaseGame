@@ -255,38 +255,36 @@ public class PlayerCarController : MonoBehaviour
             if (globalCrashSound != null) effectsAudioSource.PlayOneShot(globalCrashSound, GameUIManager.GetGameVolume());
 
             bool isPolice = collision.gameObject.CompareTag("Police");
+            bool isBarricade = false;
 
-            // Çarpılan şey polis ise (barikat vs.), kütlesini anında kağıda çevir ve fizik kilitlerini aç
             if (isPolice)
             {
-                Rigidbody policeRb = collision.gameObject.GetComponent<Rigidbody>();
-                if (policeRb != null)
+                PoliceCarAI ai = collision.gameObject.GetComponent<PoliceCarAI>();
+                if (ai != null && !ai.isActiveAndEnabled)
                 {
-                    policeRb.mass = 200f;
-                    policeRb.constraints = RigidbodyConstraints.None;
-
-                    PoliceCarAI ai = collision.gameObject.GetComponent<PoliceCarAI>();
-                    if (ai != null) ai.enabled = false;
+                    isBarricade = true;
+                    Rigidbody policeRb = collision.gameObject.GetComponent<Rigidbody>();
+                    if (policeRb != null)
+                    {
+                        policeRb.mass = 200f;
+                        policeRb.constraints = RigidbodyConstraints.None;
+                    }
                 }
             }
 
             Vector3 wallNormal = collision.contacts[0].normal;
             float hitAngle = Vector3.Dot(transform.forward, -wallNormal);
 
-            // 1. DURUM: Kafa kafaya veya sert bir açıyla çarpıldıysa
+            // 1. DURUM: Kafa kafaya çarpışma
             if (hitAngle > 0.4f)
             {
-                if (isPolice)
+                if (isBarricade)
                 {
-                    // HOLLYWOOD EFEKTİ: Barikata girince durmak yok, delip geçiyoruz!
-                    currentSpeed *= 0.65f; // Hızının %35'ini kaybeder (ceza) ama yoluna devam eder!
+                    currentSpeed *= 0.65f;
                     currentMoveDirection = transform.forward;
-
-                    // Unity fiziğinin bizi geriye sektirmesini GÜÇ KULLANARAK engelliyoruz:
                     rb.linearVelocity = transform.forward * currentSpeed;
                     rb.angularVelocity = Vector3.zero;
 
-                    // Polisi paramparça ederek havaya uçur
                     Rigidbody policeRb = collision.gameObject.GetComponent<Rigidbody>();
                     if (policeRb != null)
                     {
@@ -295,29 +293,32 @@ public class PlayerCarController : MonoBehaviour
                         policeRb.AddTorque(UnityEngine.Random.insideUnitSphere * 50f, ForceMode.Impulse);
                     }
                 }
+                else if (isPolice && !isBarricade)
+                {
+                    // Aktif polise kafa kafaya çarptın
+                    currentSpeed *= 0.8f;
+                    currentMoveDirection = transform.forward;
+                }
                 else
                 {
-                    // NORMAL DUVAR/BİNA ÇARPIŞMASI: (Eski sistem, taş gibi seker)
+                    // Normal Duvar
                     rb.linearVelocity = Vector3.zero;
                     rb.angularVelocity = Vector3.zero;
                     currentSpeed = -2f;
                     currentMoveDirection = transform.forward;
                 }
             }
-            // 2. DURUM: Yandan sıyırma / Sürtme durumu
+            // 2. DURUM: Yandan veya Arkadan Çarpışma / Sürtme
             else
             {
-                currentSpeed *= 0.5f;
-
-                Vector3 flatPushBack = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
-                Vector3 flatForward = new Vector3(currentMoveDirection.x, 0f, currentMoveDirection.z);
-                currentMoveDirection = Vector3.Reflect(flatForward, flatPushBack).normalized;
-
-                if (isPolice)
+                if (isBarricade)
                 {
-                    // Yandan çarpınca polisleri yana savur (Ama oyuncunun ivmesini sıfırlama)
-                    rb.angularVelocity = Vector3.zero;
+                    currentSpeed *= 0.5f;
+                    Vector3 flatPushBack = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
+                    Vector3 flatForward = new Vector3(currentMoveDirection.x, 0f, currentMoveDirection.z);
+                    currentMoveDirection = Vector3.Reflect(flatForward, flatPushBack).normalized;
 
+                    rb.angularVelocity = Vector3.zero;
                     Rigidbody policeRb = collision.gameObject.GetComponent<Rigidbody>();
                     if (policeRb != null)
                     {
@@ -325,9 +326,24 @@ public class PlayerCarController : MonoBehaviour
                         policeRb.AddTorque(UnityEngine.Random.insideUnitSphere * 20f, ForceMode.Impulse);
                     }
                 }
+                else if (isPolice && !isBarricade)
+                {
+                    // --- KRİTİK ÇÖZÜM: AKTİF POLİS VURDUĞUNDA HIZ KESİLMEZ ---
+                    // Sadece %5 hız kaybı yaşat (eskiden %50'ydi ve arabanı yığıyordu!)
+                    currentSpeed *= 0.95f;
+                    rb.angularVelocity = Vector3.zero;
+
+                    // Arabayı hafifçe yana doğru ittirerek (Denge bozma efekti)
+                    Vector3 flatPushBack = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
+                    currentMoveDirection = Vector3.Lerp(currentMoveDirection, -flatPushBack, 0.15f).normalized;
+                }
                 else
                 {
-                    // Normal binalara sürtünce zıplamamak için ivmeyi sıfırla
+                    // Duvara veya Trafiğe sürtme
+                    currentSpeed *= 0.5f;
+                    Vector3 flatPushBack = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
+                    Vector3 flatForward = new Vector3(currentMoveDirection.x, 0f, currentMoveDirection.z);
+                    currentMoveDirection = Vector3.Reflect(flatForward, flatPushBack).normalized;
                     rb.linearVelocity = Vector3.zero;
                     rb.angularVelocity = Vector3.zero;
                 }
@@ -464,6 +480,20 @@ public class PlayerCarController : MonoBehaviour
         MoveCar();
         SteerCar();
         ApplyBodyLean();
+        NotifyNearbyPoliceOfDrift();
+    }
+
+    private void NotifyNearbyPoliceOfDrift()
+    {
+        Collider[] nearby = Physics.OverlapSphere(transform.position, 40f);
+        foreach (Collider col in nearby)
+        {
+            if (!col.CompareTag("Police")) continue;
+
+            PoliceCarAI ai = col.GetComponent<PoliceCarAI>();
+            if (ai != null && ai.isActiveAndEnabled)
+                ai.SetPlayerDriftInput(isHandbrakeActive);
+        }
     }
 
     private void MoveCar()
@@ -481,22 +511,32 @@ public class PlayerCarController : MonoBehaviour
         float targetSpeed = isHandbrakeActive ? (originalMaxSpeed * 0.4f) : originalMaxSpeed;
         float currentAccel = isHandbrakeActive ? (accel * 2f) : accel;
 
-        // --- Tersken gaz kes ---
+        // --- ŞAHA KALKMA VE TERS DÖNME DÜZELTMESİ ---
         if (isFlipped)
         {
-            targetSpeed = 0f; // Tersken gitmeye çalışmasın, hedef hız 0!
-            currentAccel = accel * 4f; // Motor hızını çabucak sıfırlasın
+            targetSpeed = 0f;
+            currentAccel = accel * 10f; // Motoru ÇOK hızlı durdur ki zıplamayı anında kessin
         }
 
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, currentAccel * Time.fixedDeltaTime);
 
-        // Tersken aracın yönünü (MoveDirection) değiştirmesini engelle ki yolda dönmesin
         if (!isFlipped)
         {
-            currentMoveDirection = Vector3.Lerp(currentMoveDirection, transform.forward, finalGrip * Time.fixedDeltaTime);
+            // Gökyüzüne sürmeyi engellemek için ileri yönü yere paralel hale getiriyoruz
+            Vector3 flatForward = transform.forward;
+            if (flatForward.y > 0.2f) flatForward.y = 0.2f; // Burnu %20'den fazla kalkarsa motor gücünü ufka daya
+
+            currentMoveDirection = Vector3.Lerp(currentMoveDirection, flatForward.normalized, finalGrip * Time.fixedDeltaTime);
         }
 
         Vector3 movement = currentMoveDirection * currentSpeed * Time.fixedDeltaTime;
+
+        // Eğer araba şaha kalkmış (dikilmiş) ise Y eksenindeki motor hareketini TAMAMEN iptal et (Gökyüzüne tırmanmasın)
+        if (transform.forward.y > 0.5f)
+        {
+            movement.y = 0f;
+        }
+
         rb.MovePosition(rb.position + movement);
     }
 
@@ -597,14 +637,12 @@ public class PlayerCarController : MonoBehaviour
     }
     private void CheckFlipStatus()
     {
-        // Arabanın "yukarısı" (transform.up) dünya eksenine göre ne kadar dik? 
-        // 1 = tam düz, 0 = tam yan yatmış, -1 = tam ters
-        if (Vector3.Dot(transform.up, Vector3.up) < flipThreshold)
+        // 1 = tam düz, 0 = tam yan yatmış veya dikilmiş, -1 = tam ters
+        if (Vector3.Dot(transform.up, Vector3.up) < 0.35f) // Daha erken algılaması için eşiği biraz artırdık
         {
             isFlipped = true;
             flipTimer += Time.fixedDeltaTime;
 
-            // Belirlenen süre boyunca ters kaldıysa Respawn yap
             if (flipTimer >= respawnDelay)
             {
                 RespawnCar();
@@ -612,9 +650,11 @@ public class PlayerCarController : MonoBehaviour
         }
         else
         {
-            // Araba zaten düzse veya kendi kendine düzelirse sayacı sıfırla
             isFlipped = false;
-            flipTimer = 0f;
+            // --- SAYAÇ SIFIRLAMA ---
+            // Anında 0'a eşitlemek yerine yavaşça azaltıyoruz! 
+            // Böylece araba tamponu üstünde zıplarken 1 saliseliğine düzelse bile 2.5 saniyelik sayaç bozulmuyor.
+            flipTimer = Mathf.Max(0f, flipTimer - Time.fixedDeltaTime * 2f);
         }
     }
 
@@ -623,16 +663,19 @@ public class PlayerCarController : MonoBehaviour
         flipTimer = 0f;
         isFlipped = false;
 
-        // İvmeyi ve hızı tamamen sıfırla ki havadan yere düşerken sağa sola fırlamasın
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         currentSpeed = 0f;
 
-        // Aracı olduğu yerde düzelt ve yere saplanmasın diye Y ekseninde 1.5 metre havaya kaldır
-        transform.position = transform.position + Vector3.up * 1.5f;
-
-        // Z ve X rotasyonunu (takla ve yan yatma) sıfırla, sadece baktığı yönü koru
+        // Arabayı 1.5 metre havadan bırakıp beşik gibi sallandırmak yerine tam yola (Y = 0.5f) ok gibi oturtuyoruz.
+        transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
+
+        // Kasanın virajdaki yatma açısını sıfırla ki yamuk doğmasın
+        if (carMesh != null)
+        {
+            carMesh.localRotation = Quaternion.identity;
+        }
 
         currentMoveDirection = transform.forward;
     }
