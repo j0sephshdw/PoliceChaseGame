@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PoliceCarAI : MonoBehaviour
 {
+    // Polisin oyuncunun tam arkasında değil, sağında veya solunda durmasını sağlayacak sapma değeri
+    private float randomLateralOffset;
     [Header("Hedef (Oyuncu)")]
     public Transform target; // Boş bırakılırsa "Player" tag'ine sahip objeyi otomatik bulur
 
@@ -107,6 +109,8 @@ public class PoliceCarAI : MonoBehaviour
             audioSource.volume = GameUIManager.GetGameVolume();
             audioSource.Play();
         }
+        // Her polise oyuncunun -2.5 (sol) ile +2.5 (sağ) birim arasında rastgele bir hedef offset veriyoruz
+        randomLateralOffset = Random.Range(-2.5f, 2.5f);
     }
 
     void Update()
@@ -150,7 +154,13 @@ public class PoliceCarAI : MonoBehaviour
     {
         float actualDistanceToPlayer = Vector3.Distance(transform.position, target.position);
 
-        // Oyuncunun düz hızı
+        // --- 1. GERİDE KALANLARI SİL ---
+        if (actualDistanceToPlayer > 120f)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
         float playerSpeed = 0f;
         Vector3 flatTargetVel = Vector3.zero;
         if (targetRb != null)
@@ -160,10 +170,12 @@ public class PoliceCarAI : MonoBehaviour
             playerSpeed = flatTargetVel.magnitude;
         }
 
-        // 1. HEDEF NOKTA: uzaktayken hafif tahmin (lead pursuit) kullan,
-        //    yakınlaştıkça tahmini SÖNDÜR ve direkt oyuncuyu hedefle.
+        // 1. HEDEF NOKTA
         float predictionBlend = Mathf.InverseLerp(predictionFadeStart, predictionFadeEnd, actualDistanceToPlayer);
         Vector3 aimPoint = target.position + flatTargetVel * (predictionTime * predictionBlend);
+
+        // 2. YAN YANA YAYILMA 
+        aimPoint += target.right * randomLateralOffset;
 
         Vector3 toAimPoint = aimPoint - transform.position;
         toAimPoint.y = 0f;
@@ -174,14 +186,8 @@ public class PoliceCarAI : MonoBehaviour
         float angleToAimPoint = Vector3.SignedAngle(transform.forward, dirToAimPoint, Vector3.up);
 
         // --- DRIFT KARARI ---
-        // A) Polisin kendi açı hatası büyükse VE yeterince hızlıysa -> kendi başına drift.
         bool selfDrift = Mathf.Abs(angleToAimPoint) > driftAngleThreshold && currentSpeed > driftMinSpeed;
 
-        // B) OYUNCU şu an drift atıyor mu?
-        //    ÖNCELİK: Eğer usePlayerDriftInputOverride açıksa ve oyuncunun controller'ı
-        //    SetPlayerDriftInput(true) çağırdıysa, bunu ANINDA/GECİKMESİZ kullan.
-        //    Bu, fizik tabanlı (hız yönü vs. baktığı yön) algılamanın doğasında olan
-        //    "birkaç fizik karesi sonra fark etme" gecikmesini tamamen ortadan kaldırır.
         bool playerDrift;
         if (usePlayerDriftInputOverride)
         {
@@ -211,7 +217,6 @@ public class PoliceCarAI : MonoBehaviour
         float effectiveTurnResponsiveness = turnResponsiveness;
         if (isDrifting)
         {
-            // Drift sırasında araç daha keskin/hızlı döner (kaymayla desteklendiği için savrulmaz)
             effectiveTurnSpeed *= driftTurnSpeedMultiplier;
             effectiveTurnResponsiveness *= driftTurnResponsivenessMultiplier;
         }
@@ -219,51 +224,44 @@ public class PoliceCarAI : MonoBehaviour
         float desiredTurnRate = Mathf.Clamp(angleToAimPoint * effectiveTurnResponsiveness, -effectiveTurnSpeed, effectiveTurnSpeed);
         desiredTurnRate += ObstacleAvoidanceSteer();
 
-        // --- DÜZELTME (ana gecikme kaynağı) ---
-        // ESKİ KOD: yüksek smoothing sadece drift'e girilen/çıkılan TEK karede uygulanıyordu.
-        // Player virajı birkaç kare boyunca sürdürdükçe polis normal (yavaş) smoothing'e
-        // geri düşüyor, dönüşü takip edemiyor ve geride kalıyordu ("duruyor" hissi).
-        // Viraj bitince açı hatası küçüldüğü için de aniden "yetişiyor" gibi görünüyordu.
-        // YENİ: isDrifting TRUE olduğu SÜRE BOYUNCA yüksek smoothing kullanılıyor,
-        // sadece giriş/çıkış karesinde değil.
         float appliedSmoothing = isDrifting ? driftEntrySmoothing : turnSmoothing;
         currentTurnRate = Mathf.Lerp(currentTurnRate, desiredTurnRate, appliedSmoothing * Time.fixedDeltaTime);
 
-        // Neredeyse dururken sert dönemesin (yerinde dönme bugını engeller)
         float speedFactor = Mathf.Clamp01(Mathf.Abs(currentSpeed) / fullTurnSpeedThreshold);
         float appliedTurnRate = currentTurnRate * Mathf.Lerp(0.35f, 1f, speedFactor);
 
         Quaternion turnRotation = Quaternion.Euler(0f, appliedTurnRate * Time.fixedDeltaTime, 0f);
         rb.MoveRotation(rb.rotation * turnRotation);
 
-        // 3. HIZ: oyuncunun hızı + mesafe hatası.
+        // --- 3. HIZ HESAPLAMASI ---
         float distanceError = actualDistanceToPlayer - followBufferDistance;
-        // Oyuncu keskin dönünce mesafe anlık olarak değişebilir; bu tek karelik sıçramanın
-        // hızı sert şekilde düşürüp "durma" hissi yaratmasını engellemek için negatif
-        // (yakınlaşma) tarafını sınırlıyoruz.
         float clampedDistanceError = Mathf.Max(distanceError, -maxCatchUpBrake / Mathf.Max(catchUpGain, 0.0001f));
         float targetSpeed = playerSpeed + clampedDistanceError * catchUpGain;
         targetSpeed = Mathf.Clamp(targetSpeed, 0f, maxSpeed);
 
-        // 4. ÇARPIŞMAYI ÖNLEME
+        // --- 4. HİBRİD ÇARPIŞMAYI ÖNLEME SİSTEMİ (AKILLI POLİSLER) ---
         if (actualDistanceToPlayer < minSafeDistance)
         {
-            float safeFactor = Mathf.InverseLerp(emergencyStopDistance, minSafeDistance, actualDistanceToPlayer);
-            float cappedSpeed = Mathf.Lerp(playerSpeed * 0.9f, targetSpeed, safeFactor);
-            targetSpeed = Mathf.Min(targetSpeed, cappedSpeed);
+            // Eğer oyuncu düzgünce kaçıyorsa (hızı 5'ten büyükse) saygılı mesafeyi koru
+            if (playerSpeed > 5f)
+            {
+                float safeFactor = Mathf.InverseLerp(emergencyStopDistance, minSafeDistance, actualDistanceToPlayer);
+                float cappedSpeed = Mathf.Lerp(playerSpeed * 0.9f, targetSpeed, safeFactor);
+                targetSpeed = Mathf.Min(targetSpeed, cappedSpeed);
+            }
+            else
+            {
+                // Eğer oyuncu durmuşsa, kaza yapmışsa veya kendi etrafında dönüyorsa acımadan çarp!
+                targetSpeed = Mathf.Max(targetSpeed, 12f); // En az 12 hızla vur
+            }
         }
 
-        // 5. DRIFT HIZ TABANI: drift sırasında (özellikle çarpışma güvenliği hızı kıstığında)
-        //    polisin oyuncunun çok altına düşüp "durmasını" engeller -> seninle birlikte kayar.
-        //    Acil durma mesafesindeyken bu taban hâlâ devre dışı, çarpışmayı hâlâ önler.
+        // 5. DRIFT HIZ TABANI
         if (isDrifting && actualDistanceToPlayer > emergencyStopDistance)
         {
             targetSpeed = Mathf.Max(targetSpeed, playerSpeed * driftSpeedFloorFactor);
         }
 
-        // Drift sırasında hız değişimi (hızlanma da yavaşlama da) daha çabuk tepki versin,
-        // böylece polis oyuncunun hız/yön değişimlerine "gecikmeli" değil AYNI ANDA tepki verir.
-        // Drifte yeni girerken/çıkarken de ekstra hızlı tepki için aynı çarpanı kullanıyoruz.
         float effectiveAcceleration = (isDrifting || driftJustEnded) ? acceleration * driftAccelerationMultiplier : acceleration;
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, effectiveAcceleration * Time.fixedDeltaTime);
 

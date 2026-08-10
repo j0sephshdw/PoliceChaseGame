@@ -481,22 +481,32 @@ public class PlayerCarController : MonoBehaviour
         float targetSpeed = isHandbrakeActive ? (originalMaxSpeed * 0.4f) : originalMaxSpeed;
         float currentAccel = isHandbrakeActive ? (accel * 2f) : accel;
 
-        // --- Tersken gaz kes ---
+        // --- ŞAHA KALKMA VE TERS DÖNME DÜZELTMESİ ---
         if (isFlipped)
         {
-            targetSpeed = 0f; // Tersken gitmeye çalışmasın, hedef hız 0!
-            currentAccel = accel * 4f; // Motor hızını çabucak sıfırlasın
+            targetSpeed = 0f;
+            currentAccel = accel * 10f; // Motoru ÇOK hızlı durdur ki zıplamayı anında kessin
         }
 
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, currentAccel * Time.fixedDeltaTime);
 
-        // Tersken aracın yönünü (MoveDirection) değiştirmesini engelle ki yolda dönmesin
         if (!isFlipped)
         {
-            currentMoveDirection = Vector3.Lerp(currentMoveDirection, transform.forward, finalGrip * Time.fixedDeltaTime);
+            // Gökyüzüne sürmeyi engellemek için ileri yönü yere paralel hale getiriyoruz
+            Vector3 flatForward = transform.forward;
+            if (flatForward.y > 0.2f) flatForward.y = 0.2f; // Burnu %20'den fazla kalkarsa motor gücünü ufka daya
+
+            currentMoveDirection = Vector3.Lerp(currentMoveDirection, flatForward.normalized, finalGrip * Time.fixedDeltaTime);
         }
 
         Vector3 movement = currentMoveDirection * currentSpeed * Time.fixedDeltaTime;
+
+        // Eğer araba şaha kalkmış (dikilmiş) ise Y eksenindeki motor hareketini TAMAMEN iptal et (Gökyüzüne tırmanmasın)
+        if (transform.forward.y > 0.5f)
+        {
+            movement.y = 0f;
+        }
+
         rb.MovePosition(rb.position + movement);
     }
 
@@ -597,14 +607,12 @@ public class PlayerCarController : MonoBehaviour
     }
     private void CheckFlipStatus()
     {
-        // Arabanın "yukarısı" (transform.up) dünya eksenine göre ne kadar dik? 
-        // 1 = tam düz, 0 = tam yan yatmış, -1 = tam ters
-        if (Vector3.Dot(transform.up, Vector3.up) < flipThreshold)
+        // 1 = tam düz, 0 = tam yan yatmış veya dikilmiş, -1 = tam ters
+        if (Vector3.Dot(transform.up, Vector3.up) < 0.35f) // Daha erken algılaması için eşiği biraz artırdık
         {
             isFlipped = true;
             flipTimer += Time.fixedDeltaTime;
 
-            // Belirlenen süre boyunca ters kaldıysa Respawn yap
             if (flipTimer >= respawnDelay)
             {
                 RespawnCar();
@@ -612,9 +620,11 @@ public class PlayerCarController : MonoBehaviour
         }
         else
         {
-            // Araba zaten düzse veya kendi kendine düzelirse sayacı sıfırla
             isFlipped = false;
-            flipTimer = 0f;
+            // --- SAYAÇ SIFIRLAMA ---
+            // Anında 0'a eşitlemek yerine yavaşça azaltıyoruz! 
+            // Böylece araba tamponu üstünde zıplarken 1 saliseliğine düzelse bile 2.5 saniyelik sayaç bozulmuyor.
+            flipTimer = Mathf.Max(0f, flipTimer - Time.fixedDeltaTime * 2f);
         }
     }
 
@@ -623,16 +633,19 @@ public class PlayerCarController : MonoBehaviour
         flipTimer = 0f;
         isFlipped = false;
 
-        // İvmeyi ve hızı tamamen sıfırla ki havadan yere düşerken sağa sola fırlamasın
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         currentSpeed = 0f;
 
-        // Aracı olduğu yerde düzelt ve yere saplanmasın diye Y ekseninde 1.5 metre havaya kaldır
-        transform.position = transform.position + Vector3.up * 1.5f;
-
-        // Z ve X rotasyonunu (takla ve yan yatma) sıfırla, sadece baktığı yönü koru
+        // Arabayı 1.5 metre havadan bırakıp beşik gibi sallandırmak yerine tam yola (Y = 0.5f) ok gibi oturtuyoruz.
+        transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
+
+        // Kasanın virajdaki yatma açısını sıfırla ki yamuk doğmasın
+        if (carMesh != null)
+        {
+            carMesh.localRotation = Quaternion.identity;
+        }
 
         currentMoveDirection = transform.forward;
     }

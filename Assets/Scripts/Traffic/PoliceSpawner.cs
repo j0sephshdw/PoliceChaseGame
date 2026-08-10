@@ -23,8 +23,8 @@ public class PoliceSpawner : MonoBehaviour
     [Header("Zorluk (Dinamik Polis Limiti)")]
     public bool dinamikZorlukAktif = true;
     public int baslangicPolisSayisi = 2;
-    public int mutlakMaxPolisLimiti = 6;
-    public int kacSkordaBirPolisArtsin = 150;
+    public int mutlakMaxPolisLimiti = 30;
+    public int kacSkordaBirPolisArtsin = 20;
 
     [Header("Barikat (Roadblock) Ayarları")]
     public bool enableBarricades = true;
@@ -32,13 +32,30 @@ public class PoliceSpawner : MonoBehaviour
     public float barricadeInterval = 25f;
     public float barricadeDistanceAhead = 80f;
 
+    // UI için Singleton bağlantısı
+    public static PoliceSpawner Instance;
+
     private Transform player;
     private List<GameObject> activePoliceCars = new List<GameObject>();
 
     // OBJECT POOLING DEĞİŞKENLERİ
     private static Dictionary<GameObject, Queue<GameObject>> pool = new Dictionary<GameObject, Queue<GameObject>>();
     private static Transform poolHolder;
+    private void Awake()
+    {
+        Instance = this;
+    }
 
+    // UI'ın polis sayısını çekeceği fonksiyon
+    public int GetActivePoliceCount()
+    {
+        int count = 0;
+        foreach (var p in activePoliceCars)
+        {
+            if (p != null && p.activeInHierarchy) count++;
+        }
+        return count;
+    }
     void Start()
     {
         if (poolHolder == null) poolHolder = new GameObject("PolicePool").transform;
@@ -60,6 +77,7 @@ public class PoliceSpawner : MonoBehaviour
         {
             if (player == null) yield break;
 
+            // Geride kalıp kendini kapatan (veya patlayan) polisleri listeden temizle ki yer açılsın
             activePoliceCars.RemoveAll(p => p == null || !p.activeInHierarchy);
 
             int currentLimit = maxPoliceCount;
@@ -69,11 +87,16 @@ public class PoliceSpawner : MonoBehaviour
                 currentLimit = Mathf.Clamp(baslangicPolisSayisi + (currentScore / kacSkordaBirPolisArtsin), baslangicPolisSayisi, mutlakMaxPolisLimiti);
             }
 
+            // ---  PEŞ PEŞE SPAWN ---
+            // Limitte boşluk varsa 6 saniye beklemek yerine 0.5 saniyede bir polisleri art arda spawnla!
             if (activePoliceCars.Count < currentLimit)
             {
                 SpawnPolice();
+                yield return new WaitForSeconds(0.5f);
+                continue; // Döngüyü başa sar ki limit dolana kadar peş peşe çağırsın
             }
 
+            // Limit doluysa normal aralığı (6 saniye) bekle
             yield return new WaitForSeconds(spawnInterval);
         }
     }
