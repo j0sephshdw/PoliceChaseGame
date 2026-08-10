@@ -123,18 +123,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f106b17f638cd1148852deb74d72f5a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoliceAI
+  carData: {fileID: 0}
+  spawnInvulnerabilityDuration: 1.5
   target: {fileID: 0}
   followBufferDistance: 0.5
   catchUpGain: 2
-  maxCatchUpBrake: 6
+  ramSpeedBonus: 7
+  ramCloseDistance: 12
+  ramPushForce: 18
   predictionTime: 0.5
   predictionFadeStart: 6
   predictionFadeEnd: 16
   maxSpeed: 14
   acceleration: 8
-  minSafeDistance: 0.5
-  emergencyStopDistance: 0.1
   collisionMass: 400
+  emergencyStopDistance: 0.1
+  recoverDuration: 0.35
   turnSpeed: 300
   turnResponsiveness: 3
   turnSmoothing: 8
@@ -146,15 +150,24 @@ MonoBehaviour:
   driftGrip: 1.2
   driftTurnSpeedMultiplier: 1.7
   driftTurnResponsivenessMultiplier: 1.4
+  driftSpeedFloorFactor: 0.75
+  driftAccelerationMultiplier: 2.2
   usePlayerDriftInputOverride: 1
   playerDriftDetectAngle: 15
   playerDriftMinSpeed: 3
-  driftSpeedFloorFactor: 0.75
-  driftAccelerationMultiplier: 2.2
   obstacleCheckDistance: 4
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 0
+  scaleWithScore: 1
+  scoreSpeedScale: 0.004
+  scoreAccelScale: 0.006
+  carMesh: {fileID: 7701377912129739313}
+  explosionVFX: {fileID: 100006, guid: 2e7e92bc7175b744ea40878dedfa79e4, type: 3}
+  explosionSound: {fileID: 8300000, guid: 7c18f527990d42340b618f0e5c553205, type: 3}
+  patlamaGucu: 10
+  patlamaYaricapi: 8
+  havayaFirlatmaGucu: 0.5
   sirenSound: {fileID: 8300000, guid: 86a4e51bfdf01da4abcb4fca04296e6e, type: 3}
 --- !u!54 &1046546781262608822
 Rigidbody:
@@ -280,3 +293,8 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!4 &7701377912129739313 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fe3d2f923d2bef2419e6ec98ad147a69, type: 3}
+  m_PrefabInstance: {fileID: 7884240632556109274}
+  m_PrefabAsset: {fileID: 0}
