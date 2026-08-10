@@ -11,6 +11,8 @@ public class PickupItem : MonoBehaviour
     [HideInInspector] public GameObject SourcePrefab; // PickupSpawner tarafından spawn edilirken atanır
     [SerializeField] private GameObject shockwavePrefab; // ShockwaveProjectile bileşenli prefab buraya sürüklenecek
     [SerializeField] private float rotationSpeed = 90f;
+    [SerializeField] private float despawnDistance = 100f; // oyuncudan bu kadar uzaklaşınca havuza geri döner
+    private Transform player;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -51,9 +53,20 @@ public class PickupItem : MonoBehaviour
         PickupSpawner.ReturnToPool(SourcePrefab, gameObject); 
     }
 
-    void Update()
+    private void Update()
     {
         transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime, Space.World);
+
+        if (player == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null) player = playerObj.transform;
+        }
+
+        if (player != null && Vector3.Distance(player.position, transform.position) >= despawnDistance)
+        {
+            PickupSpawner.ReturnToPool(SourcePrefab, gameObject);
+        }
     }
 }
 

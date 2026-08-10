@@ -132,3 +132,4 @@ MonoBehaviour:
   SourcePrefab: {fileID: 0}
   shockwavePrefab: {fileID: 6703737979634063146, guid: fbf59fcaa532f624aba1af41c35626a5, type: 3}
   rotationSpeed: 90
+  despawnDistance: 100

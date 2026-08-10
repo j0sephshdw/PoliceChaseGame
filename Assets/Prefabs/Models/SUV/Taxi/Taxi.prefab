@@ -18,7 +18,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f7482cac7d7514042ab51447eb5adbab, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.2
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f7482cac7d7514042ab51447eb5adbab, type: 3}
       propertyPath: m_LocalPosition.x
@@ -117,5 +117,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0758d777599c074aacf8160f9ba4e82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrafficCarController
-  speed: 10
-  destroyDistance: 300
+  destroyDistance: 50
