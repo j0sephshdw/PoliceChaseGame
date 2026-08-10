@@ -255,38 +255,36 @@ public class PlayerCarController : MonoBehaviour
             if (globalCrashSound != null) effectsAudioSource.PlayOneShot(globalCrashSound, GameUIManager.GetGameVolume());
 
             bool isPolice = collision.gameObject.CompareTag("Police");
+            bool isBarricade = false;
 
-            // Çarpılan şey polis ise (barikat vs.), kütlesini anında kağıda çevir ve fizik kilitlerini aç
             if (isPolice)
             {
-                Rigidbody policeRb = collision.gameObject.GetComponent<Rigidbody>();
-                if (policeRb != null)
+                PoliceCarAI ai = collision.gameObject.GetComponent<PoliceCarAI>();
+                if (ai != null && !ai.isActiveAndEnabled)
                 {
-                    policeRb.mass = 200f;
-                    policeRb.constraints = RigidbodyConstraints.None;
-
-                    PoliceCarAI ai = collision.gameObject.GetComponent<PoliceCarAI>();
-                    if (ai != null) ai.enabled = false;
+                    isBarricade = true;
+                    Rigidbody policeRb = collision.gameObject.GetComponent<Rigidbody>();
+                    if (policeRb != null)
+                    {
+                        policeRb.mass = 200f;
+                        policeRb.constraints = RigidbodyConstraints.None;
+                    }
                 }
             }
 
             Vector3 wallNormal = collision.contacts[0].normal;
             float hitAngle = Vector3.Dot(transform.forward, -wallNormal);
 
-            // 1. DURUM: Kafa kafaya veya sert bir açıyla çarpıldıysa
+            // 1. DURUM: Kafa kafaya çarpışma
             if (hitAngle > 0.4f)
             {
-                if (isPolice)
+                if (isBarricade)
                 {
-                    // HOLLYWOOD EFEKTİ: Barikata girince durmak yok, delip geçiyoruz!
-                    currentSpeed *= 0.65f; // Hızının %35'ini kaybeder (ceza) ama yoluna devam eder!
+                    currentSpeed *= 0.65f;
                     currentMoveDirection = transform.forward;
-
-                    // Unity fiziğinin bizi geriye sektirmesini GÜÇ KULLANARAK engelliyoruz:
                     rb.linearVelocity = transform.forward * currentSpeed;
                     rb.angularVelocity = Vector3.zero;
 
-                    // Polisi paramparça ederek havaya uçur
                     Rigidbody policeRb = collision.gameObject.GetComponent<Rigidbody>();
                     if (policeRb != null)
                     {
@@ -295,29 +293,32 @@ public class PlayerCarController : MonoBehaviour
                         policeRb.AddTorque(UnityEngine.Random.insideUnitSphere * 50f, ForceMode.Impulse);
                     }
                 }
+                else if (isPolice && !isBarricade)
+                {
+                    // Aktif polise kafa kafaya çarptın
+                    currentSpeed *= 0.8f;
+                    currentMoveDirection = transform.forward;
+                }
                 else
                 {
-                    // NORMAL DUVAR/BİNA ÇARPIŞMASI: (Eski sistem, taş gibi seker)
+                    // Normal Duvar
                     rb.linearVelocity = Vector3.zero;
                     rb.angularVelocity = Vector3.zero;
                     currentSpeed = -2f;
                     currentMoveDirection = transform.forward;
                 }
             }
-            // 2. DURUM: Yandan sıyırma / Sürtme durumu
+            // 2. DURUM: Yandan veya Arkadan Çarpışma / Sürtme
             else
             {
-                currentSpeed *= 0.5f;
-
-                Vector3 flatPushBack = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
-                Vector3 flatForward = new Vector3(currentMoveDirection.x, 0f, currentMoveDirection.z);
-                currentMoveDirection = Vector3.Reflect(flatForward, flatPushBack).normalized;
-
-                if (isPolice)
+                if (isBarricade)
                 {
-                    // Yandan çarpınca polisleri yana savur (Ama oyuncunun ivmesini sıfırlama)
-                    rb.angularVelocity = Vector3.zero;
+                    currentSpeed *= 0.5f;
+                    Vector3 flatPushBack = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
+                    Vector3 flatForward = new Vector3(currentMoveDirection.x, 0f, currentMoveDirection.z);
+                    currentMoveDirection = Vector3.Reflect(flatForward, flatPushBack).normalized;
 
+                    rb.angularVelocity = Vector3.zero;
                     Rigidbody policeRb = collision.gameObject.GetComponent<Rigidbody>();
                     if (policeRb != null)
                     {
@@ -325,9 +326,24 @@ public class PlayerCarController : MonoBehaviour
                         policeRb.AddTorque(UnityEngine.Random.insideUnitSphere * 20f, ForceMode.Impulse);
                     }
                 }
+                else if (isPolice && !isBarricade)
+                {
+                    // --- KRİTİK ÇÖZÜM: AKTİF POLİS VURDUĞUNDA HIZ KESİLMEZ ---
+                    // Sadece %5 hız kaybı yaşat (eskiden %50'ydi ve arabanı yığıyordu!)
+                    currentSpeed *= 0.95f;
+                    rb.angularVelocity = Vector3.zero;
+
+                    // Arabayı hafifçe yana doğru ittirerek (Denge bozma efekti)
+                    Vector3 flatPushBack = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
+                    currentMoveDirection = Vector3.Lerp(currentMoveDirection, -flatPushBack, 0.15f).normalized;
+                }
                 else
                 {
-                    // Normal binalara sürtünce zıplamamak için ivmeyi sıfırla
+                    // Duvara veya Trafiğe sürtme
+                    currentSpeed *= 0.5f;
+                    Vector3 flatPushBack = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
+                    Vector3 flatForward = new Vector3(currentMoveDirection.x, 0f, currentMoveDirection.z);
+                    currentMoveDirection = Vector3.Reflect(flatForward, flatPushBack).normalized;
                     rb.linearVelocity = Vector3.zero;
                     rb.angularVelocity = Vector3.zero;
                 }
@@ -464,6 +480,20 @@ public class PlayerCarController : MonoBehaviour
         MoveCar();
         SteerCar();
         ApplyBodyLean();
+        NotifyNearbyPoliceOfDrift();
+    }
+
+    private void NotifyNearbyPoliceOfDrift()
+    {
+        Collider[] nearby = Physics.OverlapSphere(transform.position, 40f);
+        foreach (Collider col in nearby)
+        {
+            if (!col.CompareTag("Police")) continue;
+
+            PoliceCarAI ai = col.GetComponent<PoliceCarAI>();
+            if (ai != null && ai.isActiveAndEnabled)
+                ai.SetPlayerDriftInput(isHandbrakeActive);
+        }
     }
 
     private void MoveCar()
