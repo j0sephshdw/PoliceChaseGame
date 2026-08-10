@@ -7,7 +7,7 @@ public class TrafficCarController : MonoBehaviour
     private float speed = 3f;
     public float destroyDistance = 300f;
 
-    private Vector3 startPosition;
+    private Transform player;
 
     private void Start()
     {
@@ -27,15 +27,19 @@ public class TrafficCarController : MonoBehaviour
         Vector3 pos = transform.position;
         pos.y = 0.01f;
         transform.position = pos;
-
-        startPosition = transform.position;
     }
 
     private void Update()
     {
+        if (player == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null) player = playerObj.transform;
+        }
+
         transform.Translate(Vector3.forward * speed * Time.deltaTime, Space.Self);
 
-        if (Vector3.Distance(startPosition, transform.position) >= destroyDistance)
+        if (player != null && Vector3.Distance(player.position, transform.position) >= destroyDistance)
         {
             Destroy(gameObject);
         }

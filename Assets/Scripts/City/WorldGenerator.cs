@@ -18,6 +18,8 @@ public class WorldGenerator : MonoBehaviour
 
     private Dictionary<Vector2Int, GameObject> spawnedTiles = new();
 
+    [SerializeField] private Transform tilesParent; // Tüm GroundTile'ların toplanacağı klasör obje
+
     private void Start()
     {
         UpdateWorld();
@@ -37,9 +39,9 @@ public class WorldGenerator : MonoBehaviour
 
 
         // 4x4 tile oluşturma
-        for (int x = playerTileX; x < playerTileX + renderSize; x++)
+        for (int x = playerTileX - renderSize; x <= playerTileX + renderSize; x++)
         {
-            for (int z = playerTileZ; z < playerTileZ + renderSize; z++)
+            for (int z = playerTileZ - renderSize; z <= playerTileZ + renderSize; z++)
             {
                 Vector2Int coord = new Vector2Int(x, z);
 
@@ -54,7 +56,8 @@ public class WorldGenerator : MonoBehaviour
                     GameObject tile = Instantiate(
                         groundTilePrefab,
                         pos,
-                        Quaternion.identity
+                        Quaternion.identity,
+                        tilesParent
                     );
 
                     spawnedTiles.Add(coord, tile);

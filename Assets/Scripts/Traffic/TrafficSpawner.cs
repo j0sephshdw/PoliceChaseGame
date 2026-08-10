@@ -11,6 +11,7 @@ public class TrafficSpawner : MonoBehaviour
 
     [Header("Spawn Ayarları")]
     public float spawnInterval = 3f;
+    private static Transform trafficCarsParent; // Üretilen trafik araçlarının toplanacağı klasör
 
     private void Start()
     {
@@ -29,6 +30,11 @@ public class TrafficSpawner : MonoBehaviour
 
     void SpawnCar()
     {
+
+        if (trafficCarsParent == null)
+        {
+            trafficCarsParent = new GameObject("TrafficCars").transform;
+        }
         if (trafficCars.Length == 0)
             return;
 
@@ -44,7 +50,8 @@ public class TrafficSpawner : MonoBehaviour
         GameObject car = Instantiate(
             randomCar,
             spawnPoint.position,
-            spawnPoint.rotation);
+            spawnPoint.rotation,
+            trafficCarsParent);
 
         // Tag'ı oluşturulduktan sonra ver
         car.tag = "Traffic";
