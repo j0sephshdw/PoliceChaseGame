@@ -297,14 +297,16 @@ public class PoliceCarAI : MonoBehaviour
         rb.MovePosition(rb.position + movement);
     }
 
-    private float ObstacleAvoidanceSteer()
+    private float ObstacleAvoidanceSteer()//SphereCast ile geniş bir tarama yap
     {
         RaycastHit hit;
         Vector3 origin = transform.position + Vector3.up * 0.5f;
 
-        if (Physics.Raycast(origin, transform.forward, out hit, obstacleCheckDistance, obstacleLayerMask))
+        // 1.2f yarıçapında bir sphereCast  fırlat
+        if (Physics.SphereCast(origin, 1.2f, transform.forward, out hit, obstacleCheckDistance, obstacleLayerMask))
         {
             Vector3 localHit = transform.InverseTransformPoint(hit.point);
+            // Engel sağdaysa sola dön -60 soldaysa sağa dön 60
             return localHit.x < 0f ? 60f : -60f;
         }
 

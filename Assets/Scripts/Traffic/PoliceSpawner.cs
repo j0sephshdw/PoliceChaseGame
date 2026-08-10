@@ -126,6 +126,7 @@ public class PoliceSpawner : MonoBehaviour
         if (rb != null)
         {
             rb.mass = ai != null ? ai.collisionMass : 400f;
+            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;//Havuzdan çıkan polislerin virajlarda devrilmemesi için takla kilitlerini geri ver
         }
 
         activePoliceCars.Add(newPolice);
@@ -184,14 +185,25 @@ public class PoliceSpawner : MonoBehaviour
             if (i == emptySlot) continue;
 
             Vector3 pos = spawnCenter;
-
-            // Araç sayısına göre şeritleri yolun tam merkezine ortalayan dinamik formül
             float offsetZ = (i - (toplamSlot - 1) / 2f) * arabaGenisligi;
             pos.z += offsetZ;
 
+            // 3. DÜZELTME: O noktada başka bir araba (sivil veya polis) var mı kontrol et!
+            bool alanDolu = false;
+            Collider[] colliders = Physics.OverlapSphere(pos, 1.5f);
+            foreach (Collider col in colliders)
+            {
+                if (col.CompareTag("Traffic") || col.CompareTag("Player") || col.CompareTag("Police"))
+                {
+                    alanDolu = true;
+                    break;
+                }
+            }
+            // Eğer orada zaten bir araba varsa, o barikat slotunu boş bırak ve diğerine geç
+            if (alanDolu) continue;
+
             GameObject barricadeCar = GetFromPool(secilenBarikatAraci);
 
-            // AI kapat
             PoliceCarAI ai = barricadeCar.GetComponent<PoliceCarAI>();
             if (ai != null) ai.enabled = false;
 
@@ -199,7 +211,7 @@ public class PoliceSpawner : MonoBehaviour
             if (rb != null)
             {
                 rb.position = pos;
-                rb.rotation = fixedRotation; // Zorla 0, 0, 0
+                rb.rotation = fixedRotation;
                 rb.mass = 5000f;
                 rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
@@ -253,6 +265,7 @@ public class PoliceSpawner : MonoBehaviour
         instance.transform.SetParent(poolHolder);
 
         if (!pool.ContainsKey(prefab)) pool[prefab] = new Queue<GameObject>();
+        if (!pool.ContainsKey(prefab)) pool[prefab] = new Queue<GameObject>();
         pool[prefab].Enqueue(instance);
     }
 
@@ -264,5 +277,10 @@ public class PoliceSpawner : MonoBehaviour
         {
             ReturnToPool(prefab, instance);
         }
+    }
+    private void OnDestroy()//sahne yuklenmeden statk havuzu temızledm
+    {
+        pool.Clear();
+        poolHolder = null;
     }
 }
