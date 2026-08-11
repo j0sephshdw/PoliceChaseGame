@@ -6421,7 +6421,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -8.900024, y: -75.599976}
+  m_AnchoredPosition: {x: -31.7, y: -75.599976}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1520804396
@@ -6444,10 +6444,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: COPS
+  m_text: "\U0001F694"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3c24eb7b094e72349b20209eb43d375a, type: 2}
+  m_sharedMaterial: {fileID: 5924137655750598353, guid: 3c24eb7b094e72349b20209eb43d375a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6510,7 +6510,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 21.036816, w: 0}
+  m_margin: {x: 0, y: 0, z: -16.227924, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -6537,7 +6537,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PolicePursuitUI
   copCountText: {fileID: 1520804396}
-  prefixText: COPS
+  prefixText: "\U0001F694"
+  numberColorHex: '#FF6600'
 --- !u!1 &1545942528
 GameObject:
   m_ObjectHideFlags: 0
@@ -6912,14 +6913,14 @@ MonoBehaviour:
   suvSkorSiniri: 100
   muscleSkorSiniri: 300
   sportsSkorSiniri: 600
-  spawnInterval: 6
-  maxPoliceCount: 20
+  baseSpawnInterval: 4
+  baslangicPolisSayisi: 2
   spawnDistanceBehind: 35
   spawnDistanceAhead: 60
   dinamikZorlukAktif: 1
-  baslangicPolisSayisi: 2
+  kacSkordaBirSeviyeArtsin: 10
+  seviyeBasinaPolisArtisi: 2
   mutlakMaxPolisLimiti: 30
-  kacSkordaBirPolisArtsin: 10
   enableBarricades: 1
   barricadeScoreThreshold: 0
   barricadeInterval: 5
