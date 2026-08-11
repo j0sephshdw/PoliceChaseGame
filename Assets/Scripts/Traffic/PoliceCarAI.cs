@@ -4,87 +4,77 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PoliceCarAI : MonoBehaviour
 {
-    // --- TEMEL BİLGİLER VE KORUMA ---
-    [Header("Araç Verisi (Car Data)")]
+    [Header("Araç Verisi")]
     public CarData carData;
 
     [Header("Spawn Koruma")]
-    [Tooltip("Polis doğduğu gibi bir yere çarpıp patlamasın diye verilen süre")]
+    [Tooltip("Araç aktifleştiğinde anında patlamasını önleyen koruma süresi")]
     public float spawnInvulnerabilityDuration = 1.5f;
-    private float spawnTime; // Polisin sahneye çıktığı anı tutarız
+    private float spawnTime;
 
-    // --- HEDEF VE TAKİP AYARLARI ---
-    [Header("Hedef (Oyuncu)")]
+    [Header("Hedef (Player)")]
     public Transform target;
 
-    [Header("Yakın Takip")]
+    [Header("Takip Dinamikleri")]
     public float followBufferDistance = 1.2f;
     public float catchUpGain = 2.8f;
     public float ramSpeedBonus = 7f;
     public float ramCloseDistance = 12f;
-    public float ramPushForce = 18f; // Çarptığımızda oyuncuyu ittirme gücümüz
+    public float ramPushForce = 18f;
 
-    // --- FİZİK VE HAREKET ---
     [Header("Tahmin (Prediction)")]
-    public float predictionTime = 0.65f; // Oyuncunun gideceği yeri tahmin etme süresi
+    public float predictionTime = 0.65f;
     public float predictionFadeStart = 4f;
     public float predictionFadeEnd = 22f;
 
-    [Header("Hız")]
+    [Header("Fizik & Hız")]
     public float maxSpeed = 20f;
     public float acceleration = 9f;
-
-    [Header("Çarpışma")]
-    public float collisionMass = 400f; // Aracın ağırlığı
+    public float collisionMass = 400f;
     public float emergencyStopDistance = 1.4f;
-    public float recoverDuration = 0.35f; // Çarpıştıktan sonra toparlanma süresi
+    public float recoverDuration = 0.35f;
 
-    [Header("Dönüş")]
+    [Header("Manevra Ayarları")]
     public float turnSpeed = 55f;
     public float turnResponsiveness = 3.2f;
     public float turnSmoothing = 10f;
     public float driftEntrySmoothing = 30f;
     public float fullTurnSpeedThreshold = 3f;
 
-    // --- DRIFT AYARLARI ---
-    [Header("Drift")]
+    [Header("Drift Ayarları")]
     public float driftAngleThreshold = 18f;
     public float driftMinSpeed = 5f;
-    public float normalGrip = 7f; // Normal yol tutuşu
-    public float driftGrip = 1.4f; // Kayarkenki yol tutuşu (düşük olmalı)
+    public float normalGrip = 7f;
+    public float driftGrip = 1.4f;
     public float driftTurnSpeedMultiplier = 1.8f;
     public float driftTurnResponsivenessMultiplier = 1.5f;
     [Range(0f, 1f)] public float driftSpeedFloorFactor = 0.8f;
     public float driftAccelerationMultiplier = 2.4f;
 
-    [Header("Oyuncu Drift Senkronu")]
+    [Header("Player Drift Senkronizasyonu")]
     public bool usePlayerDriftInputOverride = true;
     public float playerDriftDetectAngle = 14f;
     public float playerDriftMinSpeed = 3f;
 
-    // --- YAPAY ZEKA ÇEVRE ALGILAMASI ---
-    [Header("Engel Algılama")]
-    public float obstacleCheckDistance = 5f; // Çarpışmayı önlemek için ışın (ray) atılacak mesafe
+    [Header("Çevre Algılama (Raycast)")]
+    public float obstacleCheckDistance = 5f;
     public LayerMask obstacleLayerMask;
 
-    [Header("Zorluk Ölçekleme")]
+    [Header("Zorluk Çarpanları")]
     public bool scaleWithScore = true;
     public float scoreSpeedScale = 0.004f;
     public float scoreAccelScale = 0.006f;
 
-    // --- GÖRSEL VE İŞİTSEL EFEKTLER ---
-    [Header("Patlama ve Görsel Efektler")]
-    public Transform carMesh;             // Polis aracının asıl gövdesi (mesh)
-    public GameObject explosionVFX;       // Patlayınca çıkacak partikül
+    [Header("VFX & SFX")]
+    public Transform carMesh;
+    public GameObject explosionVFX;
     public AudioClip explosionSound;
-    public float patlamaGucu = 10f;       // Parçaların ne kadar şiddetli fırlayacağı
+    public float patlamaGucu = 10f;
     public float patlamaYaricapi = 8f;
     public float havayaFirlatmaGucu = 0.5f;
-
-    [Header("Sesler")]
     public AudioClip sirenSound;
 
-    // --- GİZLİ (PRIVATE) DEĞİŞKENLER ---
+    // --- Private Değişkenler ---
     private AudioSource audioSource;
     private Rigidbody rb;
     private Rigidbody targetRb;
@@ -92,29 +82,27 @@ public class PoliceCarAI : MonoBehaviour
     private float currentSpeed;
     private float currentTurnRate;
     private Vector3 currentMoveDir;
-    private float randomLateralOffset; // Polislerin ip gibi dizilmemesi için rastgele sapma
+    private float randomLateralOffset;
 
-    // Durum kontrol bayrakları (Flags)
     private bool playerDriftInputActive;
     private bool isDrifting;
     private bool isStunned;
     private bool isRecovering;
     private bool isDead = false;
 
-    private float stuckTimer; // Aracın bir yere takılıp takılmadığını anladığımız sayaç
+    private float stuckTimer;
     private float lastDistanceToPlayer = 999f;
     private float difficultyMultiplier = 1f;
 
     private void Awake()
     {
-        // Oyun başlarken gerekli komponentleri çekiyoruz
         rb = GetComponent<Rigidbody>();
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
 
-        // Fizik motorunun kafası karışmasın ve araba takla atmasın diye ayarlar
-        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; // Hızlı çarpışmaları kaçırmamak için
-        rb.interpolation = RigidbodyInterpolation.Interpolate; // Hareketin pürüzsüz akması için
-        rb.centerOfMass = new Vector3(0f, -0.4f, 0f); // Ağırlık merkezini aşağı çektik ki araç devrilmesin
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ; // Şaha kalkmayı önler
+        // Aracın takla atmasını önlemek için ağırlık merkezini aşağı çekiyoruz
+        rb.centerOfMass = new Vector3(0f, -0.4f, 0f);
+        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         rb.mass = collisionMass;
 
         audioSource = GetComponent<AudioSource>();
@@ -125,14 +113,11 @@ public class PoliceCarAI : MonoBehaviour
         currentMoveDir = transform.forward;
     }
 
-    /// <summary>
-    /// Obje havuzundan (Object Pool) araç her çağrıldığında burası çalışır.
-    /// Eski verileri temizleyip aracı sıfırlarız ki "ölü" doğmasın.
-    /// </summary>
     private void OnEnable()
     {
+        // Object Pooling kullanıldığı için obje her aktifleştiğinde durumları sıfırlıyoruz
         isDead = false;
-        spawnTime = Time.time; // Polisin sahneye çıktığı anı kaydettik (Spawn koruması için)
+        spawnTime = Time.time;
 
         Collider mainCollider = GetComponent<Collider>();
         if (mainCollider != null)
@@ -142,7 +127,6 @@ public class PoliceCarAI : MonoBehaviour
         this.enabled = true;
     }
 
-    // Unity Inspector'da scripti resetleyince Car Mesh'i otomatik bulur (Elle uğraşmamak için)
     private void Reset()
     {
         if (carMesh == null && transform.childCount > 0)
@@ -153,7 +137,7 @@ public class PoliceCarAI : MonoBehaviour
 
     private void Start()
     {
-        ResolveTarget(); // Kovalayacağımız oyuncuyu buluyoruz
+        ResolveTarget();
 
         if (sirenSound != null)
         {
@@ -162,35 +146,36 @@ public class PoliceCarAI : MonoBehaviour
             audioSource.Play();
         }
 
-        ApplyCarDataBuff(); // Araç verilerini koda aktar
-        randomLateralOffset = Random.Range(-2.5f, 2.5f); // Tüm polisler aynı çizgiden gitmesin diye ufak bir sapma
+        ApplyCarDataBuff();
+
+        // Polislerin yolda ip gibi dizilmesini önlemek için rastgele kulvar sapması atanır
+        randomLateralOffset = Random.Range(-2.5f, 2.5f);
         RefreshDifficulty();
     }
 
     private void Update()
     {
-        if (isDead) return; // Araç öldüyse Update işlemlerini durdur (Performans tasarrufu)
+        if (isDead) return;
 
         if (audioSource != null)
             audioSource.volume = GameUIManager.GetGameVolume();
 
-        // Her frame yerine 30 frame'de bir zorluk kontrolü yapıyoruz (Optimizasyon)
+        // Performans optimizasyonu: Zorluk hesaplamasını her frame yerine periyodik yapıyoruz
         if (Time.frameCount % 30 == 0)
             RefreshDifficulty();
     }
 
     private void FixedUpdate()
     {
-        // Fizik hesaplamaları her zaman FixedUpdate içinde yapılmalıdır!
         if (target == null || isDead) return;
 
-        ZeroVerticalVelocity(); // Araba zıplamasın diye Y eksenindeki hızı sıfırlıyoruz
+        ZeroVerticalVelocity();
 
         if (isStunned) return;
 
         float distance = FlatDistance(transform.position, target.position);
 
-        // Eğer oyuncudan çok uzaklaştıysa polisi havuzdan kaldır (Ekranda kalabalık yapmasın)
+        // Optimizasyon: Player'dan çok uzaklaşan polis araçları havuza geri döner
         if (distance > 120f)
         {
             gameObject.SetActive(false);
@@ -205,39 +190,32 @@ public class PoliceCarAI : MonoBehaviour
     {
         if (isDead) return;
 
-        // 1. ENGEL VEYA DİĞER POLİSE ÇARPINCA DİREKT PATLA
-        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police"))
+        // Çevre engellerine çarpma durumu
+        if (collision.gameObject.CompareTag("Obstacle")  || collision.gameObject.CompareTag("Traffic") || collision.gameObject.CompareTag("Police"))
         {
             Explode();
             return;
         }
 
-        // Çarptığımız şey oyuncu değilse metottan çık
         if (!collision.gameObject.CompareTag("Player")) return;
 
-        // --- KAFA KAFAYA ÇARPIŞMA KONTROLÜ (Vektörel Matematik) ---
-        // Dot product (İç Çarpım) kullanarak iki aracın baktığı yönü kıyaslıyoruz.
-        // Eğer sonuç -1'e yakınsa, iki araç tam zıt yönden birbirine bakıyor demektir.
+        // Vektörel çarpım (Dot Product) ile kafa kafaya çarpışma kontrolü
         float headOnDot = Vector3.Dot(transform.forward, target.forward);
-
-        // İki aracın birbirine göre hızı (Çarpışmanın şiddeti)
         float impactSpeed = collision.relativeVelocity.magnitude;
 
-        // Şart: Zıt yönden geliyorsak (-0.4'ten küçükse) VE hızlı çarptıysak polisi uçur
+        // Eğer araçlar zıt yönden yüksek hızla çarpışıyorsa polisi patlat
         if (headOnDot < -0.4f && impactSpeed > 15f)
         {
             Explode();
             return;
         }
 
-        // --- NORMAL ÇARPIŞMA MANTIĞI ---
+        // Çarpışma sonrası momentum kaybı simülasyonu
         float playerSpeed = targetRb != null ? targetRb.linearVelocity.magnitude : 0f;
-        // Çarpışınca hızımızı düşürüyoruz (Gerçekçilik için)
         currentSpeed = Mathf.Max(currentSpeed * 0.94f, playerSpeed * 0.88f);
 
         if (collision.contactCount == 0) return;
 
-        // Temas noktasının normalini alıp Y eksenini sıfırlıyoruz ki araba havaya uçmasın
         Vector3 contactNormal = collision.contacts[0].normal;
         contactNormal.y = 0f;
         if (contactNormal.sqrMagnitude < 0.01f) return;
@@ -245,7 +223,7 @@ public class PoliceCarAI : MonoBehaviour
         Vector3 pushDir = -contactNormal.normalized;
         float approach = Vector3.Dot(transform.forward, pushDir);
 
-        // Eğer oyuncuya arkadan veya yandan yeterli açıyla vurduysak onu ittir
+        // Player'a arkadan/yandan çarpıldığında darbe kuvveti (Impulse) uygulanır
         if (approach > 0.25f && targetRb != null)
         {
             targetRb.AddForce(pushDir * ramPushForce * difficultyMultiplier, ForceMode.Impulse);
@@ -255,52 +233,38 @@ public class PoliceCarAI : MonoBehaviour
             StartCoroutine(RecoverRoutine());
     }
 
-    /// <summary>
-    /// Polisin patlayıp parçalara ayrıldığı metod.
-    /// Optimizasyon için asıl objeyi silmiyoruz (SetActive=false yapıyoruz).
-    /// Görsel olarak parçalanma hissini meshleri kopyalayarak veriyoruz.
-    /// </summary>
     public void Explode()
     {
         if (isDead) return;
 
-        // Spawn koruması: Doğar doğmaz patlamasın diye zaman kontrolü yapıyoruz
+        // Spawn koruması süresi bitmediyse aracın patlaması engellenir
         if (Time.time < spawnTime + spawnInvulnerabilityDuration)
             return;
 
         isDead = true;
 
-        // Sesleri sustur
         if (audioSource != null && audioSource.isPlaying)
-        {
             audioSource.Stop();
-        }
 
-        // Patlama ses efekti
         if (explosionSound != null)
-        {
             AudioSource.PlayClipAtPoint(explosionSound, transform.position, GameUIManager.GetGameVolume());
-        }
 
-        // Görsel efekt
         if (explosionVFX != null)
         {
             GameObject vfx = Instantiate(explosionVFX, transform.position, Quaternion.identity);
             Destroy(vfx, 3f);
         }
 
-        // Gövdeyi oluşturan alt parçaları (meshleri) buluyoruz
+        // Araç parçalanma efekti: Mevcut mesh'ler alt objelere kopyalanıp fiziksel özellikler eklenir
         MeshRenderer[] allParts = GetComponentsInChildren<MeshRenderer>();
 
         foreach (MeshRenderer meshPart in allParts)
         {
-            // Her parça için geçici bir kopyasını oluşturuyoruz (Havada uçacak olanlar)
             GameObject flyingPart = new GameObject(meshPart.name + "_FlyingPiece");
             flyingPart.transform.position = meshPart.transform.position;
             flyingPart.transform.rotation = meshPart.transform.rotation;
             flyingPart.transform.localScale = meshPart.transform.lossyScale;
 
-            // Görsel veriyi (Mesh ve Material) aktar
             MeshFilter originalFilter = meshPart.GetComponent<MeshFilter>();
             if (originalFilter != null)
             {
@@ -308,21 +272,18 @@ public class PoliceCarAI : MonoBehaviour
                 flyingPart.AddComponent<MeshRenderer>().sharedMaterials = meshPart.sharedMaterials;
             }
 
-            // Fizik ekle (Uçması için)
             flyingPart.AddComponent<BoxCollider>();
             Rigidbody partRb = flyingPart.AddComponent<Rigidbody>();
             partRb.mass = 1.5f;
             partRb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
-            // Patlama kuvvetini kopyalanan parçaya uygula
             partRb.AddExplosionForce(patlamaGucu, transform.position, patlamaYaricapi, havayaFirlatmaGucu, ForceMode.Impulse);
-            partRb.AddTorque(Random.insideUnitSphere * 15f, ForceMode.Impulse); // Havada döne döne gitsin
+            partRb.AddTorque(Random.insideUnitSphere * 15f, ForceMode.Impulse);
 
-            // Çöp olmasın diye uçan parçayı 5 saniye sonra sahneden siliyoruz
             Destroy(flyingPart, 5f);
         }
 
-        // Asıl polis objesini havuza geri dönebilmesi için sadece gizliyoruz (Destroy yapmıyoruz!)
+        // Objeyi Object Pool'a dönebilmesi için siliyoruz yerine inaktif duruma getiriyoruz
         gameObject.SetActive(false);
     }
 
@@ -352,11 +313,11 @@ public class PoliceCarAI : MonoBehaviour
             SetTarget(playerObj.transform);
     }
 
-    // Araç modeline göre hızı ve dönüşü ayarlıyoruz (Bypass/Buff)
     private void ApplyCarDataBuff()
     {
         if (carData == null) return;
 
+        // Yapay zekanın oyuncuya yetişebilmesi için temel değerler güçlendirilir
         maxSpeed = carData.maxSpeed * 1.55f;
         acceleration = carData.acceleration * 4.2f;
         turnSpeed = carData.turnSpeed * 1.15f;
@@ -374,12 +335,12 @@ public class PoliceCarAI : MonoBehaviour
         if (!scaleWithScore || ScoreManager.Instance == null) return;
 
         int score = ScoreManager.Instance.Score;
-        difficultyMultiplier = 1f + score * 0.002f; // Oyuncunun skoru arttıkça AI daha da acımasızlaşır
+        difficultyMultiplier = 1f + score * 0.002f;
     }
 
     private void ZeroVerticalVelocity()
     {
-        // Aracın rampalarda veya çarpmalarda saçma sapan havalanmasını engellemek için Y hızını sıfırlarız
+        // Engebeli arazilerde havaya uçmayı engellemek için dikey (Y) hız sıfırlanır
         Vector3 vel = rb.linearVelocity;
         vel.y = 0f;
         rb.linearVelocity = vel;
@@ -387,16 +348,15 @@ public class PoliceCarAI : MonoBehaviour
 
     private void UpdateStuckDetection(float distance)
     {
-        // Polisin bir yere takıldığını anlamak için oyuncuya olan mesafesini kontrol ediyoruz
+        // Aracın engellere takılma durumunu tespit etmek için hedef mesafe kontrolü
         if (distance > lastDistanceToPlayer + 0.05f)
-            stuckTimer += Time.fixedDeltaTime; // Mesafe açılıyorsa demek ki takıldık
+            stuckTimer += Time.fixedDeltaTime;
         else
             stuckTimer = Mathf.Max(0f, stuckTimer - Time.fixedDeltaTime * 2f);
 
         lastDistanceToPlayer = distance;
     }
 
-    // --- YAPAY ZEKANIN TEMEL SÜRÜŞ MANTIĞI ---
     private void ChaseTarget(float actualDistanceToPlayer)
     {
         float playerSpeed = 0f;
@@ -404,17 +364,15 @@ public class PoliceCarAI : MonoBehaviour
         if (targetRb != null)
         {
             flatTargetVel = targetRb.linearVelocity;
-            flatTargetVel.y = 0f; // Sadece X ve Z eksenindeki hızı önemsiyoruz
+            flatTargetVel.y = 0f;
             playerSpeed = flatTargetVel.magnitude;
         }
 
         Vector3 toPoliceFromPlayer = transform.position - target.position;
         toPoliceFromPlayer.y = 0f;
 
-        // Dot product ile polisin, oyuncunun önünde mi yoksa arkasında mı olduğunu buluyoruz
         bool isAheadOfPlayer = Vector3.Dot(target.forward, toPoliceFromPlayer) > 0.45f;
 
-        // Hedeflenecek noktayı (Aim Point) hesapla
         Vector3 aimPoint = ComputeAimPoint(isAheadOfPlayer, flatTargetVel, actualDistanceToPlayer);
 
         ApplySteering(aimPoint, playerSpeed, flatTargetVel, actualDistanceToPlayer);
@@ -427,7 +385,7 @@ public class PoliceCarAI : MonoBehaviour
 
     private Vector3 ComputeAimPoint(bool isAheadOfPlayer, Vector3 flatTargetVel, float distance)
     {
-        // Oyuncunun bulunduğu noktaya gitmek yerine, gideceği yeri tahmin edip önünü kesiyoruz
+        // Lineer tahmin (Linear Prediction) kullanarak hedefin gideceği konumu hesaplar
         float predictionBlend = Mathf.InverseLerp(predictionFadeStart, predictionFadeEnd, distance);
         Vector3 predictedPos = target.position + flatTargetVel * (predictionTime * predictionBlend * difficultyMultiplier);
 
@@ -446,8 +404,8 @@ public class PoliceCarAI : MonoBehaviour
             }
         }
 
-        // Polisler oyuncuyu takip ederken dümdüz bir çizgi yerine hafif sağa veya sola kaysınlar
-        float lateralFactor = Mathf.Clamp01((distance - followBufferDistance) / ramCloseDistance);
+        // Formasyon Takibi: Araçlar uzakken kulvarlara yayılır, hedefe yaklaştıkça yanal offset sıfırlanır
+        float lateralFactor = Mathf.InverseLerp(5f, 15f, distance);
         float effectiveOffset = randomLateralOffset * lateralFactor;
 
         return predictedPos - target.forward * 1.2f + target.right * effectiveOffset;
@@ -455,7 +413,7 @@ public class PoliceCarAI : MonoBehaviour
 
     private float ComputeTargetSpeed(bool isAheadOfPlayer, float distance, float playerSpeed)
     {
-        // Mesafe açıldıkça polis hızını artırıp yetişmeye çalışır (Rubberbanding mantığı)
+        // Rubberbanding sistemi: Oyuncu ile aradaki mesafeye göre hız dinamik olarak değişir
         float targetSpeed = playerSpeed + (distance - followBufferDistance) * catchUpGain * difficultyMultiplier;
 
         if (isAheadOfPlayer)
@@ -463,13 +421,12 @@ public class PoliceCarAI : MonoBehaviour
             float facingDot = Vector3.Dot(transform.forward, target.forward);
 
             if (facingDot > 0f)
-                targetSpeed = playerSpeed * 0.9f; // Oyuncunun önündeysek hızı düşür ki geçsin
+                targetSpeed = playerSpeed * 0.9f;
             else
-                targetSpeed = maxSpeed * difficultyMultiplier; // Kafa kafaya geliyorsak tam gaz
+                targetSpeed = maxSpeed * difficultyMultiplier;
         }
         else
         {
-            // Yaklaşınca hız bonusu alıp oyuncuya sert çarpmasını sağlıyoruz
             if (distance < ramCloseDistance)
             {
                 float closeBonus = Mathf.Lerp(1.5f, ramSpeedBonus * difficultyMultiplier, distance / ramCloseDistance);
@@ -497,7 +454,6 @@ public class PoliceCarAI : MonoBehaviour
         bool playerDrift = DetectPlayerDrift(playerSpeed, flatTargetVel);
         bool selfDrift = Mathf.Abs(angleToAimPoint) > driftAngleThreshold && currentSpeed > driftMinSpeed;
 
-        // Kendisi dönmek zorundaysa, oyuncu drift yapıyorsa veya takılı kaldıysa drift durumuna geç
         isDrifting = selfDrift || playerDrift || (stuckTimer > 1.2f && distance > ramCloseDistance);
 
         float effectiveTurnSpeed = turnSpeed;
@@ -509,10 +465,10 @@ public class PoliceCarAI : MonoBehaviour
         }
 
         float angleMagnitude = Mathf.Abs(angleToAimPoint);
-        float smoothFactor = Mathf.Clamp01(angleMagnitude / 12f); // Dönüşü yumuşatıyoruz ki araç robot gibi dönmesin
+        float smoothFactor = Mathf.Clamp01(angleMagnitude / 12f);
         float desiredTurnRate = Mathf.Clamp(angleToAimPoint * effectiveResponsiveness * smoothFactor, -effectiveTurnSpeed, effectiveTurnSpeed);
 
-        // Eğer önümüzde bir engel (bina vs.) varsa dönüş yönüne ekstra müdahale et (Obstacle Avoidance)
+        // Engelden kaçınma (Obstacle Avoidance) vektörü dönüşe dahil edilir
         desiredTurnRate += ObstacleAvoidanceSteer() * 0.2f;
 
         float appliedSmoothing = isDrifting ? driftEntrySmoothing : turnSmoothing;
@@ -534,7 +490,6 @@ public class PoliceCarAI : MonoBehaviour
         playerForwardFlat.y = 0f;
         if (playerForwardFlat.sqrMagnitude < 0.0001f) return false;
 
-        // Oyuncunun baktığı yön ile gittiği yön (Velocity) arasındaki açıya bakarak drift yapıp yapmadığını anlıyoruz
         float slipAngle = Vector3.Angle(playerForwardFlat.normalized, flatTargetVel.normalized);
         return slipAngle > playerDriftDetectAngle;
     }
@@ -549,7 +504,6 @@ public class PoliceCarAI : MonoBehaviour
         if (isDrifting || isRecovering)
             effectiveAcceleration *= driftAccelerationMultiplier;
 
-        // Hedef hıza yumuşak bir şekilde ulaşmak için MoveTowards kullanıyoruz
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, effectiveAcceleration * Time.fixedDeltaTime);
     }
 
@@ -557,21 +511,20 @@ public class PoliceCarAI : MonoBehaviour
     {
         float grip = isDrifting ? driftGrip : normalGrip;
 
-        // Slerp ile aracın burnunun gösterdiği yöne doğru hareketini pürüzsüzleştiriyoruz
+        // Küresel enterpolasyon (Slerp) kullanılarak aracın gerçek hareket yönü burnunun yönüne eşitlenir
         currentMoveDir = Vector3.Slerp(currentMoveDir, transform.forward, grip * Time.fixedDeltaTime).normalized;
 
         Vector3 movement = currentMoveDir * currentSpeed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + movement);
     }
 
-    // Polisin binalara veya engellere bodoslama girmemesi için etrafa ışın (Raycast) atarak yön saptırır
     private float ObstacleAvoidanceSteer()
     {
         Vector3 origin = transform.position + Vector3.up * 0.5f;
         float steer = 0f;
         int hits = 0;
 
-        // İleri, sağ çapraz ve sol çapraz olmak üzere 3 SphereCast yolluyoruz
+        // Aracın önünden ve çaprazlarından SphereCast gönderilerek engeller tespit edilir
         TryObstacleRay(origin, transform.forward, 1.2f, ref steer, ref hits);
         TryObstacleRay(origin, (transform.forward + transform.right * 0.45f).normalized, 0.9f, ref steer, ref hits);
         TryObstacleRay(origin, (transform.forward - transform.right * 0.45f).normalized, 0.9f, ref steer, ref hits);
@@ -584,10 +537,8 @@ public class PoliceCarAI : MonoBehaviour
         if (!Physics.SphereCast(origin, radius, direction, out RaycastHit hit, obstacleCheckDistance, obstacleLayerMask))
             return;
 
-        // Oyuncuya, yola veya yere çarpıyorsa tepki verme
         if (hit.collider.CompareTag("Player") || hit.collider.CompareTag("Road") || hit.collider.CompareTag("Ground")) return;
 
-        // Engel sağdaysa sola kır, soldaysa sağa kır
         Vector3 localHit = transform.InverseTransformPoint(hit.point);
         steer += localHit.x < 0f ? 20f : -20f;
         hits++;
@@ -614,7 +565,6 @@ public class PoliceCarAI : MonoBehaviour
         isStunned = false;
     }
 
-    // İki obje arasındaki uzaklığı ölçerken Y eksenini(yüksekliği) umursamayarak daha tutarlı bir değer döndürür
     private static float FlatDistance(Vector3 a, Vector3 b)
     {
         a.y = 0f;
