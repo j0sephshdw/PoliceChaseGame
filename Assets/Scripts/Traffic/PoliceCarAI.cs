@@ -91,6 +91,9 @@ public class PoliceCarAI : MonoBehaviour
     private bool isRecovering;
     private bool isDead = false;
 
+    [Header("Çarpma Hakkı")]
+    public int hitPoints = 2;
+
     private float stuckTimer;
     private float lastDistanceToPlayer = 999f;
     private float difficultyMultiplier = 1f;
@@ -117,6 +120,7 @@ public class PoliceCarAI : MonoBehaviour
     {
         isDead = false;
         spawnTime = Time.time;
+        hitPoints = 2;
 
         Collider mainCollider = GetComponent<Collider>();
         if (mainCollider != null)
@@ -187,7 +191,8 @@ public class PoliceCarAI : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Traffic") || collision.gameObject.CompareTag("Police"))
         {
-            Explode();
+            currentSpeed *= 0.4f;
+            TakeHit();
             return;
         }
 
@@ -210,6 +215,8 @@ public class PoliceCarAI : MonoBehaviour
 
         float playerSpeed = targetRb != null ? targetRb.linearVelocity.magnitude : 0f;
         currentSpeed = Mathf.Max(currentSpeed * 0.94f, playerSpeed * 0.88f);
+        TakeHit();
+        if (isDead) return; // hak bitip patladıysa devamındaki itme kısmı çalışmasın
 
         if (collision.contactCount == 0) return;
 
@@ -229,6 +236,15 @@ public class PoliceCarAI : MonoBehaviour
             StartCoroutine(RecoverRoutine());
     }
 
+    private void TakeHit()
+    {
+        if (Time.time < spawnTime + spawnInvulnerabilityDuration) return; // spawn koruması sırasında hak harcanmasın
+        hitPoints--;
+        if (hitPoints <= 0)
+        {
+            Explode();
+        }
+    }
     public void Explode()
     {
         if (isDead) return;

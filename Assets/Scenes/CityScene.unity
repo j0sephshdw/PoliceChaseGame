@@ -3844,6 +3844,8 @@ MonoBehaviour:
   swaySpeed: 1.2
   dropInterval: 3
   groundOffset: 0.02
+  dropPrepTime: 1.5
+  dipAmount: 2.5
 --- !u!136 &866681270
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -7192,7 +7194,7 @@ MonoBehaviour:
   sportsSkorSiniri: 600
   baseSpawnInterval: 4
   baslangicPolisSayisi: 2
-  spawnDistanceBehind: 35
+  spawnDistanceBehind: 18
   spawnDistanceAhead: 60
   headOnSpawnChance: 0.35
   sadeceYoldaDogsun: 1

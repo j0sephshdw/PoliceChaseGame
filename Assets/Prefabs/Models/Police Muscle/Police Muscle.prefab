@@ -124,7 +124,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoliceAI
   carData: {fileID: 0}
-  spawnInvulnerabilityDuration: 1.5
+  spawnInvulnerabilityDuration: 4
   target: {fileID: 0}
   followBufferDistance: 0.5
   catchUpGain: 2
@@ -139,6 +139,7 @@ MonoBehaviour:
   collisionMass: 400
   emergencyStopDistance: 0.1
   recoverDuration: 0.35
+  downforceMultiplier: 25
   turnSpeed: 300
   turnResponsiveness: 3
   turnSmoothing: 8
@@ -169,6 +170,7 @@ MonoBehaviour:
   patlamaYaricapi: 8
   havayaFirlatmaGucu: 0.5
   sirenSound: {fileID: 8300000, guid: 86a4e51bfdf01da4abcb4fca04296e6e, type: 3}
+  hitPoints: 2
 --- !u!54 &1046546781262608822
 Rigidbody:
   m_ObjectHideFlags: 0
