@@ -17,20 +17,26 @@ public class PoliceSpawner : MonoBehaviour
 
     [Header("Temel Spawn Ayarları")]
     [Tooltip("Polis dalgaları (wave) arasındaki bekleme süresi")]
-    public float baseSpawnInterval = 4f;
+    public float baseSpawnInterval = 0.5f;
     [Tooltip("Oyun başında sahnede bulunacak minimum polis sayısı")]
-    public int baslangicPolisSayisi = 4;
-    public float spawnDistanceBehind = 40f;
-    public float spawnDistanceAhead = 70f;
+    public int baslangicPolisSayisi = 12;
+
+    public float spawnDistanceBehind = 1f;
+    public float spawnDistanceAhead = 2f;
+
+    [Tooltip("Polislerin önden (kafa kafaya) gelme ihtimali. 0.5 = %50")]
+    [Range(0f, 1f)]
+    public float headOnSpawnChance = 0.35f;
+
+    [Header("Gelişmiş Spawn Kontrolü")]
+    [Tooltip("Sadece adında 'Road' geçen zeminlerde doğmalarını zorunlu kılar (Tavsiye edilir)")]
+    public bool sadeceYoldaDogsun = true;
 
     [Header("Agresif Zorluk Sistemi (Heat Level)")]
     public bool dinamikZorlukAktif = true;
-    [Tooltip("Skor bu değere her ulaştığında Aranma Seviyesi (Heat) 1 artar")]
-    public int kacSkordaBirSeviyeArtsin = 10;
-    [Tooltip("Seviye başına eklenecek ekstra polis kontenjanı")]
-    public int seviyeBasinaPolisArtisi = 2;
-    [Tooltip("Oyunun çökmeksizin kaldırabileceği mutlak maksimum polis sayısı")]
-    public int mutlakMaxPolisLimiti = 50;
+    public int kacSkordaBirSeviyeArtsin = 5;
+    public int seviyeBasinaPolisArtisi = 4;
+    public int mutlakMaxPolisLimiti = 80;
 
     [Header("Barikat (Roadblock) Ayarları")]
     public bool enableBarricades = true;
@@ -43,9 +49,24 @@ public class PoliceSpawner : MonoBehaviour
     private Transform player;
     private List<GameObject> activePoliceCars = new List<GameObject>();
 
-    // Object Pooling (Bellek Yönetimi)
+    // GC Optimizasyonu: Sürekli dizi oluşturmamak için önbelleğe alınmış değişkenler
+    private Collider[] overlapResults = new Collider[20];
+    private WaitForSeconds spawnDelay = new WaitForSeconds(0.05f);
+
+    // Object Pooling Sistemi
     private static Dictionary<GameObject, Queue<GameObject>> pool = new Dictionary<GameObject, Queue<GameObject>>();
+    private static Dictionary<GameObject, GameObject> instancePrefabMap = new Dictionary<GameObject, GameObject>();
     private static Transform poolHolder;
+
+    // Tamamen rastgele yerine merkezden dışa doğru (mantıklı) arama noktaları
+    private readonly Vector2[] aramaDesenleri = new Vector2[]
+    {
+        new Vector2(0, 0), new Vector2(4, 0), new Vector2(-4, 0),
+        new Vector2(0, 5), new Vector2(8, 0), new Vector2(-8, 0),
+        new Vector2(5, 5), new Vector2(-5, 5), new Vector2(0, -5),
+        new Vector2(5, -5), new Vector2(-5, -5), new Vector2(12, 0),
+        new Vector2(-12, 0), new Vector2(8, 8), new Vector2(-8, 8)
+    };
 
     private void Awake()
     {
@@ -55,8 +76,9 @@ public class PoliceSpawner : MonoBehaviour
     public int GetActivePoliceCount()
     {
         int count = 0;
-        foreach (var p in activePoliceCars)
+        for (int i = 0; i < activePoliceCars.Count; i++)
         {
+            GameObject p = activePoliceCars[i];
             if (p != null && p.activeInHierarchy) count++;
         }
         return count;
@@ -70,9 +92,6 @@ public class PoliceSpawner : MonoBehaviour
         StartCoroutine(BarricadeRoutine());
     }
 
-    /// <summary>
-    /// Oyuncunun hayatta kalma süresine ve skoruna bağlı olarak dinamik şekilde polis dalgaları (wave) yaratır.
-    /// </summary>
     IEnumerator SpawnRoutine()
     {
         while (player == null)
@@ -82,11 +101,26 @@ public class PoliceSpawner : MonoBehaviour
             yield return null;
         }
 
+        float timer = 0f;
+
         while (true)
         {
             if (player == null) yield break;
 
-            activePoliceCars.RemoveAll(p => p == null || !p.activeInHierarchy);
+            // Ters for ile inaktif polisleri listeden temizle
+            for (int i = activePoliceCars.Count - 1; i >= 0; i--)
+            {
+                GameObject p = activePoliceCars[i];
+                if (p == null)
+                {
+                    activePoliceCars.RemoveAt(i);
+                }
+                else if (!p.activeInHierarchy)
+                {
+                    ReturnToPool(p);
+                    activePoliceCars.RemoveAt(i);
+                }
+            }
 
             int currentLimit = baslangicPolisSayisi;
             float currentInterval = baseSpawnInterval;
@@ -98,26 +132,39 @@ public class PoliceSpawner : MonoBehaviour
 
                 int calculatedLimit = baslangicPolisSayisi + (heatLevel * seviyeBasinaPolisArtisi);
                 currentLimit = Mathf.Clamp(calculatedLimit, baslangicPolisSayisi, mutlakMaxPolisLimiti);
-
                 currentInterval = Mathf.Max(1.0f, baseSpawnInterval - (heatLevel * 0.35f));
             }
 
-            // --- YENİ EKLENEN: SÜREKLİ MAKSİMUMA TAMAMLAMA MANTIĞI ---
             int eksikPolisSayisi = currentLimit - activePoliceCars.Count;
 
             if (eksikPolisSayisi > 0)
             {
-                // Eksik olan sayı kadar polisi peş peşe fırlatıyoruz!
-                for (int i = 0; i < eksikPolisSayisi; i++)
+                int maxDeneme = eksikPolisSayisi * 3;
+                int basariliSpawn = 0;
+                int deneme = 0;
+
+                while (basariliSpawn < eksikPolisSayisi && deneme < maxDeneme)
                 {
-                    SpawnPolice();
-                    // Üst üste binip fizik patlaması yaşamasınlar diye sadece 0.15 saniye pay bırakıyoruz
-                    yield return new WaitForSeconds(0.15f);
+                    if (SpawnPolice())
+                    {
+                        basariliSpawn++;
+                        yield return spawnDelay;
+                    }
+                    else
+                    {
+                        yield return null;
+                    }
+                    deneme++;
                 }
             }
 
-            // Tüm eksikler tamamlandıktan sonra bir sonraki polis dalgası için belirlenen süre kadar bekle
-            yield return new WaitForSeconds(currentInterval);
+            // GC (Garbage Collector) sızıntısını önlemek için while döngüsü ile bekleme
+            timer = 0f;
+            while (timer < currentInterval)
+            {
+                timer += Time.deltaTime;
+                yield return null;
+            }
         }
     }
 
@@ -125,77 +172,127 @@ public class PoliceSpawner : MonoBehaviour
     {
         while (player == null) yield return null;
 
+        float timer = 0f;
+
         while (true)
         {
-            yield return new WaitForSeconds(barricadeInterval);
+            timer += Time.deltaTime;
 
-            if (!enableBarricades || player == null) continue;
-
-            int currentScore = (ScoreManager.Instance != null) ? ScoreManager.Instance.Score : 0;
-            if (currentScore >= barricadeScoreThreshold)
+            if (timer >= barricadeInterval)
             {
-                SpawnBarricade();
+                timer = 0f;
+                if (enableBarricades && player != null)
+                {
+                    int currentScore = (ScoreManager.Instance != null) ? ScoreManager.Instance.Score : 0;
+                    if (currentScore >= barricadeScoreThreshold)
+                    {
+                        SpawnBarricade();
+                    }
+                }
             }
+            yield return null; // RAM dostu frame bekletme
         }
     }
 
-    private void SpawnPolice()
+    private bool SpawnPolice()
     {
         GameObject selectedPrefab = SecilecekPolisAraci();
-        if (selectedPrefab == null) return;
+        if (selectedPrefab == null) return false;
 
-        float sideSign = (activePoliceCars.Count % 2 == 0) ? 1f : -1f;
+        bool isHeadOn = Random.value < headOnSpawnChance;
 
-        Vector3 spawnPos;
-        Quaternion spawnRot;
+        // Merkez referans mesafesi
+        float baseDistance = isHeadOn
+            ? Random.Range(spawnDistanceAhead - 5f, spawnDistanceAhead + 15f)
+            : Random.Range(spawnDistanceBehind - 5f, spawnDistanceBehind + 15f);
 
-        if (Random.value < 0.35f)
+        Vector3 forwardDir = isHeadOn ? -player.forward : player.forward;
+        Vector3 centerSpawnPos = player.position + (player.forward * (isHeadOn ? baseDistance : -baseDistance));
+        Quaternion spawnRot = Quaternion.LookRotation(forwardDir);
+
+        // Karışık ama rastgele olmayan 15 nokta dener (Merkezden dışa doğru)
+        for (int i = 0; i < aramaDesenleri.Length; i++)
         {
-            float headOnOffset = sideSign * Random.Range(0f, 1.5f);
-            spawnPos = player.position + (player.forward * spawnDistanceAhead) + (player.right * headOnOffset);
-            spawnRot = Quaternion.LookRotation(-player.forward);
+            Vector3 rawPos = centerSpawnPos + (player.right * aramaDesenleri[i].x) + (player.forward * aramaDesenleri[i].y);
+            Vector3 rayOrigin = new Vector3(rawPos.x, player.position.y + 30f, rawPos.z);
+            Vector3 finalSpawnPos = rawPos;
+
+            // 1. KONTROL: Lazer (Raycast)
+            if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 60f))
+            {
+                if (hit.collider.CompareTag("Obstacle") || hit.collider.CompareTag("Traffic") || hit.collider.CompareTag("Police"))
+                {
+                    continue; // Engel veya araç gördü, pas geç.
+                }
+
+                if (sadeceYoldaDogsun && !hit.collider.gameObject.name.Contains("Road"))
+                {
+                    continue; // Eğer yolda doğsun dediysek ve objenin adında Road yoksa pas geç.
+                }
+
+                finalSpawnPos = hit.point;
+                finalSpawnPos.y += 0.5f;
+            }
+            else
+            {
+                continue; // Lazer boşluğa düştü.
+            }
+
+            // 2. KONTROL: Etraf Boş Mu?
+            bool alanDolu = false;
+            int hitCount = Physics.OverlapSphereNonAlloc(finalSpawnPos, 2.5f, overlapResults);
+
+            for (int j = 0; j < hitCount; j++)
+            {
+                Collider col = overlapResults[j];
+                if (col.CompareTag("Obstacle") || col.CompareTag("Police") || col.CompareTag("Traffic") || col.CompareTag("Player"))
+                {
+                    alanDolu = true;
+                    break;
+                }
+            }
+
+            if (alanDolu) continue;
+
+            // --- MUTLU SON ---
+            GameObject newPolice = GetFromPool(selectedPrefab);
+            newPolice.transform.SetPositionAndRotation(finalSpawnPos, spawnRot);
+            newPolice.SetActive(true);
+
+            PoliceCarAI ai = newPolice.GetComponent<PoliceCarAI>();
+            if (ai != null)
+            {
+                ai.enabled = true;
+                ai.SetTarget(player);
+            }
+
+            Rigidbody rb = newPolice.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.mass = ai != null ? ai.collisionMass : 400f;
+                rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+
+            activePoliceCars.Add(newPolice);
+
+            // Başarılı log
+            Debug.Log($"<color=green>[SPAWN BAŞARILI]</color> {i + 1}. denemede nokta bulundu. Toplam Aktif: {activePoliceCars.Count}");
+            return true;
         }
-        else
-        {
-            float offsetRight = sideSign * Random.Range(1.5f, 4.5f);
-            spawnPos = player.position - (player.forward * spawnDistanceBehind) + (player.right * offsetRight);
-            spawnRot = Quaternion.LookRotation(player.forward);
-        }
 
-        spawnPos.y = 0.5f;
-
-        GameObject newPolice = GetFromPool(selectedPrefab);
-        newPolice.transform.SetPositionAndRotation(spawnPos, spawnRot);
-        newPolice.SetActive(true);
-
-        PoliceCarAI ai = newPolice.GetComponent<PoliceCarAI>();
-        if (ai != null)
-        {
-            ai.enabled = true;
-            ai.SetTarget(player);
-        }
-
-        Rigidbody rb = newPolice.GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.mass = ai != null ? ai.collisionMass : 400f;
-            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-        }
-
-        activePoliceCars.Add(newPolice);
+        return false;
     }
 
     private void SpawnBarricade()
     {
         Vector3 pDir = player.forward;
-
         bool yolX_Ekseninde = Mathf.Abs(pDir.x) > Mathf.Abs(pDir.z);
 
-        Vector3 cardinalForward;
-        if (yolX_Ekseninde)
-            cardinalForward = new Vector3(Mathf.Sign(pDir.x), 0, 0);
-        else
-            cardinalForward = new Vector3(0, 0, Mathf.Sign(pDir.z));
+        Vector3 cardinalForward = yolX_Ekseninde
+            ? new Vector3(Mathf.Sign(pDir.x), 0, 0)
+            : new Vector3(0, 0, Mathf.Sign(pDir.z));
 
         Vector3 spawnCenter = player.position + (cardinalForward * barricadeDistanceAhead);
         spawnCenter.y = 0.5f;
@@ -205,10 +302,8 @@ public class PoliceSpawner : MonoBehaviour
         {
             if (!hit.collider.gameObject.name.Contains("Road")) return;
 
-            if (yolX_Ekseninde)
-                spawnCenter.z = hit.transform.position.z;
-            else
-                spawnCenter.x = hit.transform.position.x;
+            if (yolX_Ekseninde) spawnCenter.z = hit.transform.position.z;
+            else spawnCenter.x = hit.transform.position.x;
         }
         else return;
 
@@ -229,12 +324,12 @@ public class PoliceSpawner : MonoBehaviour
             float offsetZ = (i - (toplamSlot - 1) / 2f) * arabaGenisligi;
             pos.z += offsetZ;
 
-            // --- BUG DÜZELTİLDİ: 1.5f OLAN SENSÖR ÇAPI KÜÇÜLTÜLDÜ ---
-            // Artık diğer arabaları engel olarak görüp doğmayı iptal etmeyecek!
             bool alanDolu = false;
-            Collider[] colliders = Physics.OverlapSphere(pos, 0.15f);
-            foreach (Collider col in colliders)
+            int hitCount = Physics.OverlapSphereNonAlloc(pos, 0.15f, overlapResults);
+
+            for (int j = 0; j < hitCount; j++)
             {
+                Collider col = overlapResults[j];
                 if (col.CompareTag("Traffic") || col.CompareTag("Player") || col.CompareTag("Police"))
                 {
                     alanDolu = true;
@@ -244,7 +339,6 @@ public class PoliceSpawner : MonoBehaviour
             if (alanDolu) continue;
 
             GameObject barricadeCar = GetFromPool(secilenBarikatAraci);
-
             PoliceCarAI ai = barricadeCar.GetComponent<PoliceCarAI>();
             if (ai != null) ai.enabled = false;
 
@@ -289,7 +383,24 @@ public class PoliceSpawner : MonoBehaviour
             if (obj != null) return obj;
         }
 
-        return Instantiate(prefab, poolHolder);
+        GameObject newInstance = Instantiate(prefab, poolHolder);
+        instancePrefabMap[newInstance] = prefab;
+        return newInstance;
+    }
+
+    public static void ReturnToPool(GameObject instance)
+    {
+        if (instance == null) return;
+
+        if (instancePrefabMap.TryGetValue(instance, out GameObject prefab))
+        {
+            ReturnToPool(prefab, instance);
+        }
+        else
+        {
+            instance.SetActive(false);
+            Destroy(instance);
+        }
     }
 
     public static void ReturnToPool(GameObject prefab, GameObject instance)
@@ -300,11 +411,22 @@ public class PoliceSpawner : MonoBehaviour
 
         if (!pool.ContainsKey(prefab)) pool[prefab] = new Queue<GameObject>();
         pool[prefab].Enqueue(instance);
+
+        if (!instancePrefabMap.ContainsKey(instance))
+        {
+            instancePrefabMap[instance] = prefab;
+        }
     }
 
     private IEnumerator ReturnToPoolAfterDelay(GameObject prefab, GameObject instance, float delay)
     {
-        yield return new WaitForSeconds(delay);
+        float timer = 0f;
+        while (timer < delay)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
         if (instance != null)
         {
             ReturnToPool(prefab, instance);
@@ -314,6 +436,7 @@ public class PoliceSpawner : MonoBehaviour
     private void OnDestroy()
     {
         pool.Clear();
+        instancePrefabMap.Clear();
         poolHolder = null;
     }
 }
