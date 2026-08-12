@@ -448,20 +448,20 @@ public class PlayerCarController : MonoBehaviour
         Destroy(gameObject, 5f);
     }
 
-    // Harita üzerindeki Hızlanma pickup'ı alındığında çağrılır (PickupItem.cs üzerinden)
+    // Harita üzerindeki Hızlanma pickup'ı VEYA Kapan tarafından çağrılır
     public void ActivateSpeedBoost(float multiplier, float duration)
     {
         if (isSpeedBoostActive)
         {
-            // Zaten aktifken tekrar toplandıysa: çarpanı TEKRAR uygulamıyoruz (üst üste binmesin),
-            // sadece eski sayacı iptal edip süresi sıfırlanmış yeni bir coroutine başlatıyoruz.
+            // BUG FIX: Eğer hızlandırıcı (veya yavaşlatıcı) ZATEN aktifse,
+            // eski çarpanın etkisini geri alıyoruz ki yenisi (kapan vb.) üstüne doğru şekilde yazılabilsin!
+            originalMaxSpeed /= activeSpeedBoostMultiplier;
+            currentSpeed /= activeSpeedBoostMultiplier;
             StopCoroutine(speedBoostCoroutine);
-            speedBoostCoroutine = StartCoroutine(SpeedBoostRoutine(duration));
-            return;
         }
 
         isSpeedBoostActive = true;
-        activeSpeedBoostMultiplier = multiplier; // süre bitince tam olarak bu çarpanı geri böleceğiz
+        activeSpeedBoostMultiplier = multiplier;
         originalMaxSpeed *= multiplier;
         currentSpeed *= multiplier;
         speedBoostCoroutine = StartCoroutine(SpeedBoostRoutine(duration));
