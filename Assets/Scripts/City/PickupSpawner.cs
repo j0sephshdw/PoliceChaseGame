@@ -58,9 +58,10 @@ public class PickupSpawner : MonoBehaviour
 
         Queue<GameObject> queue = pool[prefab];
 
-        if (queue.Count > 0)
+        while (queue.Count > 0)
         {
-            return queue.Dequeue(); // havuzda bekleyen varsa onu geri ver
+            GameObject candidate = queue.Dequeue();
+            if (candidate != null) return candidate; // silinmiş (missing) objeleri atla
         }
 
         return Instantiate(prefab, poolHolder); // havuzda yoksa ilk defa üret

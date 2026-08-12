@@ -6,13 +6,6 @@ public class PolicePursuitUI : MonoBehaviour
     [Header("UI Referansları")]
     public TextMeshProUGUI copCountText;
 
-    [Header("Görsel Ayarlar")]
-    // \U0001F693 = 🚔 (Önden Polis Arabası Emojisi)
-    public string prefixText = "COPS \U0001F693";
-
-    [Tooltip("Sayıların rengi (Hex kodu).")]
-    public string numberColorHex = "#FF6600";
-
     // --- OPTİMİZASYON DEĞİŞKENİ ---
     private int lastCopCount = -1;
 
@@ -36,8 +29,7 @@ public class PolicePursuitUI : MonoBehaviour
 
         if (currentCount > 0)
         {
-            // SetText'in string kısıtlamasından dolayı standart interpolation kullanıyoruz
-            copCountText.text = $"{prefixText} <color={numberColorHex}>{currentCount}</color>";
+            copCountText.text = currentCount.ToString();
         }
         else
         {
