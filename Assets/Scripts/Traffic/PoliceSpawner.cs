@@ -262,6 +262,9 @@ public class PoliceSpawner : MonoBehaviour
             newPolice.SetActive(true);
 
             PoliceCarAI ai = newPolice.GetComponent<PoliceCarAI>();
+
+            if (ai != null) ai.poolGeneration++;
+
             if (ai != null)
             {
                 ai.enabled = true;
@@ -342,6 +345,9 @@ public class PoliceSpawner : MonoBehaviour
 
             GameObject barricadeCar = GetFromPool(secilenBarikatAraci);
             PoliceCarAI ai = barricadeCar.GetComponent<PoliceCarAI>();
+            
+            if (ai != null) ai.poolGeneration++;
+
             if (ai != null) ai.enabled = false;
 
             Rigidbody rb = barricadeCar.GetComponent<Rigidbody>();
@@ -357,7 +363,7 @@ public class PoliceSpawner : MonoBehaviour
             barricadeCar.transform.SetPositionAndRotation(pos, fixedRotation);
             barricadeCar.SetActive(true);
 
-            StartCoroutine(ReturnToPoolAfterDelay(secilenBarikatAraci, barricadeCar, 15f));
+            StartCoroutine(ReturnToPoolAfterDelay(secilenBarikatAraci, barricadeCar, 15f, ai, ai != null ? ai.poolGeneration : 0));
         }
     }
 
@@ -420,7 +426,7 @@ public class PoliceSpawner : MonoBehaviour
         }
     }
 
-    private IEnumerator ReturnToPoolAfterDelay(GameObject prefab, GameObject instance, float delay)
+    private IEnumerator ReturnToPoolAfterDelay(GameObject prefab, GameObject instance, float delay, PoliceCarAI ai, int expectedGeneration)
     {
         float timer = 0f;
         while (timer < delay)
@@ -429,7 +435,7 @@ public class PoliceSpawner : MonoBehaviour
             yield return null;
         }
 
-        if (instance != null)
+        if (instance != null && (ai == null || ai.poolGeneration == expectedGeneration))
         {
             ReturnToPool(prefab, instance);
         }

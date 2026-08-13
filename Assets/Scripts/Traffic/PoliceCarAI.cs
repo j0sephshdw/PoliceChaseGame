@@ -90,6 +90,7 @@ public class PoliceCarAI : MonoBehaviour
     private bool isStunned;
     private bool isRecovering;
     private bool isDead = false;
+    [HideInInspector] public int poolGeneration = 0;
 
     [Header("Çarpma Hakkı")]
     public int hitPoints = 2;
@@ -124,6 +125,8 @@ public class PoliceCarAI : MonoBehaviour
         isStunned = false;
         isRecovering = false;
         isDrifting = false;
+        stuckTimer = 0f;
+        lastDistanceToPlayer = 999f;
 
         Collider mainCollider = GetComponent<Collider>();
         if (mainCollider != null)
@@ -469,7 +472,7 @@ public class PoliceCarAI : MonoBehaviour
 
         bool selfDrift = Mathf.Abs(angleToAimPoint) > driftAngleThreshold && currentSpeed > driftMinSpeed;
 
-        isDrifting = selfDrift || (stuckTimer > 1.2f && distance > ramCloseDistance);
+        isDrifting = selfDrift || stuckTimer > 1.2f;
 
         float effectiveTurnSpeed = turnSpeed;
         float effectiveResponsiveness = turnResponsiveness;
