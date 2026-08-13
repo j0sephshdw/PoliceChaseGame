@@ -37,8 +37,18 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        // Sahnede yanlışlıkla birden fazla GameManager oluşursa fazlasını yok edip
-        // tek bir Instance kalmasını garanti ediyorum.
+        // 60 FPS ve VSync Ayarı
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
+
+        // 1. Ekranın Kapanmasını/Kararmasını Engelle:
+        // Oyuncu ekrana bir süre dokunmadığında veya sadece direksiyon çevirdiğinde telefonun ekranı kararmasın.
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
+        // 2. Fizik Güncellemesini 60 FPS'e Eşitle:
+        // Araç ve polis fizikleri 60 FPS çizimle tam senkronize çalışsın, mikroskopik takılmalar (jittering) engellensin.
+        Time.fixedDeltaTime = 0.02f; // 50 Hz / 60 Hz stabil fizik adımı
+
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
