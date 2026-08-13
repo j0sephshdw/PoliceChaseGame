@@ -6,6 +6,10 @@ public class PoliceHelicopter : MonoBehaviour
 {
     public static PoliceHelicopter Instance;
 
+    [Header("Ses Ayarları")]
+    public AudioClip rotorSound;
+    private AudioSource audioSource;
+
     [Header("Pervane Ayarları")]
     public Transform mainRotor;
     public Transform tailRotor;
@@ -57,6 +61,20 @@ public class PoliceHelicopter : MonoBehaviour
     {
         Instance = this;
 
+        // --- Ses Kaynağı Ayarları ---
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.loop = true;          // Pervane sesi sürekli dönecek
+        audioSource.spatialBlend = 0f;    // 2D ses (net ve gür)
+        audioSource.playOnAwake = false;
+
+        //  Sesi bağlayıp başlatıyoruz
+        if (rotorSound != null)
+        {
+            audioSource.clip = rotorSound;
+            audioSource.Play();
+        }
+
+        // Havuz (Pool) döngüsü
         for (int i = 0; i < poolSize; i++)
         {
             GameObject spike = Instantiate(spikeStripPrefab, transform);
@@ -88,6 +106,14 @@ public class PoliceHelicopter : MonoBehaviour
     private void Update()
     {
         if (player == null) return;
+        // --- ANA MENÜ AYARLARINA (SFX SLIDER) BAĞLI SES KONTROLÜ ---
+        if (audioSource != null)
+        {
+            // UIManager.GetSFXVolume() sayesinde Ana Menüdeki "SFX" slider'ı sesi direkt kontrol eder!
+            float baseVol = UIManager.GetSFXVolume() * 1.5f;
+            audioSource.volume = (Time.timeScale == 0f) ? 0f : Mathf.Clamp01(baseVol);
+        }
+        // -------------------------------------------------------------
 
         dropTimer -= Time.deltaTime;
 

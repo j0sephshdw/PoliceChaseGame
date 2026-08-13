@@ -3826,6 +3826,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 404be53c0b1f55743970752fd3e965da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoliceHelicopter
+  rotorSound: {fileID: 8300000, guid: 769fef70e6078364291d0d1e2cbd8ede, type: 3}
   mainRotor: {fileID: 1885536991}
   tailRotor: {fileID: 374003501}
   mainRotorSpeed: 1200
@@ -3833,7 +3834,7 @@ MonoBehaviour:
   player: {fileID: 269937355}
   groundTag: Ground
   spikeStripPrefab: {fileID: 4423841148766814248, guid: a06a340501f946b4abdb26f4867af403, type: 3}
-  tireBurstVFXPrefab: {fileID: 0}
+  tireBurstVFXPrefab: {fileID: 100014, guid: a57a6829db3568c4d9bdc37e9e63c017, type: 3}
   poolSize: 10
   distanceAhead: 7
   heightAbovePlayer: 3

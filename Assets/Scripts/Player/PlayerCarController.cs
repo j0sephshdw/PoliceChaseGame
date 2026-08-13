@@ -219,8 +219,10 @@ public class PlayerCarController : MonoBehaviour
         {
             if (!engineAudioSource.isPlaying) engineAudioSource.UnPause();
         }
+        // --- SIFIRA BÖLÜNME VE SONSUZ DEĞER KORUMASI ---
+        float safeMaxSpeed = Mathf.Max(0.1f, originalMaxSpeed); // originalMaxSpeed 0 olsa bile en az 0.1 al
+        float speedRatio = Mathf.Clamp01(Mathf.Abs(currentSpeed) / safeMaxSpeed);
 
-        float speedRatio = currentSpeed / originalMaxSpeed;
         int newGear = Mathf.Clamp(Mathf.FloorToInt(speedRatio * numberOfGears), 0, numberOfGears - 1);
 
         // Vites değişimi anında motor sesini düşür (vites atma hissi)
@@ -233,9 +235,12 @@ public class PlayerCarController : MonoBehaviour
         // Mevcut vites içindeki devir oranını hesapla
         float gearMinRatio = (float)currentGear / numberOfGears;
         float gearMaxRatio = (float)(currentGear + 1) / numberOfGears;
-        float currentGearRatio = (speedRatio - gearMinRatio) / (gearMaxRatio - gearMinRatio);
 
-        float rpmCurve = Mathf.Pow(currentGearRatio, 1.5f);
+        // Payda sıfır olmasın diye min/max farkını güvenli hesaplıyoruz
+        float range = gearMaxRatio - gearMinRatio;
+        float currentGearRatio = (range > 0f) ? (speedRatio - gearMinRatio) / range : 0f;
+
+        float rpmCurve = Mathf.Pow(Mathf.Clamp01(currentGearRatio), 1.5f);
         float gearBaseOffset = currentGear * 0.08f;
         float targetPitch = currentCarData.baseEnginePitch + gearBaseOffset + (rpmCurve * 0.50f);
 
@@ -244,6 +249,14 @@ public class PlayerCarController : MonoBehaviour
         {
             targetPitch -= 0.15f;
         }
+
+        // --- PITCH DEĞERİNİ HAPSETME (SONSUZ DEĞER ENGELLENDİ) ---
+        if (float.IsNaN(targetPitch) || float.IsInfinity(targetPitch))
+        {
+            targetPitch = currentCarData.baseEnginePitch;
+        }
+
+        targetPitch = Mathf.Clamp(targetPitch, 0.5f, 3.0f); // Sesin aşırı bozulmaması için 0.5 ile 3.0 arasına sıkıştır
 
         engineAudioSource.pitch = Mathf.Lerp(engineAudioSource.pitch, targetPitch, 6f * Time.deltaTime);
     }
