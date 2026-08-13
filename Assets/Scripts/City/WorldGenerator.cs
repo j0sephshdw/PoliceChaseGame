@@ -38,7 +38,7 @@ public class WorldGenerator : MonoBehaviour
         int playerTileZ = Mathf.FloorToInt(player.position.z / tileSize);
 
 
-        // 4x4 tile oluşturma
+       
         for (int x = playerTileX - renderSize; x <= playerTileX + renderSize; x++)
         {
             for (int z = playerTileZ - renderSize; z <= playerTileZ + renderSize; z++)

@@ -206,6 +206,8 @@ public class PoliceSpawner : MonoBehaviour
             ? Random.Range(spawnDistanceAhead - 5f, spawnDistanceAhead + 15f)
             : Random.Range(spawnDistanceBehind - 5f, spawnDistanceBehind + 15f);
 
+        baseDistance = Mathf.Max(baseDistance, 10f); // Inspector'daki değer ne olursa olsun negatif/çok küçük mesafeyi engelle
+
         Vector3 forwardDir = isHeadOn ? -player.forward : player.forward;
         Vector3 centerSpawnPos = player.position + (player.forward * (isHeadOn ? baseDistance : -baseDistance));
         Quaternion spawnRot = Quaternion.LookRotation(forwardDir);

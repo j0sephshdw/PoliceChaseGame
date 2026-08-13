@@ -121,6 +121,9 @@ public class PoliceCarAI : MonoBehaviour
         isDead = false;
         spawnTime = Time.time;
         hitPoints = 2;
+        isStunned = false;
+        isRecovering = false;
+        isDrifting = false;
 
         Collider mainCollider = GetComponent<Collider>();
         if (mainCollider != null)
@@ -414,6 +417,11 @@ public class PoliceCarAI : MonoBehaviour
             }
         }
 
+        if (distance < ramCloseDistance)
+        {
+            return predictedPos; // yakınken tam üzerine gitsin, çarpmaya çalışsın
+        }
+
         float lateralFactor = Mathf.InverseLerp(5f, 15f, distance);
         float effectiveOffset = randomLateralOffset * lateralFactor;
 
@@ -437,7 +445,7 @@ public class PoliceCarAI : MonoBehaviour
         {
             if (distance < ramCloseDistance)
             {
-                float closeBonus = Mathf.Lerp(1.5f, ramSpeedBonus * difficultyMultiplier, distance / ramCloseDistance);
+                float closeBonus = Mathf.Lerp(ramSpeedBonus * difficultyMultiplier, 1.5f, distance / ramCloseDistance);
                 targetSpeed = Mathf.Max(targetSpeed, playerSpeed + closeBonus);
             }
         }
