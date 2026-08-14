@@ -75,6 +75,18 @@ public class BowlingManager : MonoBehaviour
 
     void Update()
     {
+        if (durum == OyunDurumu.Hazir)
+        {
+            foreach (var lobut in lobutlar)
+            {
+                if (Vector3.Dot(lobut.transform.up, Vector3.up) < 0.6f)
+                {
+                    StartCoroutine(FaulVeResetle());
+                    return;
+                }
+            }
+        }
+
         if (durum != OyunDurumu.AtisYapildi) return;
 
         bool kuralTetiklendi = false;
@@ -115,6 +127,22 @@ public class BowlingManager : MonoBehaviour
         yield return StartCoroutine(SkorGosterVeResetle());
     }
 
+    IEnumerator FaulVeResetle()
+    {
+        durum = OyunDurumu.SkorGosteriliyor;
+
+        if (skorText != null)
+        {
+            skorText.gameObject.SetActive(true);
+            skorText.text = "FOUL!";
+            skorText.color = new Color(1f, 0.5f, 0f);
+        }
+
+        yield return new WaitForSeconds(2f);
+
+        SistemiTemizle();
+    }
+
     IEnumerator SkorGosterVeResetle()
     {
         durum = OyunDurumu.SkorGosteriliyor;
@@ -132,10 +160,18 @@ public class BowlingManager : MonoBehaviour
         {
             skorText.gameObject.SetActive(true);
 
+            BombTimer timer = Object.FindFirstObjectByType<BombTimer>();
+
             if (devrilenSayisi == lobutlar.Count)
             {
                 skorText.text = "STRIKE!!!";
                 skorText.color = Color.yellow;
+
+                // 🎳 TÜMÜ DEVRİLDİĞİNDE BÜYÜK ÖDÜL (+20 Saniye)
+                if (timer != null)
+                {
+                    timer.SureEkle(20f);
+                }
             }
             else if (devrilenSayisi == 0)
             {
@@ -146,11 +182,22 @@ public class BowlingManager : MonoBehaviour
             {
                 skorText.text = devrilenSayisi + " PINS!";
                 skorText.color = Color.white;
+
+                // 🎳 DEVRİLEN HER LOBUT İÇİN ÖDÜL (Lobut Başına +2 Saniye)
+                if (timer != null)
+                {
+                    timer.SureEkle(devrilenSayisi * 2f);
+                }
             }
         }
 
         yield return new WaitForSeconds(2f);
 
+        SistemiTemizle();
+    }
+
+    private void SistemiTemizle()
+    {
         if (skorText != null) skorText.gameObject.SetActive(false);
 
         if (bowlingTopu != null && topRb != null)

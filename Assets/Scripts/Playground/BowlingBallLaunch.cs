@@ -20,7 +20,7 @@ public class BowlingBallLaunch : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             Vector3 vurusYonu = (transform.position - collision.transform.position).normalized;
-            vurusYonu.y = 0f; 
+            vurusYonu.y = 0f;
 
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
@@ -28,7 +28,9 @@ public class BowlingBallLaunch : MonoBehaviour
             Vector3 kuvvet = (vurusYonu * firlatmaGucu) + (Vector3.up * yukariGuc);
             rb.AddForce(kuvvet, ForceMode.Impulse);
 
-            if (manager != null)
+            
+            // Eğer yönetici varsa VE bu top "SoccerBall" tag'ine sahip DEĞİLSE hakeme haber ver
+            if (manager != null && !gameObject.CompareTag("SoccerBall"))
             {
                 manager.ArabaTopaVurdu();
             }

@@ -192,4 +192,11 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
+    // Bomba patladığında kalkanı ve dokunulmazlığı delip anında öldüren fonksiyon
+    public void InstantKill()
+    {
+        currentHealth = 0;
+        OnHealthChanged?.Invoke(currentHealth, maxHealth); // UI barını sıfırla
+        Die(); // Parçalanma efektini ve Game Over'ı tetikle
+    }
 }

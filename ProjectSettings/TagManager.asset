@@ -8,6 +8,7 @@ TagManager:
   - Police
   - Traffic
   - Ground
+  - SoccerBall
   layers:
   - Default
   - TransparentFX
