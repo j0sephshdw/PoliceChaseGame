@@ -33,6 +33,14 @@ public class PlayerCarController : MonoBehaviour
     private bool isHandbrakeActive = false;
     private float handbrakeDirection = 0f;
 
+    [Header("Playground - Dinamit Ayarları")]
+    public GameObject dynamitePrefab; // dinamit
+    public Vector3 dynamiteOffset = new Vector3(0f, 1.2f, -0.5f); // Arabanın tavanına yerleşmesi için pozisyon ayarı
+    // Boyut ve Açı ayarları
+    public Vector3 dynamiteRotation = new Vector3(90f, 0f, 0f); // 90 derece yatırmak için
+    public Vector3 dynamiteScale = new Vector3(3f, 3f, 3f);     // Boyutunu 3 kat büyütmek için
+    private GameObject spawnedDynamite;
+
     [Header("Ters Dönme / Respawn Ayarları")]
     public float flipThreshold = 0.2f; // Arabanın üst yönü bu değerin altına düşerse (yan yatar/ters dönerse) algılar
     public float respawnDelay = 2.5f; // Ters halde kaç saniye beklerse düzeltilecek
@@ -92,12 +100,22 @@ public class PlayerCarController : MonoBehaviour
 
     private void OnEnable()
     {
+        // Eğer inputActions henüz yaratılmadıysa, hemen burada yarat.
+        if (inputActions == null)
+        {
+            inputActions = new PlayerInputActions();
+        }
+
         inputActions.Enable();
     }
 
     private void OnDisable()
     {
-        inputActions.Disable();
+        // Eğer inputActions doluysa (yaratılmışsa) kapat, boşsa zaten hata verme es geç.
+        if (inputActions != null)
+        {
+            inputActions.Disable();
+        }
     }
 
     private void Start()
@@ -113,6 +131,20 @@ public class PlayerCarController : MonoBehaviour
         }
 
         currentMoveDirection = transform.forward;
+
+        // GameManager'ın state (durum) değişikliklerini dinlemeye başla
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnGameStateChanged += CheckGameStateForDynamite;
+        }
+    }
+    private void OnDestroy()
+    {
+        // Obje yok olduğunda aboneliği kaldır 
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnGameStateChanged -= CheckGameStateForDynamite;
+        }
     }
 
     // ScriptableObject içindeki modele ve verilere göre aracı sahnede oluşturur
@@ -149,6 +181,24 @@ public class PlayerCarController : MonoBehaviour
             engineAudioSource.clip = currentCarData.engineSound;
             engineAudioSource.pitch = currentCarData.baseEnginePitch;
             engineAudioSource.Play();
+        }
+        // SADECE "VehicleTestScene" sahnesindeysek dinamiti araca yükle
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "VehicleTestScene")
+        {
+            if (dynamitePrefab != null)
+            {
+                if (spawnedDynamite != null) Destroy(spawnedDynamite);
+
+                spawnedDynamite = Instantiate(dynamitePrefab, carMesh);
+                spawnedDynamite.transform.localPosition = dynamiteOffset;
+                // ---  Açı ve Boyut ataması ---
+                // Dinamiti yatırmak için belirlediğimiz açıyı (Euler) kullan
+                spawnedDynamite.transform.localRotation = Quaternion.Euler(dynamiteRotation);
+                // Dinamitin boyutunu belirlediğimiz oranda büyüt
+                spawnedDynamite.transform.localScale = dynamiteScale;
+
+                spawnedDynamite.SetActive(false);
+            }
         }
     }
 
@@ -691,5 +741,17 @@ public class PlayerCarController : MonoBehaviour
         }
 
         currentMoveDirection = transform.forward;
+    }
+    private void CheckGameStateForDynamite(GameState newState)
+    {
+        // Oyun Playing durumuna geçtiyse ve dinamit objemiz hafızada hazır bekliyorsa
+        if (newState == GameState.Playing && spawnedDynamite != null)
+        {
+            // Sadece bu test sahnesinde görünür yap
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "VehicleTestScene")
+            {
+                spawnedDynamite.SetActive(true);
+            }
+        }
     }
 }
