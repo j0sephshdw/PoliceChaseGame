@@ -4,7 +4,7 @@ using UnityEngine;
 public class WorldGenerator : MonoBehaviour
 {
     [Header("References")]
-    public GameObject groundTilePrefab;
+    public GameObject[] groundTilePrefabs;
     public Transform player;
 
     [Header("Settings")]
@@ -18,10 +18,13 @@ public class WorldGenerator : MonoBehaviour
 
     private Dictionary<Vector2Int, GameObject> spawnedTiles = new();
 
+    private int selectedMapIndex = 0;
+
     [SerializeField] private Transform tilesParent; // Tüm GroundTile'ların toplanacağı klasör obje
 
     private void Start()
     {
+        selectedMapIndex = PlayerPrefs.GetInt("SelectedMapIndex", 0);
         UpdateWorld();
     }
 
@@ -54,7 +57,7 @@ public class WorldGenerator : MonoBehaviour
                     );
 
                     GameObject tile = Instantiate(
-                        groundTilePrefab,
+                        groundTilePrefabs[selectedMapIndex],
                         pos,
                         Quaternion.identity,
                         tilesParent

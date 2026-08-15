@@ -1872,7 +1872,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e0354cc62c09844d8d8e532ed1f43f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldGenerator
-  groundTilePrefab: {fileID: 5787238577119049162, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
+  groundTilePrefabs:
+  - {fileID: 5787238577119049162, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
+  - {fileID: 5173950702589341085, guid: 226a4ec523d266e48980803c3618a6b5, type: 3}
   player: {fileID: 269937355}
   tileSize: 25
   renderSize: 2
@@ -9775,7 +9777,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9157403018796256022, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 4559586507711282857, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

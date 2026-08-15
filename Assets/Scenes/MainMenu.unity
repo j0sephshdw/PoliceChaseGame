@@ -4486,12 +4486,14 @@ MonoBehaviour:
   availableMaps:
   - mapName: "\u015Eehir"
     sceneName: CityScene
-    previewImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+    previewImage: {fileID: 21300000, guid: 30577b085f2a7684a845e68dbe7a0c9b, type: 3}
     requiredScore: 0
-  - mapName: Test
-    sceneName: SampleScene
-    previewImage: {fileID: 21300000, guid: e09cbe0c664f9654db8d6a0271668912, type: 3}
+    groundTileIndex: 0
+  - mapName: "K\u0131\u015F Haritas\u0131"
+    sceneName: CityScene
+    previewImage: {fileID: 21300000, guid: 934704cba764e674cb0c3daa287292ca, type: 3}
     requiredScore: 20
+    groundTileIndex: 1
   previousButton: {fileID: 266881716}
   nextButton: {fileID: 1889844036}
   mapPreviewImage: {fileID: 782883751}
@@ -5392,6 +5394,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicManager
   musicClip: {fileID: 8300000, guid: 4a36b693e7af08e4d8677d573cbf414b, type: 3}
+  musicBaseVolume: 0.6
 --- !u!4 &1776392532
 Transform:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ public class MapOption
     public string sceneName; // SceneManager.LoadScene için gerçek sahne adı
     public Sprite previewImage;
     public int requiredScore;
+    public int groundTileIndex; // WorldGenerator'daki Ground Tile Prefabs dizisindeki sırayla eşleşmeli
 }
 
 public class MapSelectionUI : MonoBehaviour
@@ -90,6 +91,9 @@ public class MapSelectionUI : MonoBehaviour
             UISoundPlayer.PlayError();
             return;
         }
+
+        PlayerPrefs.SetInt("SelectedMapIndex", map.groundTileIndex);
+        PlayerPrefs.Save();
 
         SceneManager.LoadScene(map.sceneName);
     }

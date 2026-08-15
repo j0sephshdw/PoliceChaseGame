@@ -5562,7 +5562,7 @@ GameObject:
   - component: {fileID: 352219858634189254}
   - component: {fileID: 4421226234690292174}
   m_Layer: 0
-  m_Name: snow-flat-large (2)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5577,7 +5577,7 @@ Transform:
   m_GameObject: {fileID: 511346583037404804}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.63, y: 0, z: 0.738}
+  m_LocalPosition: {x: 3.3121963, y: 0, z: 0.738}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8342,8 +8342,8 @@ GameObject:
   - component: {fileID: 6396291902265667397}
   - component: {fileID: 5477272819883206500}
   m_Layer: 0
-  m_Name: Ground
-  m_TagString: Untagged
+  m_Name: Road
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8717,7 +8717,7 @@ GameObject:
   - component: {fileID: 7254584926523487178}
   - component: {fileID: 6222689161835943703}
   m_Layer: 0
-  m_Name: snow-flat-large (23)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8732,7 +8732,7 @@ Transform:
   m_GameObject: {fileID: 865847763559239605}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.65, y: 0, z: 9.19}
+  m_LocalPosition: {x: 9.332195, y: 0, z: 9.19}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10037,7 +10037,7 @@ GameObject:
   - component: {fileID: 5359487219870394186}
   - component: {fileID: 2952132934633672874}
   m_Layer: 0
-  m_Name: snow-flat-large (13)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10052,7 +10052,7 @@ Transform:
   m_GameObject: {fileID: 1009577705136745936}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.45, y: 0, z: -0.5}
+  m_LocalPosition: {x: 4.132196, y: 0, z: -0.5}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11676,7 +11676,7 @@ GameObject:
   - component: {fileID: 852720617274253052}
   - component: {fileID: 8542514410763113182}
   m_Layer: 0
-  m_Name: snow-flat-large (19)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11691,7 +11691,7 @@ Transform:
   m_GameObject: {fileID: 1148312069777296552}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.16, y: 0, z: 6.54}
+  m_LocalPosition: {x: -6.4778037, y: 0, z: 6.54}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12188,7 +12188,7 @@ GameObject:
   - component: {fileID: 7155985172231255191}
   - component: {fileID: 5067685012670696441}
   m_Layer: 0
-  m_Name: snow-flat-large (10)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12203,7 +12203,7 @@ Transform:
   m_GameObject: {fileID: 1222606257224001655}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.162, y: 0, z: 5.59}
+  m_LocalPosition: {x: 4.8441963, y: 0, z: 5.59}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13821,7 +13821,7 @@ GameObject:
   - component: {fileID: 3296510789514477157}
   - component: {fileID: 2860101923698865486}
   m_Layer: 0
-  m_Name: snow-flat-large (5)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13836,7 +13836,7 @@ Transform:
   m_GameObject: {fileID: 1359877866635329875}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.559, y: 0, z: 1.915}
+  m_LocalPosition: {x: 2.2411962, y: 0, z: 1.915}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16006,7 +16006,7 @@ GameObject:
   - component: {fileID: 4751952735146670133}
   - component: {fileID: 1501418523965470376}
   m_Layer: 0
-  m_Name: snow-flat-large (1)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16021,7 +16021,7 @@ Transform:
   m_GameObject: {fileID: 1657240532798921581}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.807, y: 0, z: 0.738}
+  m_LocalPosition: {x: 3.489196, y: 0, z: 0.738}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19218,7 +19218,7 @@ GameObject:
   - component: {fileID: 5725059118080611103}
   - component: {fileID: 2631181732954225513}
   m_Layer: 0
-  m_Name: snow-flat-large (16)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19233,7 +19233,7 @@ Transform:
   m_GameObject: {fileID: 2021524716995753395}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.77, y: 0, z: -4.59}
+  m_LocalPosition: {x: -7.087804, y: 0, z: -4.59}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19971,7 +19971,7 @@ GameObject:
   - component: {fileID: 8438810751158360050}
   - component: {fileID: 5729149822004639069}
   m_Layer: 0
-  m_Name: snow-flat-large (21)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19986,7 +19986,7 @@ Transform:
   m_GameObject: {fileID: 2122482552708629233}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.19, y: 0, z: 6.27}
+  m_LocalPosition: {x: 6.872196, y: 0, z: 6.27}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21526,7 +21526,7 @@ GameObject:
   - component: {fileID: 4479004597760342524}
   - component: {fileID: 96563660979097387}
   m_Layer: 0
-  m_Name: snow-flat-large (6)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21541,7 +21541,7 @@ Transform:
   m_GameObject: {fileID: 2228689137789358808}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.409, y: 0, z: 1.915}
+  m_LocalPosition: {x: 1.0911961, y: 0, z: 1.915}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -23333,7 +23333,7 @@ GameObject:
   - component: {fileID: 6003346667973795334}
   - component: {fileID: 5781415805223528461}
   m_Layer: 0
-  m_Name: snow-flat-large (20)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23348,7 +23348,7 @@ Transform:
   m_GameObject: {fileID: 2372050132903677614}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.62, y: 0, z: -8.14}
+  m_LocalPosition: {x: -5.9378037, y: 0, z: -8.14}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -24178,7 +24178,7 @@ GameObject:
   - component: {fileID: 3749603076952070915}
   - component: {fileID: 5915000733234751568}
   m_Layer: 0
-  m_Name: snow-flat-large (9)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24193,7 +24193,7 @@ Transform:
   m_GameObject: {fileID: 2457208393868257005}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.58, y: 0, z: 5.59}
+  m_LocalPosition: {x: -2.8978038, y: 0, z: 5.59}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -25460,7 +25460,7 @@ GameObject:
   - component: {fileID: 5174189662203911936}
   - component: {fileID: 505607276216268390}
   m_Layer: 0
-  m_Name: snow-flat-large (27)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25475,7 +25475,7 @@ Transform:
   m_GameObject: {fileID: 2587024357917865297}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.59, y: 0, z: 12.52}
+  m_LocalPosition: {x: -4.907804, y: 0, z: 12.52}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -27512,7 +27512,7 @@ GameObject:
   - component: {fileID: 3153985198687880357}
   - component: {fileID: 4587996476521524023}
   m_Layer: 0
-  m_Name: snow-flat-large (31)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27527,7 +27527,7 @@ Transform:
   m_GameObject: {fileID: 2939276054494029846}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.96, y: 0, z: 10.26}
+  m_LocalPosition: {x: -8.277804, y: 0, z: 10.26}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -29256,7 +29256,7 @@ GameObject:
   - component: {fileID: 7245294865848989953}
   - component: {fileID: 5605212871495219556}
   m_Layer: 0
-  m_Name: snow-flat-large (30)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29271,7 +29271,7 @@ Transform:
   m_GameObject: {fileID: 3133423965110435907}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.96, y: 0, z: 10.26}
+  m_LocalPosition: {x: -8.277804, y: 0, z: 10.26}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -30544,7 +30544,7 @@ GameObject:
   - component: {fileID: 7548756667925613737}
   - component: {fileID: 3431262010157203710}
   m_Layer: 0
-  m_Name: snow-flat-large (8)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30559,7 +30559,7 @@ Transform:
   m_GameObject: {fileID: 3241215164712044351}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.409, y: 0, z: 4.144}
+  m_LocalPosition: {x: 1.0911961, y: 0, z: 4.144}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -30969,8 +30969,8 @@ Transform:
   - {fileID: 1448652068367774916}
   - {fileID: 8328795926042353243}
   - {fileID: 8792718003351864599}
-  - {fileID: 5596898362211139240}
   - {fileID: 5632291966035253796}
+  - {fileID: 5596898362211139240}
   - {fileID: 103913368220641565}
   - {fileID: 6169073288069719561}
   - {fileID: 5496738398021344764}
@@ -35087,7 +35087,7 @@ GameObject:
   - component: {fileID: 9193507684247367191}
   - component: {fileID: 1681543014343077667}
   m_Layer: 0
-  m_Name: snow-flat-large (22)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35102,7 +35102,7 @@ Transform:
   m_GameObject: {fileID: 3852176065238243811}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.65, y: 0, z: -0.08}
+  m_LocalPosition: {x: 9.332195, y: 0, z: -0.08}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -37227,7 +37227,7 @@ GameObject:
   - component: {fileID: 3755640192258912497}
   - component: {fileID: 2081893275451948860}
   m_Layer: 0
-  m_Name: snow-flat-large (12)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37242,7 +37242,7 @@ Transform:
   m_GameObject: {fileID: 4012411436440800269}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.97, y: 0, z: -1.84}
+  m_LocalPosition: {x: -3.287804, y: 0, z: -1.84}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -39787,7 +39787,7 @@ GameObject:
   - component: {fileID: 5026676599917825733}
   - component: {fileID: 2533765267574270367}
   m_Layer: 0
-  m_Name: snow-flat-large (28)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39802,7 +39802,7 @@ Transform:
   m_GameObject: {fileID: 4220852953902101163}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.46, y: 0, z: 12.52}
+  m_LocalPosition: {x: -9.777804, y: 0, z: 12.52}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44655,7 +44655,7 @@ GameObject:
   - component: {fileID: 4470992308891852318}
   - component: {fileID: 3869232273043014890}
   m_Layer: 0
-  m_Name: snow-flat-large (24)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44670,7 +44670,7 @@ Transform:
   m_GameObject: {fileID: 4715701296101320991}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.81, y: 0, z: 9.19}
+  m_LocalPosition: {x: 2.492196, y: 0, z: 9.19}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45977,7 +45977,7 @@ GameObject:
   - component: {fileID: 8077779281056147615}
   - component: {fileID: 4436570124355717642}
   m_Layer: 0
-  m_Name: snow-flat-large (7)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45992,7 +45992,7 @@ Transform:
   m_GameObject: {fileID: 4815935895303498925}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.62, y: 0, z: 2.042}
+  m_LocalPosition: {x: 1.302196, y: 0, z: 2.042}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -48829,9 +48829,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6064911381964072897}
+  - component: {fileID: 2159812774626715893}
   m_Layer: 0
   m_Name: HolidayTile
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48845,7 +48846,7 @@ Transform:
   m_GameObject: {fileID: 5173950702589341085}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.74026, y: -0, z: -2.07356}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -48853,6 +48854,25 @@ Transform:
   - {fileID: 2895910901445553828}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2159812774626715893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5173950702589341085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de746f2727d5b154c91f1bbac3917a98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PickupSpawner
+  pickupPrefabs:
+  - {fileID: 4588600792752247853, guid: 6df380a59cfbed44f9b62a875b9fff78, type: 3}
+  - {fileID: 8464716780235105526, guid: dbda80d416ca581469003a2f11714592, type: 3}
+  - {fileID: 4689731187172504469, guid: 040f5b91a3dd1a3489ac8fbacb551f66, type: 3}
+  - {fileID: 8614702945418793873, guid: 38b5aadb734fed243b259c937a14583b, type: 3}
+  pickupSpawnChance: 20
+  pickupSpawnPointsParent: {fileID: 8915391052248519638}
 --- !u!1 &5179710692221057016
 GameObject:
   m_ObjectHideFlags: 0
@@ -50178,7 +50198,7 @@ GameObject:
   - component: {fileID: 8208762821127097105}
   - component: {fileID: 2394318860937329450}
   m_Layer: 0
-  m_Name: snow-flat-large (29)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50193,7 +50213,7 @@ Transform:
   m_GameObject: {fileID: 5356013793912042818}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.46, y: 0, z: 10.26}
+  m_LocalPosition: {x: -9.777804, y: 0, z: 10.26}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -51009,7 +51029,7 @@ GameObject:
   - component: {fileID: 6207870860081108833}
   - component: {fileID: 5758497142526417021}
   m_Layer: 0
-  m_Name: snow-flat-large (25)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51024,7 +51044,7 @@ Transform:
   m_GameObject: {fileID: 5465482164581751833}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.4, y: 0, z: 9.19}
+  m_LocalPosition: {x: -1.717804, y: 0, z: 9.19}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -51749,7 +51769,7 @@ GameObject:
   - component: {fileID: 7807010927336723667}
   - component: {fileID: 7426743011239440011}
   m_Layer: 0
-  m_Name: snow-flat-large (26)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51764,7 +51784,7 @@ Transform:
   m_GameObject: {fileID: 5505791077106544675}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.4, y: 0, z: 12.52}
+  m_LocalPosition: {x: -1.717804, y: 0, z: 12.52}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -54139,7 +54159,7 @@ GameObject:
   - component: {fileID: 8037726574174877068}
   - component: {fileID: 3725504009373592048}
   m_Layer: 0
-  m_Name: snow-flat-large (11)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -54154,7 +54174,7 @@ Transform:
   m_GameObject: {fileID: 5750877077854656409}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.246, y: 0, z: 5.59}
+  m_LocalPosition: {x: 0.9281961, y: 0, z: 5.59}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -56544,7 +56564,7 @@ GameObject:
   - component: {fileID: 8596628253191643772}
   - component: {fileID: 3054029718342942742}
   m_Layer: 0
-  m_Name: snow-flat-large (4)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56559,7 +56579,7 @@ Transform:
   m_GameObject: {fileID: 6075540199661090787}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.426, y: 0, z: 0.738}
+  m_LocalPosition: {x: 3.1081963, y: 0, z: 0.738}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -57005,7 +57025,7 @@ GameObject:
   - component: {fileID: 4955466508680546607}
   m_Layer: 0
   m_Name: Build
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59459,7 +59479,7 @@ GameObject:
   - component: {fileID: 1163349526547361214}
   - component: {fileID: 8198028276350410994}
   m_Layer: 0
-  m_Name: snow-flat-large (14)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59474,7 +59494,7 @@ Transform:
   m_GameObject: {fileID: 6548984423294056497}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.757804, y: 0, z: -4.59}
+  m_LocalPosition: {x: 1.44, y: 0, z: -4.59}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -65094,7 +65114,7 @@ GameObject:
   - component: {fileID: 8829899638033630853}
   - component: {fileID: 8261822230352645223}
   m_Layer: 0
-  m_Name: snow-flat-large (18)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65109,7 +65129,7 @@ Transform:
   m_GameObject: {fileID: 7169185274416719040}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.17, y: 0, z: 2.79}
+  m_LocalPosition: {x: -9.487804, y: 0, z: 2.79}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -68600,7 +68620,7 @@ GameObject:
   - component: {fileID: 5676767436017099444}
   - component: {fileID: 4231660889575110267}
   m_Layer: 0
-  m_Name: snow-flat-large (3)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68615,7 +68635,7 @@ Transform:
   m_GameObject: {fileID: 7500624831605564118}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.426, y: 0, z: 0.738}
+  m_LocalPosition: {x: 3.1081963, y: 0, z: 0.738}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -69437,7 +69457,7 @@ GameObject:
   - component: {fileID: 4595194029223423474}
   - component: {fileID: 7834515589022855795}
   m_Layer: 0
-  m_Name: snow-flat-large
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69452,7 +69472,7 @@ Transform:
   m_GameObject: {fileID: 7591433336165991023}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.757804, y: 0, z: -0.5124966}
+  m_LocalPosition: {x: 1.44, y: 0, z: -0.5124966}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -81082,7 +81102,7 @@ GameObject:
   - component: {fileID: 5793686080235978292}
   - component: {fileID: 3355615759052379896}
   m_Layer: 0
-  m_Name: snow-flat-large (17)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -81097,7 +81117,7 @@ Transform:
   m_GameObject: {fileID: 8894795216301597209}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.77, y: 0, z: -1.35}
+  m_LocalPosition: {x: -7.087804, y: 0, z: -1.35}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -83310,7 +83330,7 @@ GameObject:
   - component: {fileID: 4527135061105363143}
   - component: {fileID: 6696286114985448912}
   m_Layer: 0
-  m_Name: snow-flat-large (15)
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -83325,7 +83345,7 @@ Transform:
   m_GameObject: {fileID: 9116966602486935073}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.57, y: 0, z: -4.59}
+  m_LocalPosition: {x: -2.8878038, y: 0, z: -4.59}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []

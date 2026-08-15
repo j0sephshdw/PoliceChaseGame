@@ -434,7 +434,7 @@ public class PoliceSpawner : MonoBehaviour
             timer += Time.deltaTime;
             yield return null;
         }
-
+        // Araç bu süre içinde başka bir amaçla tekrar kullanıldıysa (nesil değiştiyse) havuza geri döndürme
         if (instance != null && (ai == null || ai.poolGeneration == expectedGeneration))
         {
             ReturnToPool(prefab, instance);

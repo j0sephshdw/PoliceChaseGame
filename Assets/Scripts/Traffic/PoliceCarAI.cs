@@ -470,8 +470,9 @@ public class PoliceCarAI : MonoBehaviour
 
         float angleToAimPoint = Vector3.SignedAngle(transform.forward, dirToAimPoint, Vector3.up);
 
+        // Açı farkı ve hız yeterliyse normal viraj/drift durumu
         bool selfDrift = Mathf.Abs(angleToAimPoint) > driftAngleThreshold && currentSpeed > driftMinSpeed;
-
+        // Artık mesafeye bakılmaksızın çalışıyor, yakın mesafede sıkışan araçlar da kurtulabiliyor
         isDrifting = selfDrift || stuckTimer > 1.2f;
 
         float effectiveTurnSpeed = turnSpeed;
