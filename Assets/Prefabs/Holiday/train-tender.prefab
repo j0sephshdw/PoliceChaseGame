@@ -64,6 +64,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: train-tender
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a7e92d7c896ecac4b93c725936b4e69b, type: 3}
+      propertyPath: m_TagString
+      value: Obstacle
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

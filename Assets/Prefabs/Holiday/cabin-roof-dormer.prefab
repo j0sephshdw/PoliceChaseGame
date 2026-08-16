@@ -9,18 +9,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 21564e21628d74044aaf8b5ae145ff49, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 21564e21628d74044aaf8b5ae145ff49, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 21564e21628d74044aaf8b5ae145ff49, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 21564e21628d74044aaf8b5ae145ff49, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -64,20 +52,24 @@ PrefabInstance:
       propertyPath: m_Name
       value: cabin-roof-dormer
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 21564e21628d74044aaf8b5ae145ff49, type: 3}
+      propertyPath: m_TagString
+      value: Obstacle
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 21564e21628d74044aaf8b5ae145ff49, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3424578415486452440}
+      addedObject: {fileID: 3870756548761295605}
   m_SourcePrefab: {fileID: 100100000, guid: 21564e21628d74044aaf8b5ae145ff49, type: 3}
 --- !u!1 &8229486034949889481 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 21564e21628d74044aaf8b5ae145ff49, type: 3}
   m_PrefabInstance: {fileID: 9148051245065625752}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &3424578415486452440
+--- !u!65 &3870756548761295605
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
