@@ -36,6 +36,12 @@ public class GameUIManager : MonoBehaviour
     [Header("Pause Menü Elemanları")]
     [SerializeField] private Slider gameVolumeSlider;
 
+    [Header("Yerelleştirme")]
+    [SerializeField] private LocalizationData sceneData;
+    [SerializeField] private int scoreLabelIndex = 12;
+    [SerializeField] private int levelLabelIndex = 21;
+    [SerializeField] private int highScoreLabelIndex = 11;
+
     private const string GameVolumeKey = "GameVolume";
 
     private void Start()
@@ -71,6 +77,13 @@ public class GameUIManager : MonoBehaviour
         if (GameEvents.Instance != null)
             GameEvents.Instance.OnPlayerHealthChanged -= HandleHealthChanged;
     }
+    
+    private string GetLabel(int index)
+    {
+        if (sceneData == null) return "";
+        LocalizationData.LocalizedEntry entry = sceneData.entries[index];
+        return Localization.CurrentLanguage == Localization.Language.Turkish ? entry.turkish : entry.english;
+    }
 
     // GameManager durumu her değiştiğinde (Playing/Paused/GameOver) çalışır.
     private void HandleGameStateChanged(GameState newState)
@@ -87,13 +100,13 @@ public class GameUIManager : MonoBehaviour
 
     private void HandleScoreChanged(int newScore)
     {
-        scoreText.text = "Skor: " + newScore;
+        scoreText.text = GetLabel(scoreLabelIndex) + " " + newScore;
     }
 
     private void HandleXPChanged(int currentXP, int xpToNextLevel)
     {
         xpBar.value = (float)currentXP / xpToNextLevel; // 0-1 arası oran, Slider Max Value 1 olduğu için
-        levelText.text = "Seviye: " + ScoreManager.Instance.Level;
+        levelText.text = GetLabel(levelLabelIndex) + " " + ScoreManager.Instance.Level;
     }
 
     private void HandleHealthChanged(int currentHealth, int maxHealth)
@@ -116,8 +129,8 @@ public class GameUIManager : MonoBehaviour
 
     private void UpdateGameOverScreen()
     {
-        finalScoreText.text = "Skor: " + ScoreManager.Instance.Score;
-        highScoreText.text = "En Yüksek Skor: " + ScoreManager.GetHighScore();
+        finalScoreText.text = GetLabel(scoreLabelIndex) + " " + ScoreManager.Instance.Score;
+        highScoreText.text = GetLabel(highScoreLabelIndex) + " " + ScoreManager.GetHighScore();
     }
 
     // --- Buton fonksiyonları (OnClick() ile bağlanacak) ---

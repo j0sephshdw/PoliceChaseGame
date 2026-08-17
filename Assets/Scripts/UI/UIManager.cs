@@ -26,6 +26,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private UnityEngine.UI.Slider musicVolumeSlider;
     [SerializeField] private UnityEngine.UI.Slider sfxVolumeSlider;
     [SerializeField] private UnityEngine.UI.Toggle vibrationToggle;
+    [SerializeField] private TMP_Text languageButtonText;
+    [SerializeField] private LocalizationData sceneData;
+    [SerializeField] private int highScoreLabelIndex = 11;
 
     // Ses açık/kapalı durumunu PlayerPrefs'te saklamak için kullandığımız anahtar.
     private const string MuteKey = "IsMuted";
@@ -38,8 +41,7 @@ public class UIManager : MonoBehaviour
         // Sahne ilk açıldığında sadece Ana Menü görünsün, diğer paneller kapalı kalsın.
         ShowMainMenu();
 
-        // En yüksek skoru ScoreManager'ın kalıcı (PlayerPrefs) kaydından okuyup yazıya bas.
-        highScoreText.text = "En Yüksek Skor: " + ScoreManager.GetHighScore();
+        UpdateHighScoreText();
 
         // Daha önce kaydedilmiş bir ses tercihi varsa onu uygula (varsayılan: sessiz değil).
         ApplySavedMuteState();
@@ -52,6 +54,7 @@ public class UIManager : MonoBehaviour
         musicVolumeSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
         sfxVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
         vibrationToggle.onValueChanged.AddListener(OnVibrationChanged);
+        UpdateLanguageButtonText();
     }
 
     // Dört ShowX() fonksiyonu da aynı mantıkta çalışıyor: istenen paneli açıp
@@ -127,6 +130,34 @@ public class UIManager : MonoBehaviour
         AudioListener.volume = newState ? 0f : 1f;
     }
 
+    // "DİL" butonuna bağlanacak. Basıldıkça Türkçe/İngilizce arasında geçiş yapar.
+    public void ToggleLanguage()
+    {
+        Localization.CurrentLanguage = Localization.CurrentLanguage == Localization.Language.Turkish
+            ? Localization.Language.English
+            : Localization.Language.Turkish;
+
+        UpdateLanguageButtonText();
+        UpdateHighScoreText();
+    }
+
+    private void UpdateLanguageButtonText()
+    {
+        if (languageButtonText != null)
+        {
+            languageButtonText.text = Localization.CurrentLanguage == Localization.Language.Turkish ? "TR" : "EN";
+        }
+    }
+
+    private void UpdateHighScoreText()
+    {
+        if (highScoreText == null || sceneData == null) return;
+
+        LocalizationData.LocalizedEntry entry = sceneData.entries[highScoreLabelIndex];
+        string label = Localization.CurrentLanguage == Localization.Language.Turkish ? entry.turkish : entry.english;
+
+        highScoreText.text = label + " " + ScoreManager.GetHighScore();
+    }
     public static void ApplySavedMuteState()
     {
         AudioListener.volume = IsMuted() ? 0f : 1f;

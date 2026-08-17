@@ -7,7 +7,8 @@ using System.Collections.Generic;
 [System.Serializable]
 public class MapOption
 {
-    public string mapName;
+    public string mapNameTurkish;
+    public string mapNameEnglish;
     public string sceneName; // SceneManager.LoadScene için gerçek sahne adı
     public Sprite previewImage;
     public int requiredScore;
@@ -33,6 +34,10 @@ public class MapSelectionUI : MonoBehaviour
 
     [SerializeField] private Color lockedColor = new Color(0.3f, 0.3f, 0.3f, 1f);
     [SerializeField] private Color unlockedColor = Color.white;
+
+    [SerializeField] private LocalizationData sceneData;
+    [SerializeField] private int scoreLabelIndex = 12;
+    [SerializeField] private int requiredLabelIndex = 13;
 
     private int currentIndex = 0;
 
@@ -65,7 +70,9 @@ public class MapSelectionUI : MonoBehaviour
         bool isUnlocked = ScoreManager.GetHighScore() >= map.requiredScore;
 
         mapPreviewImage.sprite = map.previewImage;
-        mapNameText.text = map.mapName;
+        mapNameText.text = Localization.CurrentLanguage == Localization.Language.Turkish
+            ? map.mapNameTurkish
+            : map.mapNameEnglish;
 
         if (isUnlocked)
         {
@@ -76,9 +83,24 @@ public class MapSelectionUI : MonoBehaviour
         else
         {
             mapPreviewImage.color = lockedColor;
-            lockInfoText.text = "Skor: " + map.requiredScore + " gerekli";
+            lockInfoText.text = GetLockText(map.requiredScore);
             lockIcon.gameObject.SetActive(true);
         }
+    }
+
+    private string GetLockText(int requiredScore)
+    {
+        if (sceneData == null) return "";
+
+        string scoreLabel = Localization.CurrentLanguage == Localization.Language.Turkish
+            ? sceneData.entries[scoreLabelIndex].turkish
+            : sceneData.entries[scoreLabelIndex].english;
+
+        string requiredLabel = Localization.CurrentLanguage == Localization.Language.Turkish
+            ? sceneData.entries[requiredLabelIndex].turkish
+            : sceneData.entries[requiredLabelIndex].english;
+
+        return scoreLabel + " " + requiredScore + " " + requiredLabel;
     }
 
     private void SelectCurrentMap()

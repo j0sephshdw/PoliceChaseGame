@@ -36,6 +36,10 @@ public class CarSelectionUI : MonoBehaviour
     [SerializeField] private TMP_Text lockInfoText;
     [SerializeField] private GameObject lockIcon;
 
+    [SerializeField] private LocalizationData sceneData;
+    [SerializeField] private int scoreLabelIndex = 12;
+    [SerializeField] private int requiredLabelIndex = 13;
+
     private PlayerCarController playerCarController;
     private int currentIndex = 0;
 
@@ -76,7 +80,9 @@ public class CarSelectionUI : MonoBehaviour
         CarOption car = availableCars[currentIndex];
         bool isUnlocked = ScoreManager.GetHighScore() >= car.requiredScore;
 
-        carNameText.text = car.carData.carName;
+        carNameText.text = Localization.CurrentLanguage == Localization.Language.Turkish
+            ? car.carData.carNameTurkish
+            : car.carData.carNameEnglish;
 
         // 1. Havuzdaki tüm araç modellerini gizle
         foreach (var kvp in carModelCache)
@@ -110,9 +116,24 @@ public class CarSelectionUI : MonoBehaviour
         }
         else
         {
-            lockInfoText.text = "Skor: " + car.requiredScore + " gerekli";
+            lockInfoText.text = GetLockText(car.requiredScore);
             lockIcon.SetActive(true);
         }
+    }
+
+    private string GetLockText(int requiredScore)
+    {
+        if (sceneData == null) return "";
+
+        string scoreLabel = Localization.CurrentLanguage == Localization.Language.Turkish
+            ? sceneData.entries[scoreLabelIndex].turkish
+            : sceneData.entries[scoreLabelIndex].english;
+
+        string requiredLabel = Localization.CurrentLanguage == Localization.Language.Turkish
+            ? sceneData.entries[requiredLabelIndex].turkish
+            : sceneData.entries[requiredLabelIndex].english;
+
+        return scoreLabel + " " + requiredScore + " " + requiredLabel;
     }
 
     private void SelectCurrentCar()

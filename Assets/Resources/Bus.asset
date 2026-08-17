@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e45d262c62db3b84b9f8d0f894b68a04, type: 3}
   m_Name: Bus
   m_EditorClassIdentifier: Assembly-CSharp::CarData
-  carName: Bus
+  carNameTurkish: "Otob\xFCs"
+  carNameEnglish: Bus
   engineSound: {fileID: 8300000, guid: 4c83fa58137027040a00e11430e472e4, type: 3}
   baseEnginePitch: 0.6
   carPrefab: {fileID: 919132149155446097, guid: 91261d622c99d9544815e9abe976450d, type: 3}

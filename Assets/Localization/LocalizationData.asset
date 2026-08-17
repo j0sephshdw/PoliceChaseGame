@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3187601b3ada0847a42e8c148c230e4, type: 3}
+  m_Name: LocalizationData
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizationData
+  entries:
+  - label: Oyna Butonu
+    turkish: OYNA
+    english: PLAY
+  - label: Ayarlar Butonu
+    turkish: AYARLAR
+    english: SETTINGS
+  - label: "Nas\u0131l Oynan\u0131r Butonu"
+    turkish: NASIL OYNANIR
+    english: HOW TO PLAY
+  - label: "\xC7\u0131k\u0131\u015F Butonu"
+    turkish: "\xC7IKI\u015E"
+    english: QUIT
+  - label: "Ayarlar Ba\u015Fl\u0131\u011F\u0131"
+    turkish: AYARLAR
+    english: SETTINGS
+  - label: "M\xFCzik Etiketi"
+    turkish: "M\xFCzik Sesi"
+    english: Music Volume
+  - label: Efekt Etiketi
+    turkish: Efekt Sesi
+    english: SFX Volume
+  - label: "Titre\u015Fim Etiketi"
+    turkish: "Titre\u015Fim"
+    english: Vibration
+  - label: "Harita Se\xE7im Ba\u015Fl\u0131\u011F\u0131"
+    turkish: "HAR\u0130TA SE\xC7"
+    english: SELECT MAP
+  - label: "Nas\u0131l Oynan\u0131r Ba\u015Fl\u0131\u011F\u0131"
+    turkish: NASIL OYNANIR
+    english: HOW TO PLAY
+  - label: "Nas\u0131l Oynan\u0131r A\xE7\u0131klamas\u0131"
+    turkish: "\u2022 Ara\xE7 otomatik olarak ileri gider. \u2022 Ekran\u0131n sol
+      yar\u0131s\u0131na dokun: sola d\xF6n. \u2022 Ekran\u0131n sa\u011F yar\u0131s\u0131na
+      dokun: sa\u011Fa d\xF6n. \u2022 Bilgisayarda A/D veya ok tu\u015Flar\u0131yla
+      da d\xF6nebilirsin. \u2022 Seviye atlad\u0131\u011F\u0131nda \xE7\u0131kan
+      kartlardan birini se\xE7,   arac\u0131na yeni bir yetenek kazand\u0131r  (Kalkan,
+      \u015Eok Dalgas\u0131, H\u0131zlanma vb.)"
+    english: "\u2022 Your car moves forward automatically. \u2022 Tap the left half
+      of the screen: turn left. \u2022 Tap the right half of the screen: turn right.
+      \u2022 On PC, you can also turn using A/D or the arrow keys. \u2022 When you
+      level up, pick one of the cards   to grant your car a new ability  (Shield,
+      Shockwave, Speed Boost, etc.)"
+  - label: "Y\xFCksek Skor Etiketi"
+    turkish: "En Y\xFCksek Skor:"
+    english: 'High Score:'
+  - label: Skor Etiketi
+    turkish: 'Skor:'
+    english: 'Score:'
+  - label: Gerekli Etiketi
+    turkish: gerekli
+    english: required
+  - label: "Ara\xE7 Se\xE7 Ba\u015Fl\u0131\u011F\u0131"
+    turkish: "ARA\xC7 SE\xC7"
+    english: SELECT CAR
+  - label: "Yetenek Se\xE7 Ba\u015Fl\u0131\u011F\u0131"
+    turkish: "YETENEK SE\xC7"
+    english: CHOOSE ABILITY
+  - label: "Duraklat\u0131ld\u0131 Ba\u015Fl\u0131\u011F\u0131"
+    turkish: DURAKLATILDI
+    english: PAUSED
+  - label: "Ana Men\xFCye D\xF6n Butonu"
+    turkish: "ANA MEN\xDCYE D\xD6N"
+    english: MAIN MENU
+  - label: Tekrar Oyna Butonu
+    turkish: TEKRAR OYNA
+    english: PLAY AGAIN
+  - label: Oyun Sesleri Etiketi
+    turkish: "OYUN SESLER\u0130"
+    english: GAME SOUNDS
+  - label: Devam Et Butonu
+    turkish: DEVAM ET
+    english: RESUME
+  - label: Seviye Etiketi
+    turkish: 'Seviye:'
+    english: 'Level:'

@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e45d262c62db3b84b9f8d0f894b68a04, type: 3}
   m_Name: Muscle2
   m_EditorClassIdentifier: Assembly-CSharp::CarData
-  carName: Muscle2
+  carNameTurkish: Muscle 2
+  carNameEnglish: Muscle 2
   engineSound: {fileID: 8300000, guid: 4c83fa58137027040a00e11430e472e4, type: 3}
   baseEnginePitch: 0.85
   carPrefab: {fileID: 919132149155446097, guid: 7fdde701c77d80540927a6758e80ef93, type: 3}

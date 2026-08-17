@@ -4,7 +4,8 @@ using UnityEngine;
 public class CarData : ScriptableObject
 {
     [Header("Araç Kimliği")]
-    public string carName;
+    public string carNameTurkish;
+    public string carNameEnglish;
 
     [Header("Motor Sesi Ayarları")]
     public AudioClip engineSound; // Buraya tek bir gerçek motor sesi atacağız
