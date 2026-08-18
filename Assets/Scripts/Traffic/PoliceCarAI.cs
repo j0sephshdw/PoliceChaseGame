@@ -75,6 +75,10 @@ public class PoliceCarAI : MonoBehaviour
     public float havayaFirlatmaGucu = 0.5f;
     public AudioClip sirenSound;
 
+    [Header("Ödül Ayarları")]
+    public int xpReward = 25; // Bu araç patlayınca oyuncuya verilecek XP miktarı
+    public float xpZoneRadius = 20f; // Oyuncuya bu mesafeden yakın patlarsa XP verilir, uzaktaki patlamalar sayılmaz
+
     // --- Private Değişkenler ---
     private AudioSource audioSource;
     private Rigidbody rb;
@@ -259,6 +263,16 @@ public class PoliceCarAI : MonoBehaviour
             return;
 
         isDead = true;
+
+        // Patlama oyuncuya yakın bir alanda mı oldu diye bakıyoruz;
+        // sadece bu alanın (xpZoneRadius) içinde patlarsa oyuncuyu ödüllendiriyoruz
+        bool isInsideXPZone = target != null && FlatDistance(transform.position, target.position) <= xpZoneRadius;
+
+        if (isInsideXPZone && ScoreManager.Instance != null)
+        {
+            int starMultiplier = WantedManager.Instance != null ? WantedManager.Instance.CurrentStars : 1;
+            ScoreManager.Instance.AddXP(xpReward * starMultiplier);
+        }
 
         if (audioSource != null && audioSource.isPlaying)
             audioSource.Stop();

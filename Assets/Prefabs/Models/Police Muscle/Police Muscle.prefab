@@ -170,6 +170,9 @@ MonoBehaviour:
   patlamaYaricapi: 8
   havayaFirlatmaGucu: 0.5
   sirenSound: {fileID: 8300000, guid: 86a4e51bfdf01da4abcb4fca04296e6e, type: 3}
+  xpReward: 25
+  xpZoneRadius: 5
+  poolGeneration: 0
   hitPoints: 2
 --- !u!54 &1046546781262608822
 Rigidbody:

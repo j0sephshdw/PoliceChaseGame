@@ -66,17 +66,6 @@ public class ScoreManager : MonoBehaviour
     private void Update()
     {
         HandleSurvivalScore();
-        // GEÇİCİ TEST KODU: T tuşuna basınca 50 XP kazanılır (kart seçim ekranını test etmek için).
-        // Gerçek XP kazanımı ileride Kişi 2'nin (Berat) engel/polis sisteminden gelecek, o zaman bu kaldırılacak.
-        if (Keyboard.current != null && Keyboard.current.tKey.wasPressedThisFrame)
-        {
-            AddXP(50);
-        }
-
-        if (Keyboard.current != null && Keyboard.current.yKey.wasPressedThisFrame)
-        {
-            AddScore(10);
-        }
     }
 
     private void HandleSurvivalScore()
@@ -143,11 +132,11 @@ public class ScoreManager : MonoBehaviour
         OnLevelUp?.Invoke(level);
     }
 
-    // Seviye arttıkça bir sonraki seviyeye ulaşmanın daha fazla XP istemesini sağlayan
-    // basit bir formül (100, 200, 300... şeklinde doğrusal artıyor).
     private int CalculateXPToNextLevel(int currentLevel)
     {
-        return baseXPToLevelUp * currentLevel;
+        int tier = (currentLevel - 1) / 5; // Seviyeleri 5'erli gruplara ayırıyoruz: 0=1-5, 1=6-10, 2=11-15...
+        int n = tier + 1; // Üçgensel sayı formülü 1'den başladığı için tier'i 1 kaydırıyoruz
+        return baseXPToLevelUp * n * (n + 1) / 2; // Üçgensel sayı formülü: 100, 300, 600, 1000, 1500... şeklinde giderek büyüyen bir ilerleme sağlar
     }
 
     // --- OYUN DÖNGÜSÜ NOTU (Bedirhan/GameManager tarafı) ---

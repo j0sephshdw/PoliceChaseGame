@@ -14,9 +14,16 @@ public class WantedManager : MonoBehaviour
     public int sportsSkor = 600;
     public int maxSkor = 1000;
 
+    public static WantedManager Instance;
     private int currentStars = 0;
+    public int CurrentStars => currentStars;
     private Color defaultColor; // Yıldızın Inspector'daki orijinal rengini (Sarı) hafızada tutar
 
+    private void Awake()
+    {
+        Instance = this;
+    }
+    
     void Start()
     {
         if (wantedText != null)

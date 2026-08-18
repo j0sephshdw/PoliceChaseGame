@@ -163,6 +163,7 @@ MonoBehaviour:
   collisionMass: 400
   emergencyStopDistance: 1.4
   recoverDuration: 0.35
+  downforceMultiplier: 25
   turnSpeed: 350
   turnResponsiveness: 3
   turnSmoothing: 8
@@ -193,6 +194,10 @@ MonoBehaviour:
   patlamaYaricapi: 8
   havayaFirlatmaGucu: 0.5
   sirenSound: {fileID: 8300000, guid: 86a4e51bfdf01da4abcb4fca04296e6e, type: 3}
+  xpReward: 25
+  xpZoneRadius: 5
+  poolGeneration: 0
+  hitPoints: 2
 --- !u!4 &7848050120070772600 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2d204f38df872be4088e097b51c2a2b0, type: 3}
