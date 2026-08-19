@@ -95,7 +95,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2420899887257807162}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 400
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -111,9 +111,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  m_Interpolate: 1
+  m_Constraints: 80
+  m_CollisionDetection: 2
 --- !u!114 &521445929642830773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,7 +134,7 @@ MonoBehaviour:
   ramSpeedBonus: 7
   ramCloseDistance: 12
   ramPushForce: 18
-  predictionTime: 0.5
+  predictionTime: 0.2
   predictionFadeStart: 6
   predictionFadeEnd: 16
   maxSpeed: 12
@@ -144,13 +144,13 @@ MonoBehaviour:
   recoverDuration: 0.35
   downforceMultiplier: 25
   turnSpeed: 100
-  turnResponsiveness: 3
-  turnSmoothing: 8
+  turnResponsiveness: 1.8
+  turnSmoothing: 12
   driftEntrySmoothing: 30
   fullTurnSpeedThreshold: 3
-  driftAngleThreshold: 20
+  driftAngleThreshold: 40
   driftMinSpeed: 6
-  normalGrip: 6
+  normalGrip: 18
   driftGrip: 1.2
   driftTurnSpeedMultiplier: 1.7
   driftTurnResponsivenessMultiplier: 1.4
@@ -159,10 +159,14 @@ MonoBehaviour:
   usePlayerDriftInputOverride: 1
   playerDriftDetectAngle: 15
   playerDriftMinSpeed: 3
+  maxSlideAngle: 45
+  slideSpeedLoss: 0.55
+  wallBounceSpeed: 3
+  wallStuckDuration: 1.5
   obstacleCheckDistance: 4
   obstacleLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   scaleWithScore: 1
   scoreSpeedScale: 0.004
   scoreAccelScale: 0.006
@@ -176,7 +180,9 @@ MonoBehaviour:
   xpReward: 25
   xpZoneRadius: 5
   poolGeneration: 0
-  hitPoints: 2
+  playerHitPoints: 1
+  environmentHitPoints: 3
+  environmentDamageSpeed: 12
 --- !u!65 &4928625051376748390
 BoxCollider:
   m_ObjectHideFlags: 0

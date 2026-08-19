@@ -3343,6 +3343,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Police Muscle
       objectReference: {fileID: 0}
+    - target: {fileID: 7037748275423215755, guid: e8c7b54e4597af84992902f2ecb2df14, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7701377912129739313, guid: e8c7b54e4597af84992902f2ecb2df14, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.8591269
@@ -7203,15 +7207,15 @@ MonoBehaviour:
   muscleSkorSiniri: 300
   sportsSkorSiniri: 600
   baseSpawnInterval: 4
-  baslangicPolisSayisi: 2
+  baslangicPolisSayisi: 3
   spawnDistanceBehind: 18
   spawnDistanceAhead: 60
   headOnSpawnChance: 0.35
   sadeceYoldaDogsun: 1
   dinamikZorlukAktif: 1
-  kacSkordaBirSeviyeArtsin: 10
-  seviyeBasinaPolisArtisi: 2
-  mutlakMaxPolisLimiti: 30
+  kacSkordaBirSeviyeArtsin: 15
+  seviyeBasinaPolisArtisi: 1
+  mutlakMaxPolisLimiti: 12
   enableBarricades: 1
   barricadeScoreThreshold: 0
   barricadeInterval: 5
@@ -9274,6 +9278,10 @@ PrefabInstance:
     - target: {fileID: 804167722505294088, guid: 8c659291cc6058e42bc7387c4af52a36, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6146254702500308383, guid: 8c659291cc6058e42bc7387c4af52a36, type: 3}
+      propertyPath: damageCooldown
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8390110231832219928, guid: 8c659291cc6058e42bc7387c4af52a36, type: 3}
       propertyPath: engineBaseVolume
