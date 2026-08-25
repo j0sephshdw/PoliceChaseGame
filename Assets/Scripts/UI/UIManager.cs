@@ -192,4 +192,19 @@ public class UIManager : MonoBehaviour
     {
         return PlayerPrefs.GetInt(VibrationKey, 1) == 1;
     }
+
+    // Titreşim tercihi açıksa cihazı titretir. Handheld.Vibrate() yalnızca Android ve iOS'ta
+    // çalıştığı için platform kontrolü koyuyoruz; PC ve Editor'de hiçbir şey olmuyor.
+    public static void Vibrate()
+    {
+        Debug.Log("Titreşim tetiklendi");
+        if (!IsVibrationEnabled()) return;
+
+#if UNITY_ANDROID || UNITY_IOS
+        if (!Application.isEditor)
+        {
+            Handheld.Vibrate();
+        }
+#endif
+    }
 }

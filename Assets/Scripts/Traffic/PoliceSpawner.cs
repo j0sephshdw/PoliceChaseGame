@@ -282,8 +282,6 @@ public class PoliceSpawner : MonoBehaviour
 
             activePoliceCars.Add(newPolice);
 
-            // Başarılı log
-            Debug.Log($"<color=green>[SPAWN BAŞARILI]</color> {i + 1}. denemede nokta bulundu. Toplam Aktif: {activePoliceCars.Count}");
             return true;
         }
 

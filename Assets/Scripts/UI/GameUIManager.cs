@@ -5,7 +5,7 @@ using TMPro;
 
 // ============================================================
 // GAME UI MANAGER — Oyun Döngüsü ve UI (Bedirhan) sorumluluğunda.
-// Sadece "SampleScene" (oyun sahnesi) içinde çalışır. HUD/Pause/GameOver
+// Oyun sahnesinde ("CityScene") çalışır. HUD/Pause/GameOver
 // panellerini GameManager, ScoreManager ve GameEvents'e bağlar.
 // ============================================================
 public class GameUIManager : MonoBehaviour

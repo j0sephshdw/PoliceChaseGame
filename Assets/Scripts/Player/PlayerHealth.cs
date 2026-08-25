@@ -114,6 +114,10 @@ public class PlayerHealth : MonoBehaviour
         // Bedirhan'ın UI sistemine haber verdim: "Can değişti, can barını güncelle"
         OnHealthChanged?.Invoke(currentHealth, maxHealth);
 
+        // Hasar gerçekten uygulandığı için cihazı titretiyoruz (Ayarlar menüsünden kapatılabiliyor).
+        // Kalkan ve dokunulmazlık kontrolleri yukarıda olduğu için burada boşuna titreşim olmuyor.
+        UIManager.Vibrate();
+
         Debug.Log("Araç Hasar Aldı! Kalan Can: " + currentHealth);
 
         if (currentHealth <= 0)
