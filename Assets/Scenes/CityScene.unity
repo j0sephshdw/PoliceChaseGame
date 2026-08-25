@@ -7217,8 +7217,8 @@ MonoBehaviour:
   seviyeBasinaPolisArtisi: 1
   mutlakMaxPolisLimiti: 12
   enableBarricades: 1
-  barricadeScoreThreshold: 0
-  barricadeInterval: 5
+  barricadeScoreThreshold: 30
+  barricadeInterval: 25
   barricadeDistanceAhead: 20
 --- !u!4 &1670362415
 Transform:

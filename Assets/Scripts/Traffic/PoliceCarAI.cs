@@ -93,6 +93,10 @@ public class PoliceCarAI : MonoBehaviour
     public float patlamaYaricapi = 8f;
     public float havayaFirlatmaGucu = 0.5f;
     public AudioClip sirenSound;
+    [Tooltip("Sirenin tam sesle duyulacağı mesafe")]
+    public float sirenMinDistance = 8f;
+    [Tooltip("Sirenin tamamen duyulmaz olacağı mesafe")]
+    public float sirenMaxDistance = 60f;
 
     [Header("Ödül Ayarları")]
     public int xpReward = 25; // Bu araç patlayınca oyuncuya verilecek XP miktarı
@@ -146,6 +150,14 @@ public class PoliceCarAI : MonoBehaviour
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.loop = true;
         audioSource.playOnAwake = false;
+
+        // Siren sesini 3B yapıyoruz: prefablardaki AudioSource'lar varsayılan (2B) ayarda geldiği için
+        // sahnedeki bütün polislerin sireni, ne kadar uzakta olurlarsa olsunlar tam sesle çalıyordu.
+        audioSource.spatialBlend = 1f;                     // 1 = tamamen 3B, mesafeye göre kısılır
+        audioSource.rolloffMode = AudioRolloffMode.Linear; // Uzaklaştıkça düzgün şekilde azalsın
+        audioSource.minDistance = sirenMinDistance;        // Bu mesafeye kadar tam ses
+        audioSource.maxDistance = sirenMaxDistance;        // Bu mesafeden sonra hiç duyulmaz
+        audioSource.dopplerLevel = 0f;                     // Hızlı geçişlerde ses tizleşip bozulmasın
 
         currentMoveDir = transform.forward;
     }
@@ -498,7 +510,11 @@ public class PoliceCarAI : MonoBehaviour
         Vector3 toPoliceFromPlayer = transform.position - target.position;
         toPoliceFromPlayer.y = 0f;
 
-        bool isAheadOfPlayer = Vector3.Dot(target.forward, toPoliceFromPlayer) > 0.45f;
+        // Yönü normalize ediyoruz: normalize edilmezse çarpım mesafeyle birlikte büyüyor ve
+        // oyuncunun yanındaki uzak bir araç bile "önde" sayılıyordu. Normalize edilince eşik,
+        // gerçek bir açı ölçüsüne dönüşüyor (0.45 ≈ oyuncunun burnundan 63 derecelik koni).
+        Vector3 dirToPolice = toPoliceFromPlayer.sqrMagnitude > 0.01f ? toPoliceFromPlayer.normalized : target.forward;
+        bool isAheadOfPlayer = Vector3.Dot(target.forward, dirToPolice) > 0.45f;
 
         Vector3 aimPoint = ComputeAimPoint(isAheadOfPlayer, flatTargetVel, actualDistanceToPlayer);
 
