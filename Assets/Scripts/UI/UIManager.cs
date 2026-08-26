@@ -1,5 +1,16 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
+using System.Collections;
+using System.Collections.Generic;
+
+// Yükleme ekranında gösterilecek ipuçları. Her ipucu iki dilde tanımlanıyor.
+[System.Serializable]
+public class LoadingTip
+{
+    [TextArea] public string turkish;
+    [TextArea] public string english;
+}
 
 // ============================================================
 // UI MANAGER (Ana Menü) — Oyun Döngüsü ve UI (Bedirhan) sorumluluğunda.
@@ -30,6 +41,26 @@ public class UIManager : MonoBehaviour
     [SerializeField] private LocalizationData sceneData;
     [SerializeField] private int highScoreLabelIndex = 11;
 
+    [Header("Sahne Ayarları")]
+    [SerializeField] private string gameSceneName = "CityScene";
+
+    [Header("Yükleme Ekranı")]
+    [SerializeField] private GameObject loadingPanel;
+    [SerializeField] private UnityEngine.UI.Slider loadingBar;
+    [SerializeField] private TMP_Text loadingPercentText;
+    [SerializeField] private TMP_Text loadingTipText;
+    [SerializeField] private UnityEngine.UI.Image loadingBackground;
+    [Tooltip("Yükleme çok hızlı bitse bile ekranın en az bu kadar saniye görünmesini sağlar")]
+    [SerializeField] private float minimumLoadingTime = 2f;
+    [Tooltip("Bar boşken arka plan rengi (beyaz = görsel olduğu gibi)")]
+    [SerializeField] private Color backgroundStartColor = Color.white;
+    [Tooltip("Bar doluyken arka plan rengi (koyu = kararmış görsel)")]
+    [SerializeField] private Color backgroundEndColor = new Color(0.15f, 0.15f, 0.15f, 1f);
+    [SerializeField] private List<LoadingTip> loadingTips = new List<LoadingTip>();
+    // Son gösterilen ipucunun sırası. static olduğu için sahne yeniden yüklendiğinde de
+    // hatırlanıyor; böylece ana menüye dönüp tekrar oynadığında aynı ipucu çıkmıyor.
+    private static int lastTipIndex = -1;
+
     // Ses açık/kapalı durumunu PlayerPrefs'te saklamak için kullandığımız anahtar.
     private const string MuteKey = "IsMuted";
     private const string MusicVolumeKey = "MusicVolume";
@@ -40,6 +71,9 @@ public class UIManager : MonoBehaviour
     {
         // Sahne ilk açıldığında sadece Ana Menü görünsün, diğer paneller kapalı kalsın.
         ShowMainMenu();
+
+        // Yükleme ekranı sahne açılışında kapalı olsun
+        if (loadingPanel != null) loadingPanel.SetActive(false);
 
         UpdateHighScoreText();
 
@@ -84,15 +118,93 @@ public class UIManager : MonoBehaviour
         mapSelectionPanel.SetActive(false);
     }
 
-    // "OYNA" butonuna bağlı. Artık direkt oyun sahnesine geçmiyoruz — önce
-    // Harita Seçim ekranını açıyoruz; asıl sahne geçişini (SceneManager.LoadScene)
-    // MapSelectionUI, oyuncunun seçtiği haritaya göre kendisi yapacak.
+    // "OYNA" butonuna bağlı. Harita seçimi şimdilik devre dışı olduğu için panel açmak yerine
+    // yükleme ekranını gösterip oyun sahnesini arka planda yüklüyoruz.
+    // Yeni harita eklendiğinde: aşağıdaki yükleme çağrılarını silip
+    // mapSelectionPanel.SetActive(true); yazmak yeterli — panel ve MapSelectionUI hazır duruyor.
     public void PlayGame()
     {
+        // Daha önce başka bir harita seçilmiş olabilir; kayıtlı seçimi ilk haritaya sıfırlıyoruz
+        // ki kaldırılan haritanın kaydı yüzünden yanlış karo yüklenmesin.
+        PlayerPrefs.SetInt("SelectedMapIndex", 0);
+        PlayerPrefs.Save();
+
+        // Menü panellerini kapatıp yükleme ekranını açıyoruz
         mainMenuPanel.SetActive(false);
         settingsPanel.SetActive(false);
         howToPlayPanel.SetActive(false);
-        mapSelectionPanel.SetActive(true);
+        mapSelectionPanel.SetActive(false);
+
+        ShowLoadingScreen();
+        StartCoroutine(LoadGameRoutine());
+    }
+
+    // Yükleme ekranını açar, barı sıfırlar ve rastgele bir ipucu seçip aktif dilde yazar
+    private void ShowLoadingScreen()
+    {
+        if (loadingPanel == null) return;
+
+        loadingPanel.SetActive(true);
+
+        if (loadingBar != null) loadingBar.value = 0f;
+        if (loadingPercentText != null) loadingPercentText.text = "%0";
+        if (loadingBackground != null) loadingBackground.color = backgroundStartColor;
+
+        if (loadingTipText != null && loadingTips.Count > 0)
+        {
+            int index = Random.Range(0, loadingTips.Count);
+
+            // Bir öncekiyle aynı ipucu geldiyse bir sonrakine kaydırıyoruz.
+            // (Listede tek ipucu varsa kaydıracak yer yok, olduğu gibi kalıyor.)
+            if (loadingTips.Count > 1 && index == lastTipIndex)
+                index = (index + 1) % loadingTips.Count;
+
+            lastTipIndex = index;
+
+            LoadingTip tip = loadingTips[index];
+            loadingTipText.text = Localization.CurrentLanguage == Localization.Language.Turkish
+                ? tip.turkish
+                : tip.english;
+        }
+    }
+
+    private IEnumerator LoadGameRoutine()
+    {
+        float startTime = Time.time;
+
+        AsyncOperation op = SceneManager.LoadSceneAsync(gameSceneName);
+        // Sahneyi biz "hazır" diyene kadar açmasın; yoksa yükleme biter bitmez ekran anında kaybolur
+        op.allowSceneActivation = false;
+
+        while (!op.isDone)
+        {
+            // op.progress en fazla 0.9'a çıkar ve sahne aktive edilene kadar orada bekler,
+            // bu yüzden 0.9'a bölerek gerçek yüzdeye çeviriyoruz.
+            float loadProgress = Mathf.Clamp01(op.progress / 0.9f);
+
+            // Yükleme çok hızlı biterse ekran anlık görünüp kaybolmasın diye geçen süreyi de ilerleme sayıyoruz
+            float timeProgress = minimumLoadingTime > 0f
+                ? Mathf.Clamp01((Time.time - startTime) / minimumLoadingTime)
+                : 1f;
+
+            // İkisinden küçük olanı gösteriyoruz: bar hem yüklemeyi hem minimum süreyi beklemiş oluyor
+            float shown = Mathf.Min(loadProgress, timeProgress);
+
+            if (loadingBar != null) loadingBar.value = shown;
+            if (loadingPercentText != null) loadingPercentText.text = "%" + Mathf.RoundToInt(shown * 100f);
+
+            // Bar doldukça arka plan görselini kararttıyoruz
+            if (loadingBackground != null)
+                loadingBackground.color = Color.Lerp(backgroundStartColor, backgroundEndColor, shown);
+
+            // Hem yükleme bitti hem minimum süre doldu: artık sahneyi açabiliriz
+            if (loadProgress >= 1f && timeProgress >= 1f)
+            {
+                op.allowSceneActivation = true;
+            }
+
+            yield return null;
+        }
     }
 
     // "ÇIKIŞ" butonuna bağlı. Application.Quit() gerçek (build alınmış) oyunda çalışır;

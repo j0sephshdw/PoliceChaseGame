@@ -1874,7 +1874,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WorldGenerator
   groundTilePrefabs:
   - {fileID: 5787238577119049162, guid: ad30d1e1a03bb2d498d25acfeb7ff0d6, type: 3}
-  - {fileID: 5173950702589341085, guid: 226a4ec523d266e48980803c3618a6b5, type: 3}
   player: {fileID: 269937355}
   tileSize: 25
   renderSize: 2

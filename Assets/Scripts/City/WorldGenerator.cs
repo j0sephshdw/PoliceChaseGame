@@ -25,6 +25,14 @@ public class WorldGenerator : MonoBehaviour
     private void Start()
     {
         selectedMapIndex = PlayerPrefs.GetInt("SelectedMapIndex", 0);
+
+        // Kayıtlı seçim dizinin dışında kalıyorsa (örneğin kaldırılmış bir harita) ilk haritaya düşüyoruz.
+        // Bu koruma olmadan, eski bir kayıt yüzünden aşağıdaki Instantiate satırı IndexOutOfRange hatası veriyor.
+        if (groundTilePrefabs != null && groundTilePrefabs.Length > 0)
+            selectedMapIndex = Mathf.Clamp(selectedMapIndex, 0, groundTilePrefabs.Length - 1);
+        else
+            selectedMapIndex = 0;
+
         UpdateWorld();
     }
 
@@ -37,6 +45,9 @@ public class WorldGenerator : MonoBehaviour
     {
         // Oyuncu öldüyse/yoksa yol oluşturmayı durdur!
         if (player == null) return;
+        // Karo listesi boşsa üretilecek bir şey yok; hatayı burada kesiyoruz
+        if (groundTilePrefabs == null || groundTilePrefabs.Length == 0) return;
+        
         int playerTileX = Mathf.FloorToInt(player.position.x / tileSize);
         int playerTileZ = Mathf.FloorToInt(player.position.z / tileSize);
 
