@@ -164,14 +164,10 @@ public class BowlingManager : MonoBehaviour
 
             if (devrilenSayisi == lobutlar.Count)
             {
-                skorText.text = "STRIKE!!!";
+                skorText.text = "STRIKE!!!\n<size=50>+20 SANİYE</size>";
                 skorText.color = Color.yellow;
 
-                // 🎳 TÜMÜ DEVRİLDİĞİNDE BÜYÜK ÖDÜL (+20 Saniye)
-                if (timer != null)
-                {
-                    timer.SureEkle(20f);
-                }
+                if (timer != null) timer.SureEkle(20f);
             }
             else if (devrilenSayisi == 0)
             {
@@ -180,14 +176,11 @@ public class BowlingManager : MonoBehaviour
             }
             else
             {
-                skorText.text = devrilenSayisi + " PINS!";
+                float kazanilanSure = devrilenSayisi * 2f;
+                skorText.text = devrilenSayisi + " PINS!\n<size=50>+" + kazanilanSure + " SANİYE</size>";
                 skorText.color = Color.white;
 
-                // 🎳 DEVRİLEN HER LOBUT İÇİN ÖDÜL (Lobut Başına +2 Saniye)
-                if (timer != null)
-                {
-                    timer.SureEkle(devrilenSayisi * 2f);
-                }
+                if (timer != null) timer.SureEkle(kazanilanSure);
             }
         }
 
