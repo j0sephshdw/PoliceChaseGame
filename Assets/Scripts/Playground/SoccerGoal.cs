@@ -101,7 +101,8 @@ public class SoccerGoal : MonoBehaviour
         if (golText != null)
         {
             golText.gameObject.SetActive(true);
-            golText.text = "GOAL!!!";
+            // \n ile alt satıra geçip boyutu ufaltarak süreyi yazdırıyoruz
+            golText.text = "GOAL!!!\n<size=50>+15 SANİYE</size>";
             golText.color = Color.green;
         }
 
