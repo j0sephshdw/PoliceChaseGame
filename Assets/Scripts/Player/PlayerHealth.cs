@@ -13,6 +13,19 @@ public class PlayerHealth : MonoBehaviour
     private float damageReduction = 0f;
     // --- HASAR COOLDOWN (DOKUNULMAZLIK) SİSTEMİ ---
     public float damageCooldown = 1.5f; // Hasar aldıktan sonra 1.5 saniye dokunulmaz olur
+
+    [Header("Çarpışma Hasarı")]
+    [Tooltip("En hafif temasta alınacak hasar")]
+    [SerializeField] private int minCollisionDamage = 8;
+    [Tooltip("Tam gazla kafa kafaya çarpmada alınacak hasar")]
+    [SerializeField] private int maxCollisionDamage = 35;
+    [Tooltip("Bu sertliğe ulaşan çarpmalar en yüksek hasarı verir")]
+    [SerializeField] private float maxImpactSpeed = 18f;
+
+    // Çarpışma anında araç zaten yavaşlatıldığı için, sertliği doğru ölçebilmek adına
+    // her fizik karesinde çarpışmadan önceki hızı saklıyoruz.
+    private float lastFrameSpeed;
+
     private float lastDamageTime = -9999f;
 
     // Bedirhan'ın (UI ve Oyun Döngüsü sorumlusu) kendi sisteminde kullanacağı tetikleyiciler
@@ -58,6 +71,12 @@ public class PlayerHealth : MonoBehaviour
             }
         }
     }
+
+    private void FixedUpdate()
+    {
+        if (carController != null) lastFrameSpeed = Mathf.Abs(carController.CurrentSpeed);
+    }
+
     public void IncreaseRegen(float amountPerSecond)
     {
         regenPerSecond += amountPerSecond;
@@ -162,9 +181,27 @@ public class PlayerHealth : MonoBehaviour
         // Eğer çarptığımız obje bir Engel veya Polis ise hasar almasını sağladım
         if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Police") || collision.gameObject.CompareTag("Traffic"))
         {
-            TakeDamage(25); // Çarpınca şimdilik 25 hasar almasını ayarladım (4 vuruşta ölür)
+            // Sabit hasar yerine çarpmanın sertliğine göre hesaplanan hasar uygulanıyor
+            TakeDamage(CalculateCollisionDamage(collision));
         }
-    } 
+    }
+
+    // Çarpma sertliğini hesaplar. Araç MovePosition ile hareket ettiği için Rigidbody'nin
+    // gerçek hızı (relativeVelocity) sıfıra yakın kalıyor; bu yüzden sertliği aracın kendi
+    // sürüş hızı ve çarpmanın açısı üzerinden hesaplıyoruz.
+    private int CalculateCollisionDamage(Collision collision)
+    {
+        if (collision.contactCount == 0) return minCollisionDamage;
+
+        Vector3 normal = collision.contacts[0].normal;
+        // Çarpmanın ne kadar dik olduğu: 1 = kafa kafaya, 0'a yakın = teğet sıyırma
+        float alignment = Mathf.Abs(Vector3.Dot(transform.forward, normal));
+
+        // Sertlik = çarpma anındaki hız × dikliğin oranı
+        float severity = Mathf.Clamp01((lastFrameSpeed * alignment) / maxImpactSpeed);
+
+        return Mathf.RoundToInt(Mathf.Lerp(minCollisionDamage, maxCollisionDamage, severity));
+    }
 
     public void IncreaseMaxHealth(float percentage)
     {

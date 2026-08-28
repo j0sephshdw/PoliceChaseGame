@@ -160,10 +160,16 @@ MonoBehaviour:
   slideSpeedLoss: 0.55
   wallBounceSpeed: 3
   wallStuckDuration: 1.5
-  obstacleCheckDistance: 4
+  wallFollowDuration: 1.2
+  wallDetectDistance: 6
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 8
+  vehicleLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  vehicleCheckDistance: 3
+  vehicleAvoidStrength: 60
   scaleWithScore: 1
   scoreSpeedScale: 0.004
   scoreAccelScale: 0.006
@@ -174,6 +180,8 @@ MonoBehaviour:
   patlamaYaricapi: 8
   havayaFirlatmaGucu: 0.5
   sirenSound: {fileID: 8300000, guid: 86a4e51bfdf01da4abcb4fca04296e6e, type: 3}
+  sirenMinDistance: 8
+  sirenMaxDistance: 60
   xpReward: 25
   xpZoneRadius: 5
   poolGeneration: 0

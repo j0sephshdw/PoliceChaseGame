@@ -13,6 +13,7 @@ public class PlayerCarController : MonoBehaviour
     [SerializeField] private float engineBaseVolume = 0.4f; // motor sesi diğer seslere göre çok baskın geldiği için düşürüldü
     
     [SerializeField] private float currentSpeed = 0f;
+    public float CurrentSpeed => currentSpeed; // PlayerHealth'in çarpma sertliğini hesaplayabilmesi için okuma erişimi
     private float turnInput;
     private float turnSpeedMultiplier = 1f;
     private float gripMultiplier = 1f;

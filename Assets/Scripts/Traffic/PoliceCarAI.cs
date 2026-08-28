@@ -76,9 +76,19 @@ public class PoliceCarAI : MonoBehaviour
     private Vector3 wallFollowDir;  // Binanın etrafından dolaşmak için seçilen kaçış yönü
     private float wallFollowTimer;  // Kaçış yönü kilidinin kalan süresi
 
-    [Header("Çevre Algılama (Raycast)")]
-    public float obstacleCheckDistance = 5f;
+    [Header("Çevre Algılama")]
+    [Tooltip("Binaların bulunduğu katman")]
     public LayerMask obstacleLayerMask;
+
+    [Header("Araç Kaçınma")]
+    [Tooltip("Trafik ve polis araçlarının bulunduğu katman (genelde Default)")]
+    public LayerMask vehicleLayerMask;
+    [Tooltip("Öndeki araçları kaç metre önceden görüp kaçınmaya başlasın")]
+    public float vehicleCheckDistance = 3f;
+    [Tooltip("Araçlardan kaçınırken uygulanacak dönüş gücü (derece/saniye)")]
+    public float vehicleAvoidStrength = 60f;
+
+    private readonly RaycastHit[] vehicleHits = new RaycastHit[8]; // Her karede dizi oluşturmamak için önbelleğe alındı
 
     [Header("Zorluk Çarpanları")]
     public bool scaleWithScore = true;
@@ -673,7 +683,7 @@ public class PoliceCarAI : MonoBehaviour
         float smoothFactor = Mathf.Clamp01(angleMagnitude / 12f);
         float desiredTurnRate = Mathf.Clamp(angleToAimPoint * effectiveResponsiveness * smoothFactor, -effectiveTurnSpeed, effectiveTurnSpeed);
 
-        desiredTurnRate += ObstacleAvoidanceSteer() * 0.15f;
+        desiredTurnRate += VehicleAvoidanceSteer();
 
         float appliedSmoothing = isDrifting ? driftEntrySmoothing : turnSmoothing;
         currentTurnRate = Mathf.Lerp(currentTurnRate, desiredTurnRate, appliedSmoothing * Time.fixedDeltaTime);
@@ -782,32 +792,49 @@ public class PoliceCarAI : MonoBehaviour
         rb.MovePosition(rb.position + movement);
     }
 
-    private float ObstacleAvoidanceSteer()
+    // Öndeki trafik ve polis araçlarından kaçınmak için bir dönüş miktarı üretir.
+    // Binaları UpdateWallAvoidance hallettiği için burada sadece araçlara bakıyoruz.
+    // Tarama, sabit bir küre yerine aracın kendi çarpışma kutusuyla yapılıyor; eski sistemde
+    // kullanılan 1.2 yarıçaplı küre, aracın üç katı büyüklüğünde olduğu için hep yanlış sonuç veriyordu.
+    private float VehicleAvoidanceSteer()
     {
-        Vector3 origin = transform.position + Vector3.up * 0.5f;
-        float steer = 0f;
-        int hits = 0;
+        if (bodyCollider == null) return 0f;
 
-        TryObstacleRay(origin, transform.forward, 1.2f, ref steer, ref hits);
-        TryObstacleRay(origin, (transform.forward + transform.right * 0.45f).normalized, 0.9f, ref steer, ref hits);
-        TryObstacleRay(origin, (transform.forward - transform.right * 0.45f).normalized, 0.9f, ref steer, ref hits);
+        Vector3 boxCenter = transform.TransformPoint(bodyCollider.center);
+        Vector3 halfExtents = Vector3.Scale(bodyCollider.size, transform.lossyScale) * 0.5f;
 
-        return hits > 0 ? steer / hits : 0f;
-    }
+        int count = Physics.BoxCastNonAlloc(boxCenter, halfExtents, transform.forward, vehicleHits,
+                                            transform.rotation, vehicleCheckDistance, vehicleLayerMask, QueryTriggerInteraction.Ignore);
 
-    private void TryObstacleRay(Vector3 origin, Vector3 direction, float radius, ref float steer, ref int hits)
-    {
-        if (!Physics.SphereCast(origin, radius, direction, out RaycastHit hit, obstacleCheckDistance, obstacleLayerMask))
-            return;
+        // Taramanın önüne zemin ve yol gibi başka nesneler de çıkabildiği için hepsini gezip
+        // yalnızca araçlar arasından en yakınını seçiyoruz.
+        float nearestDistance = float.MaxValue;
+        int nearestIndex = -1;
 
-        // Sadece binalar ve trafik araçları engel sayılsın; zemin, yol ve oyuncu kaçınmayı tetiklemesin.
-        // (Eskiden tersi yapılıp CompareTag("Road") çağrılıyordu ama projede "Road" diye bir etiket yok, hata veriyordu.)
-        if (!hit.collider.CompareTag("Obstacle") && !hit.collider.CompareTag("Traffic")) return;
+        for (int i = 0; i < count; i++)
+        {
+            Collider col = vehicleHits[i].collider;
+            if (col.attachedRigidbody == rb) continue; // Kendi gövdemizi engel saymıyoruz
+            if (!col.CompareTag("Traffic") && !col.CompareTag("Police")) continue;
 
-        Vector3 localHit = transform.InverseTransformPoint(hit.point);
-        steer += localHit.x < 0f ? 10f : -10f;
-        hits++;
-    }
+            if (vehicleHits[i].distance < nearestDistance)
+            {
+                nearestDistance = vehicleHits[i].distance;
+                nearestIndex = i;
+            }
+        }
+
+        if (nearestIndex < 0) return 0f;
+
+        // Araç solumuzdaysa sağa, sağımızdaysa sola kırıyoruz
+        Vector3 localHit = transform.InverseTransformPoint(vehicleHits[nearestIndex].collider.transform.position);
+        float direction = localHit.x < 0f ? 1f : -1f;
+
+        // Araca yaklaştıkça kaçınma sertleşsin
+        float closeness = 1f - Mathf.Clamp01(nearestDistance / vehicleCheckDistance);
+
+        return direction * vehicleAvoidStrength * closeness;
+    }   
 
     private IEnumerator RecoverRoutine()
     {
