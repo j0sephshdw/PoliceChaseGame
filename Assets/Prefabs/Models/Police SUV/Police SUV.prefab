@@ -187,6 +187,8 @@ MonoBehaviour:
   sirenMaxDistance: 60
   xpReward: 25
   xpZoneRadius: 5
+  shakeDistance: 12
+  explosionShakeForce: 0.6
   poolGeneration: 0
   playerHitPoints: 1
   environmentHitPoints: 3

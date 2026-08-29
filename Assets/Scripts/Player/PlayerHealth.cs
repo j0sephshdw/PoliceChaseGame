@@ -21,6 +21,8 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private int maxCollisionDamage = 35;
     [Tooltip("Bu sertliğe ulaşan çarpmalar en yüksek hasarı verir")]
     [SerializeField] private float maxImpactSpeed = 18f;
+    [Tooltip("Araç parçalandığında uygulanacak sarsıntı şiddeti")]
+    [SerializeField] private float deathShakeForce = 2.5f;
 
     // Çarpışma anında araç zaten yavaşlatıldığı için, sertliği doğru ölçebilmek adına
     // her fizik karesinde çarpışmadan önceki hızı saklıyoruz.
@@ -137,6 +139,10 @@ public class PlayerHealth : MonoBehaviour
         // Kalkan ve dokunulmazlık kontrolleri yukarıda olduğu için burada boşuna titreşim olmuyor.
         UIManager.Vibrate();
 
+        // Alınan hasara orantılı kamera sarsıntısı: hafif temasta az, sert çarpmada çok sarsılır
+        float shakeForce = Mathf.Lerp(0.3f, 1.2f, Mathf.Clamp01((float)reducedDamage / maxCollisionDamage));
+        CameraShake.Shake(shakeForce);
+
         Debug.Log("Araç Hasar Aldı! Kalan Can: " + currentHealth);
 
         if (currentHealth <= 0)
@@ -153,6 +159,10 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         Debug.Log("Araç Parçalandı! GAME OVER.");
+
+        // Sarsıntıyı aracı parçalamadan ÖNCE tetikliyoruz; parçalanma sırasında obje
+        // devre dışı kalabildiği için sonrasında çağırmak güvenilir olmuyor.
+        CameraShake.Shake(deathShakeForce);
 
         // Aracı ve motor sesini durdurduk
         if (carController != null)

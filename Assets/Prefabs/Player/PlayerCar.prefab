@@ -362,9 +362,11 @@ GameObject:
   - component: {fileID: 8390110231832219928}
   - component: {fileID: 6146254702500308383}
   - component: {fileID: 8663239726737931951}
+  - component: {fileID: 719907118147301845}
+  - component: {fileID: 2855109015121081049}
   m_Layer: 0
   m_Name: PlayerCar
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -499,7 +501,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCarController
   originalMaxSpeed: 0
+  engineBaseVolume: 1
   currentSpeed: 0
+  dynamitePrefab: {fileID: 0}
+  dynamiteOffset: {x: 0, y: 1.2, z: -0.5}
+  dynamiteRotation: {x: 90, y: 0, z: 0}
+  dynamiteScale: {x: 3, y: 3, z: 3}
+  flipThreshold: 0.2
+  respawnDelay: 2.5
   patlamaGucu: 10
   patlamaYaricapi: 8
   havayaFirlatmaGucu: 0.5
@@ -521,6 +530,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 496e751e9ff139a4ca6b9939cda1f888, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  damageCooldown: 0.5
+  minCollisionDamage: 8
+  maxCollisionDamage: 35
+  maxImpactSpeed: 18
 --- !u!114 &8663239726737931951
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -539,6 +552,72 @@ MonoBehaviour:
   rightTrail: {fileID: 6047714336471949116}
   carCollider: {fileID: 7233267061149924484}
   minimumSpeedForSmoke: 1
+--- !u!114 &719907118147301845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8520568083609264127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseSource
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 2
+    CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ImpulseDuration: 0.25
+    ImpulseType: 0
+    DissipationRate: 0.25
+    RawSignal: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    RepeatMode: 0
+    Randomize: 1
+    TimeEnvelope:
+      AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      AttackTime: 0
+      SustainTime: 0.2
+      DecayTime: 0.7
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 100
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 100
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 0.15, y: -0.25, z: 0.15}
+--- !u!114 &2855109015121081049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8520568083609264127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65909441a72c3e34aae671fab8e3b36f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraShake
+  shakeMultiplier: 1.5
 --- !u!1 &8554456887009695271
 GameObject:
   m_ObjectHideFlags: 0

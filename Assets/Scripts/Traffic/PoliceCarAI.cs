@@ -112,6 +112,12 @@ public class PoliceCarAI : MonoBehaviour
     public int xpReward = 25; // Bu araç patlayınca oyuncuya verilecek XP miktarı
     public float xpZoneRadius = 20f; // Oyuncuya bu mesafeden yakın patlarsa XP verilir, uzaktaki patlamalar sayılmaz
 
+    [Header("Kamera Sarsıntısı")]
+    [Tooltip("Patlamanın kamerayı sarsacağı en uzak mesafe")]
+    public float shakeDistance = 12f;
+    [Tooltip("Tam dibinde patladığında uygulanacak sarsıntı şiddeti")]
+    public float explosionShakeForce = 1.2f;
+
     // --- Private Değişkenler ---
     private AudioSource audioSource;
     private Rigidbody rb;
@@ -374,15 +380,26 @@ public class PoliceCarAI : MonoBehaviour
 
         isDead = true;
 
+        // Oyuncuya olan mesafeyi bir kez hesaplayıp hem ödül hem sarsıntı için kullanıyoruz
+        float distanceToPlayer = target != null ? FlatDistance(transform.position, target.position) : float.MaxValue;
+
         // Patlama oyuncuya yakın bir alanda mı oldu diye bakıyoruz;
         // sadece bu alanın (xpZoneRadius) içinde patlarsa oyuncuyu ödüllendiriyoruz
-        bool isInsideXPZone = target != null && FlatDistance(transform.position, target.position) <= xpZoneRadius;
+        bool isInsideXPZone = distanceToPlayer <= xpZoneRadius;
 
         // Tek şart: patlama oyuncuya yakın alanda (xpZoneRadius) gerçekleşmiş olsun
         if (isInsideXPZone && ScoreManager.Instance != null)
         {
             int starMultiplier = WantedManager.Instance != null ? WantedManager.Instance.CurrentStars : 1;
             ScoreManager.Instance.AddXP(xpReward * starMultiplier);
+        }
+
+        // Yakında gerçekleşen patlamalar kamerayı sarsıyor; uzaklaştıkça sarsıntı zayıflıyor,
+        // böylece haritanın öbür ucundaki patlamalar oyuncuyu rahatsız etmiyor.
+        if (distanceToPlayer <= shakeDistance)
+        {
+            float closeness = 1f - Mathf.Clamp01(distanceToPlayer / shakeDistance);
+            CameraShake.Shake(explosionShakeForce * closeness);
         }
 
         if (audioSource != null && audioSource.isPlaying)

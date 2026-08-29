@@ -14,6 +14,7 @@ public class PlayerCarController : MonoBehaviour
     
     [SerializeField] private float currentSpeed = 0f;
     public float CurrentSpeed => currentSpeed; // PlayerHealth'in çarpma sertliğini hesaplayabilmesi için okuma erişimi
+    public float MaxSpeed => originalMaxSpeed; // Kameranın hız oranını hesaplayabilmesi için okuma erişimi
     private float turnInput;
     private float turnSpeedMultiplier = 1f;
     private float gripMultiplier = 1f;

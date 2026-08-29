@@ -42,6 +42,7 @@ public class ScoreManager : MonoBehaviour
     public event Action<int> OnScoreChanged;   // Skor her değiştiğinde tetiklenir
     public event Action<int, int> OnXPChanged; // (mevcut XP, sonraki seviyeye gereken XP)
     public event Action<int> OnLevelUp;        // Seviye atlanınca tetiklenir -> Kart Seçim Ekranı bunu dinleyecek
+    public event Action<int> OnXPGained;        // Tek seferde kazanılan XP miktarı (ekranda göstermek için)
 
     private void Awake()
     {
@@ -105,6 +106,7 @@ public class ScoreManager : MonoBehaviour
     {
         int boostedAmount = Mathf.RoundToInt(amount * xpMultiplier);
         currentXP += boostedAmount;
+        OnXPGained?.Invoke(boostedAmount);
 
         // if değil while kullanıyorum çünkü tek seferde büyük XP kazanılırsa
         // (örn. 250 XP) oyuncu birden fazla seviye birden atlayabilmeli.
