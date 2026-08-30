@@ -88,3 +88,15 @@ MonoBehaviour:
   - label: Seviye Etiketi
     turkish: 'Seviye:'
     english: 'Level:'
+  - label: Grafik Etiketi
+    turkish: Grafik
+    english: Graphics
+  - label: "S\xFCre Etiketi"
+    turkish: "S\xFCre:"
+    english: 'Time:'
+  - label: Etkisiz Hale Getirilen Etiketi
+    turkish: 'Etkisiz Hale Getirilen:'
+    english: 'Neutralized:'
+  - label: "Yeni Rekor Yaz\u0131s\u0131"
+    turkish: "YEN\u0130 REKOR!"
+    english: NEW RECORD!

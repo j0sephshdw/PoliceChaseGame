@@ -50,6 +50,11 @@ public class WantedManager : MonoBehaviour
             }
 
             currentStars = newStars;
+
+            // Tur sonunda gösterilmek üzere ulaşılan en yüksek seviyeyi kaydediyoruz
+            if (ScoreManager.Instance != null)
+                ScoreManager.Instance.RegisterWantedLevel(currentStars);
+
             UpdateStarsUI(currentStars);
         }
     }

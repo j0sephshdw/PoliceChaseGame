@@ -38,6 +38,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private UnityEngine.UI.Slider sfxVolumeSlider;
     [SerializeField] private UnityEngine.UI.Toggle vibrationToggle;
     [SerializeField] private TMP_Text languageButtonText;
+    [SerializeField] private TMP_Text qualityButtonText;
     [SerializeField] private LocalizationData sceneData;
     [SerializeField] private int highScoreLabelIndex = 11;
 
@@ -66,6 +67,12 @@ public class UIManager : MonoBehaviour
     private const string MusicVolumeKey = "MusicVolume";
     private const string SFXVolumeKey = "SFXVolume";
     private const string VibrationKey = "VibrationEnabled";
+    private const string QualityKey = "GraphicsQuality";
+    // Kalite seviyesine göre hedeflenen kare hızı sınırları.
+    // Düşük ayarda güçsüz cihazlarda ısınma ve pil tüketimi kontrol altında kalıyor;
+    // yüksek ayarda yüksek yenileme hızlı ekranlarda akıcılık elde ediliyor.
+    private const int LowQualityFrameRate = 60;
+    private const int HighQualityFrameRate = 120;
 
     private void Start()
     {
@@ -79,6 +86,7 @@ public class UIManager : MonoBehaviour
 
         // Daha önce kaydedilmiş bir ses tercihi varsa onu uygula (varsayılan: sessiz değil).
         ApplySavedMuteState();
+        ApplySavedQuality(); // Oyun sahnesine doğrudan girilse bile kayıtlı kalite tercihi uygulansın
         soundIcon.sprite = IsMuted() ? audioOffSprite : audioOnSprite;
 
         musicVolumeSlider.value = PlayerPrefs.GetFloat(MusicVolumeKey, 1f);
@@ -89,6 +97,8 @@ public class UIManager : MonoBehaviour
         sfxVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
         vibrationToggle.onValueChanged.AddListener(OnVibrationChanged);
         UpdateLanguageButtonText();
+        ApplySavedQuality();
+        UpdateQualityButtonText();
     }
 
     // Dört ShowX() fonksiyonu da aynı mantıkta çalışıyor: istenen paneli açıp
@@ -251,6 +261,64 @@ public class UIManager : MonoBehaviour
 
         UpdateLanguageButtonText();
         UpdateHighScoreText();
+        UpdateQualityButtonText();
+    }
+
+    // --- GRAFİK KALİTESİ ---
+    // Projede iki kalite seviyesi tanımlı: 0 = Mobile (düşük), 1 = PC (yüksek).
+    // Her seviyenin kendi render pipeline asset'i olduğu için seçim; gölge mesafesi,
+    // anti-aliasing ve gerçek zamanlı yansıma gibi ayarları topluca değiştiriyor.
+
+    // "GRAFİK" butonuna bağlanacak. Basıldıkça Düşük ↔ Yüksek arasında geçiş yapar.
+    public void ToggleQuality()
+    {
+        SetQuality(GetQualityLevel() == 0 ? 1 : 0);
+        UpdateQualityButtonText();
+    }
+
+    public static int GetQualityLevel()
+    {
+        // Kayıt yoksa projenin o anki seviyesini varsayılan kabul ediyoruz
+        return PlayerPrefs.GetInt(QualityKey, QualitySettings.GetQualityLevel());
+    }
+
+    public static void SetQuality(int level)
+    {
+        // İkinci parametre true: değişiklik anında ve tam olarak uygulanır. Kısa bir
+        // takılmaya sebep olabilir ama menüde olduğumuz için oyunu etkilemiyor.
+        QualitySettings.SetQualityLevel(level, true);
+        ApplyFrameRate(level);
+
+        PlayerPrefs.SetInt(QualityKey, level);
+        PlayerPrefs.Save();
+
+        Debug.Log($"Kalite: {QualitySettings.names[QualitySettings.GetQualityLevel()]} | Pipeline: {QualitySettings.renderPipeline?.name}");
+    }
+
+    // Oyun açılışında kaydedilmiş kalite tercihini ve ona bağlı kare hızı sınırını uygular
+    public static void ApplySavedQuality()
+    {
+        int level = GetQualityLevel();
+        QualitySettings.SetQualityLevel(level, true);
+        ApplyFrameRate(level);
+    }
+    // Kalite seviyesine göre kare hızı sınırını uygular.
+    // VSync açıkken Application.targetFrameRate yok sayıldığı için önce onu kapatıyoruz.
+    private static void ApplyFrameRate(int level)
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = (level == 1) ? HighQualityFrameRate : LowQualityFrameRate;
+    }
+
+    private void UpdateQualityButtonText()
+    {
+        if (qualityButtonText == null) return;
+
+        bool isHigh = GetQualityLevel() == 1;
+
+        qualityButtonText.text = Localization.CurrentLanguage == Localization.Language.Turkish
+            ? (isHigh ? "Yüksek" : "Düşük")
+            : (isHigh ? "High" : "Low");
     }
 
     private void UpdateLanguageButtonText()

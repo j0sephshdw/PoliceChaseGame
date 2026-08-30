@@ -387,11 +387,11 @@ public class PoliceCarAI : MonoBehaviour
         // sadece bu alanın (xpZoneRadius) içinde patlarsa oyuncuyu ödüllendiriyoruz
         bool isInsideXPZone = distanceToPlayer <= xpZoneRadius;
 
-        // Tek şart: patlama oyuncuya yakın alanda (xpZoneRadius) gerçekleşmiş olsun
         if (isInsideXPZone && ScoreManager.Instance != null)
         {
             int starMultiplier = WantedManager.Instance != null ? WantedManager.Instance.CurrentStars : 1;
             ScoreManager.Instance.AddXP(xpReward * starMultiplier);
+            ScoreManager.Instance.RegisterPoliceDestroyed(); // Tur sonu istatistiği için sayıyoruz
         }
 
         // Yakında gerçekleşen patlamalar kamerayı sarsıyor; uzaklaştıkça sarsıntı zayıflıyor,

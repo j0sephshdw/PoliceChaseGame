@@ -37,9 +37,9 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        // 60 FPS ve VSync Ayarı
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = 60;
+        // Kare hızı sınırı artık sabit değil; oyuncunun ayarlardan seçtiği grafik
+        // kalitesine göre belirleniyor (düşük ayarda 60, yüksek ayarda 120 FPS).
+        UIManager.ApplySavedQuality();
 
         // 1. Ekranın Kapanmasını/Kararmasını Engelle:
         // Oyuncu ekrana bir süre dokunmadığında veya sadece direksiyon çevirdiğinde telefonun ekranı kararmasın.

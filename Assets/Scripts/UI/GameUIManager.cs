@@ -30,6 +30,14 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private TMP_Text finalScoreText;
     [SerializeField] private TMP_Text highScoreText;
 
+    [Header("Game Over İstatistikleri")]
+    [SerializeField] private TMP_Text survivalTimeText;
+    [SerializeField] private TMP_Text finalLevelText;
+    [SerializeField] private TMP_Text policeDestroyedText;
+    [SerializeField] private GameObject newRecordObject;
+    [SerializeField] private int timeLabelIndex = 23;
+    [SerializeField] private int neutralizedLabelIndex = 24;
+
     [Header("Sahne Ayarları")]
     [SerializeField] private string mainMenuSceneName = "MainMenu";
 
@@ -52,7 +60,6 @@ public class GameUIManager : MonoBehaviour
         GameEvents.Instance.OnPlayerHealthChanged += HandleHealthChanged;
 
         hudPanel.SetActive(true);
-        UIManager.ApplySavedMuteState();
         hudSoundIcon.sprite = UIManager.IsMuted() ? audioOffSprite : audioOnSprite;
         pausePanel.SetActive(false);
         gameVolumeSlider.value = PlayerPrefs.GetFloat(GameVolumeKey, 1f);
@@ -131,6 +138,20 @@ public class GameUIManager : MonoBehaviour
     {
         finalScoreText.text = GetLabel(scoreLabelIndex) + " " + ScoreManager.Instance.Score;
         highScoreText.text = GetLabel(highScoreLabelIndex) + " " + ScoreManager.GetHighScore();
+
+        // Tur istatistikleri
+        if (survivalTimeText != null)
+            survivalTimeText.text = GetLabel(timeLabelIndex) + " " + ScoreManager.Instance.GetSurvivalTimeText();
+
+        if (finalLevelText != null)
+            finalLevelText.text = GetLabel(levelLabelIndex) + " " + ScoreManager.Instance.Level;
+
+        if (policeDestroyedText != null)
+            policeDestroyedText.text = GetLabel(neutralizedLabelIndex) + " " + ScoreManager.Instance.PoliceDestroyed;
+
+        // Rekor bildirimi yalnızca bu turda rekor kırıldıysa görünsün
+        if (newRecordObject != null)
+            newRecordObject.SetActive(ScoreManager.Instance.IsNewHighScore);
     }
 
     // --- Buton fonksiyonları (OnClick() ile bağlanacak) ---

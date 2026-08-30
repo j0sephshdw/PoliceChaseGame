@@ -29,13 +29,22 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private float xpMultiplier = 1f;
     private float scoreTimer = 0f;
 
+    [Header("Tur İstatistikleri")]
+    [SerializeField] private int policeDestroyed = 0;    // Bu turda etkisiz hale getirilen polis sayısı
+    [SerializeField] private int highestWantedLevel = 1; // Bu turda ulaşılan en yüksek aranma seviyesi
+    private float survivalTime = 0f;                     // Turda geçen gerçek süre
+
     // Dışarıya SADECE okuma izni veren property'ler.
     // Skoru/XP'yi değiştirmenin tek yolu AddScore()/AddXP() — böylece başka bir
     // script yanlışlıkla "score = 999999" gibi bir satır yazamaz.
     public int Score => score;
     public int Level => level;
     public int CurrentXP => currentXP;
+    public int PoliceDestroyed => policeDestroyed;
+    public int HighestWantedLevel => highestWantedLevel;
     public int XPToNextLevel { get; private set; }
+    // Bu turda rekor kırıldı mı? Game Over ekranındaki bildirim için kullanılıyor.
+    public bool IsNewHighScore { get; private set; }
 
     // --- EVENT'LER ---
     // HUD (can/skor barı) ve Kart Seçim Ekranı gibi sistemler bunlara abone olacak.
@@ -73,6 +82,8 @@ public class ScoreManager : MonoBehaviour
     {
         if(GameManager.Instance.CurrentState == GameState.Playing)
         {
+            survivalTime += Time.deltaTime; // Gerçek süreyi ayrıca sayıyoruz
+
             scoreTimer += Time.deltaTime;
             if(scoreTimer >= 1f)
             {
@@ -141,6 +152,26 @@ public class ScoreManager : MonoBehaviour
         return baseXPToLevelUp * n * (n + 1) / 2; // Üçgensel sayı formülü: 100, 300, 600, 1000, 1500... şeklinde giderek büyüyen bir ilerleme sağlar
     }
 
+    // Oyuncuya yakın alanda bir polis aracı etkisiz hale geldiğinde PoliceCarAI tarafından çağrılır.
+    public void RegisterPoliceDestroyed()
+    {
+        policeDestroyed++;
+    }
+
+    // Aranma seviyesi değiştiğinde WantedManager tarafından çağrılır;
+    // tur boyunca görülen en yüksek değeri saklıyoruz.
+    public void RegisterWantedLevel(int stars)
+    {
+        if (stars > highestWantedLevel) highestWantedLevel = stars;
+    }
+
+    // Hayatta kalınan süreyi "dakika:saniye" biçiminde döndürür (örn. "2:07")
+    public string GetSurvivalTimeText()
+    {
+        int total = Mathf.FloorToInt(survivalTime);
+        return (total / 60) + ":" + (total % 60).ToString("00");
+    }
+
     // --- OYUN DÖNGÜSÜ NOTU (Bedirhan/GameManager tarafı) ---
     // Game Over anında (PlayerHealth.OnPlayerDeath tetiklenince) bu fonksiyon çağrılacak;
     // mevcut skor rekoru geçtiyse PlayerPrefs'e kaydedilecek.
@@ -149,6 +180,7 @@ public class ScoreManager : MonoBehaviour
         int savedHighScore = PlayerPrefs.GetInt(HighScoreKey, 0);
         if (score > savedHighScore)
         {
+            IsNewHighScore = true; // Ekran açılmadan önce işareti bırakıyoruz
             PlayerPrefs.SetInt(HighScoreKey, score);
             PlayerPrefs.Save();
         }
