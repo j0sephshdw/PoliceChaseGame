@@ -2096,10 +2096,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WantedManager
   wantedText: {fileID: 89640808}
-  suvSkor: 50
-  muscleSkor: 100
-  sportsSkor: 150
-  maxSkor: 200
+  suvSkor: 100
+  muscleSkor: 300
+  sportsSkor: 700
+  maxSkor: 1200
 --- !u!114 &288008798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6308,66 +6308,54 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarSelectionUI
   carSelectionPanel: {fileID: 741029212}
   availableCars:
-  - carData: {fileID: 11400000, guid: f65dcbf5fb00aec4e8e0a11d8df2b718, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: f4d52184563e17e4a80f7cdd38816077, type: 3}
-    requiredScore: 0
   - carData: {fileID: 11400000, guid: a263d28a6196dd241b7997c88774497f, type: 2}
     carPrefab: {fileID: 919132149155446097, guid: 1a36d48f60534be4083ac36f761e8fa9, type: 3}
     requiredScore: 0
+  - carData: {fileID: 11400000, guid: f65dcbf5fb00aec4e8e0a11d8df2b718, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: f4d52184563e17e4a80f7cdd38816077, type: 3}
+    requiredScore: 0
   - carData: {fileID: 11400000, guid: 2e5941c24d8e2954e8fa9ae01d4e2da6, type: 2}
     carPrefab: {fileID: 919132149155446097, guid: f7482cac7d7514042ab51447eb5adbab, type: 3}
-    requiredScore: 50
-  - carData: {fileID: 11400000, guid: 0001b9b31b7a28e4b8657be5c26bee46, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: 55fd9773dca0533498db478c45c9b629, type: 3}
-    requiredScore: 60
+    requiredScore: 40
   - carData: {fileID: 11400000, guid: 3506a189f3c533744b49b991e9733af1, type: 2}
     carPrefab: {fileID: 919132149155446097, guid: 460ce92160641af44b6a9abd2f70658d, type: 3}
-    requiredScore: 120
-  - carData: {fileID: 11400000, guid: b8cdcb656a255f4428cf787a577928f6, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: 198ac3ee83cde1a46a00b19335dfe3f5, type: 3}
-    requiredScore: 150
+    requiredScore: 90
   - carData: {fileID: 11400000, guid: 54cbf7d86b8bf0442b84a176a0aca3ba, type: 2}
     carPrefab: {fileID: 919132149155446097, guid: 32e5eca1cba790e40be2505723885ea9, type: 3}
-    requiredScore: 200
-  - carData: {fileID: 11400000, guid: 7e34d998e280d074695bed8695a8cb2e, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: d31c4262f127ead49bda41c0ccd4637d, type: 3}
-    requiredScore: 210
-  - carData: {fileID: 11400000, guid: 7dbd17470d659e14898c370e217fc481, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: bf01b8e32bf60244ab1216b7061a55c5, type: 3}
+    requiredScore: 150
+  - carData: {fileID: 11400000, guid: 0001b9b31b7a28e4b8657be5c26bee46, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 55fd9773dca0533498db478c45c9b629, type: 3}
     requiredScore: 220
+  - carData: {fileID: 11400000, guid: b8cdcb656a255f4428cf787a577928f6, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 198ac3ee83cde1a46a00b19335dfe3f5, type: 3}
+    requiredScore: 300
   - carData: {fileID: 11400000, guid: bfa26055b3c6b7c4dbfbb53a530525d8, type: 2}
     carPrefab: {fileID: 919132149155446097, guid: 7fdde701c77d80540927a6758e80ef93, type: 3}
-    requiredScore: 230
-  - carData: {fileID: 11400000, guid: f544ebe99a4eaa1428f9ed8302718e10, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: 91261d622c99d9544815e9abe976450d, type: 3}
-    requiredScore: 240
+    requiredScore: 390
+  - carData: {fileID: 11400000, guid: 7e34d998e280d074695bed8695a8cb2e, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: d31c4262f127ead49bda41c0ccd4637d, type: 3}
+    requiredScore: 490
   - carData: {fileID: 11400000, guid: d25b0ecf51bfc0546abf9e881a53ce9f, type: 2}
     carPrefab: {fileID: 919132149155446097, guid: 0d367e1cf1f1bd447bb24ae73e0025ce, type: 3}
-    requiredScore: 250
-  - carData: {fileID: 11400000, guid: ba20d1f5250142c4d887632f4e916756, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: 3a4cad23f30eba248a9f2063249ac15d, type: 3}
-    requiredScore: 260
-  - carData: {fileID: 11400000, guid: 333c1f04e4928644084d2b18e6e93948, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: e496521f28ed134408b4b71629928aad, type: 3}
-    requiredScore: 270
-  - carData: {fileID: 11400000, guid: 49805ae234adb674b8264e4a505152dc, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: 17afdd2138a5b07449545d2858a9ac89, type: 3}
-    requiredScore: 280
-  - carData: {fileID: 11400000, guid: 36436aababe585a42a84719f24ae1150, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: fe3d2f923d2bef2419e6ec98ad147a69, type: 3}
-    requiredScore: 290
-  - carData: {fileID: 11400000, guid: afb0a26d589ee7f4e974310fa8fb9df1, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: 2d204f38df872be4088e097b51c2a2b0, type: 3}
-    requiredScore: 300
-  - carData: {fileID: 11400000, guid: fd164372eef839041af678cac099f944, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: 47ef70d02c6f6fd48bcc73ecd1e4d1fe, type: 3}
-    requiredScore: 310
-  - carData: {fileID: 11400000, guid: 2e33c324ed6242c458bdf81bf19fa0d0, type: 2}
-    carPrefab: {fileID: 919132149155446097, guid: 57647e2cefac9c74c841fccfaf6b78b2, type: 3}
-    requiredScore: 320
+    requiredScore: 600
+  - carData: {fileID: 11400000, guid: 7dbd17470d659e14898c370e217fc481, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: bf01b8e32bf60244ab1216b7061a55c5, type: 3}
+    requiredScore: 720
+  - carData: {fileID: 11400000, guid: f544ebe99a4eaa1428f9ed8302718e10, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 91261d622c99d9544815e9abe976450d, type: 3}
+    requiredScore: 850
   - carData: {fileID: 11400000, guid: dd0878460c1e33c41b791ada4d50e80a, type: 2}
     carPrefab: {fileID: 919132149155446097, guid: 35e4b0030cff6f3478861ebae757c7a5, type: 3}
-    requiredScore: 330
+    requiredScore: 1000
+  - carData: {fileID: 11400000, guid: ba20d1f5250142c4d887632f4e916756, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 3a4cad23f30eba248a9f2063249ac15d, type: 3}
+    requiredScore: 1160
+  - carData: {fileID: 11400000, guid: 2e33c324ed6242c458bdf81bf19fa0d0, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 57647e2cefac9c74c841fccfaf6b78b2, type: 3}
+    requiredScore: 1330
+  - carData: {fileID: 11400000, guid: fd164372eef839041af678cac099f944, type: 2}
+    carPrefab: {fileID: 919132149155446097, guid: 47ef70d02c6f6fd48bcc73ecd1e4d1fe, type: 3}
+    requiredScore: 1500
   carSpawnPoint: {fileID: 227740881}
   modelOffset: {x: 0, y: 0, z: 0}
   previousButton: {fileID: 548563176}
@@ -8017,7 +8005,7 @@ MonoBehaviour:
   sportsPrefab: {fileID: 7467584649455726018, guid: 2955c9fd024caf944be78415a1458a3a, type: 3}
   suvSkorSiniri: 100
   muscleSkorSiniri: 300
-  sportsSkorSiniri: 600
+  sportsSkorSiniri: 700
   baseSpawnInterval: 4
   baslangicPolisSayisi: 3
   spawnDistanceBehind: 18
@@ -8025,9 +8013,9 @@ MonoBehaviour:
   headOnSpawnChance: 0.35
   sadeceYoldaDogsun: 1
   dinamikZorlukAktif: 1
-  kacSkordaBirSeviyeArtsin: 15
+  kacSkordaBirSeviyeArtsin: 25
   seviyeBasinaPolisArtisi: 1
-  mutlakMaxPolisLimiti: 12
+  mutlakMaxPolisLimiti: 15
   enableBarricades: 1
   barricadeScoreThreshold: 30
   barricadeInterval: 25

@@ -20,9 +20,9 @@ MonoBehaviour:
   colliderCenter: {x: 0, y: -0.88, z: 0.1}
   colliderSize: {x: 2.3, y: 1.9, z: 5}
   maxSpeed: 5.5
-  acceleration: 0.9
-  turnSpeed: 85
+  acceleration: 1
+  turnSpeed: 90
   driftGrip: 6
   maxLeanAngle: 6
-  maxHealth: 90
+  maxHealth: 80
   baseArmor: 0

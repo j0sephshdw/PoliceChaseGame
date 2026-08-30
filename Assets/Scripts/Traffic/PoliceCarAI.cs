@@ -92,8 +92,8 @@ public class PoliceCarAI : MonoBehaviour
 
     [Header("Zorluk Çarpanları")]
     public bool scaleWithScore = true;
-    public float scoreSpeedScale = 0.004f;
-    public float scoreAccelScale = 0.006f;
+    [Tooltip("Skora göre ivme artışı. Bu değer difficultyMultiplier'ın ÜSTÜNE binerek çarpılır, o yüzden küçük tutulmalı")]
+    public float scoreAccelScale = 0.003f;  
 
     [Header("VFX & SFX")]
     public Transform carMesh;

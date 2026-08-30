@@ -43,6 +43,10 @@ public class PoliceSpawner : MonoBehaviour
     public int barricadeScoreThreshold = 15;
     public float barricadeInterval = 20f;
     public float barricadeDistanceAhead = 40f;
+    [Tooltip("Barikat aralığının inebileceği en düşük değer")]
+    public float minBarricadeInterval = 8f;
+    [Tooltip("Her 1 skor puanının barikat aralığını kaç saniye kısaltacağı")]
+    public float barricadeIntervalScale = 0.01f;
 
     public static PoliceSpawner Instance;
 
@@ -178,19 +182,22 @@ public class PoliceSpawner : MonoBehaviour
         {
             timer += Time.deltaTime;
 
-            if (timer >= barricadeInterval)
+            int currentScore = (ScoreManager.Instance != null) ? ScoreManager.Instance.Score : 0;
+
+            // Skor arttıkça barikatlar sıklaşıyor. Polis sayısı tavana ulaştıktan sonra
+            // baskıyı artırmaya devam eden iki sistemden biri bu.
+            float currentInterval = Mathf.Max(minBarricadeInterval, barricadeInterval - (currentScore * barricadeIntervalScale));
+
+            if (timer >= currentInterval)
             {
                 timer = 0f;
-                if (enableBarricades && player != null)
+
+                if (enableBarricades && player != null && currentScore >= barricadeScoreThreshold)
                 {
-                    int currentScore = (ScoreManager.Instance != null) ? ScoreManager.Instance.Score : 0;
-                    if (currentScore >= barricadeScoreThreshold)
-                    {
-                        SpawnBarricade();
-                    }
+                    SpawnBarricade();
                 }
             }
-            yield return null; // RAM dostu frame bekletme
+            yield return null;
         }
     }
 

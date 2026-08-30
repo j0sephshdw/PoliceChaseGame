@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: ArmorBoostAbility
   m_EditorClassIdentifier: Assembly-CSharp::ArmorBoostAbilityData
   icon: {fileID: 21300000, guid: e733a95b027ee7945b03114dd934922b, type: 3}
-  percentageIncrease: 0.05
+  percentageIncrease: 0.12
   diminishingFactor: 0.7
   maxLevel: 5

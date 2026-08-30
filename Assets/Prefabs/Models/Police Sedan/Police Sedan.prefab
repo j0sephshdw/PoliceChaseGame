@@ -404,8 +404,7 @@ MonoBehaviour:
   vehicleCheckDistance: 3
   vehicleAvoidStrength: 60
   scaleWithScore: 1
-  scoreSpeedScale: 0.004
-  scoreAccelScale: 0.006
+  scoreAccelScale: 0.003
   carMesh: {fileID: 6628976892143945343}
   explosionVFX: {fileID: 100006, guid: 42f257b24c959a44794a35d032e9da12, type: 3}
   explosionSound: {fileID: 8300000, guid: 7c18f527990d42340b618f0e5c553205, type: 3}

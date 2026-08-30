@@ -128,7 +128,7 @@ MonoBehaviour:
   type: 2
   effectDuration: 3
   speedMultiplier: 1.5
-  healAmount: 10
+  healAmount: 20
   SourcePrefab: {fileID: 0}
   shockwavePrefab: {fileID: 6703737979634063146, guid: fbf59fcaa532f624aba1af41c35626a5, type: 3}
   rotationSpeed: 90

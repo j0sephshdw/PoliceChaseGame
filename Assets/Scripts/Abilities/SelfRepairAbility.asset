@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: SelfRepairAbility
   m_EditorClassIdentifier: Assembly-CSharp::SelfRepairAbilityData
   icon: {fileID: 21300000, guid: 833bb6440d0304b409d269c0eee1b409, type: 3}
-  healPerSecond: 2
+  healPerSecond: 0.5
   diminishingFactor: 0.7
   maxLevel: 5

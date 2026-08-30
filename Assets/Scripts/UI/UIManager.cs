@@ -28,6 +28,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject howToPlayPanel;
     [SerializeField] private GameObject mapSelectionPanel;
+    [SerializeField] private GameObject creditsPanel;
 
     [Header("Diğer UI Elemanları")]
     [SerializeField] private TMP_Text highScoreText;   // MainMenuPanel'deki "En Yüksek Skor: 0" yazısı
@@ -104,15 +105,13 @@ public class UIManager : MonoBehaviour
         UpdateQualityButtonText();
     }
 
-    // Dört ShowX() fonksiyonu da aynı mantıkta çalışıyor: istenen paneli açıp
-    // diğerlerini kapatıyor. Aynı anda birden fazla panelin açık kalmasını
-    // (örn. Ayarlar ile Harita Seçimi'nin üst üste binmesini) bu şekilde engelliyoruz.
     public void ShowMainMenu()
     {
         mainMenuPanel.SetActive(true);
         settingsPanel.SetActive(false);
         howToPlayPanel.SetActive(false);
         mapSelectionPanel.SetActive(false);
+        creditsPanel.SetActive(false);
     }
 
     public void ShowSettings()
@@ -121,6 +120,7 @@ public class UIManager : MonoBehaviour
         settingsPanel.SetActive(true);
         howToPlayPanel.SetActive(false);
         mapSelectionPanel.SetActive(false);
+        creditsPanel.SetActive(false);
     }
 
     public void ShowHowToPlay()
@@ -129,6 +129,17 @@ public class UIManager : MonoBehaviour
         settingsPanel.SetActive(false);
         howToPlayPanel.SetActive(true);
         mapSelectionPanel.SetActive(false);
+        creditsPanel.SetActive(false);
+    }
+
+    // "KÜNYE" butonuna bağlanacak. Emeği geçenler panelini açar.
+    public void ShowCredits()
+    {
+        mainMenuPanel.SetActive(false);
+        settingsPanel.SetActive(false);
+        howToPlayPanel.SetActive(false);
+        mapSelectionPanel.SetActive(false);
+        creditsPanel.SetActive(true);
     }
 
     // "OYNA" butonuna bağlı. Harita seçimi şimdilik devre dışı olduğu için panel açmak yerine
@@ -147,6 +158,7 @@ public class UIManager : MonoBehaviour
         settingsPanel.SetActive(false);
         howToPlayPanel.SetActive(false);
         mapSelectionPanel.SetActive(false);
+        creditsPanel.SetActive(false);
 
         ShowLoadingScreen();
         StartCoroutine(LoadGameRoutine());

@@ -44,17 +44,65 @@ MonoBehaviour:
     turkish: NASIL OYNANIR
     english: HOW TO PLAY
   - label: "Nas\u0131l Oynan\u0131r A\xE7\u0131klamas\u0131"
-    turkish: "\u2022 Ara\xE7 otomatik olarak ileri gider. \u2022 Ekran\u0131n sol
-      yar\u0131s\u0131na dokun: sola d\xF6n. \u2022 Ekran\u0131n sa\u011F yar\u0131s\u0131na
-      dokun: sa\u011Fa d\xF6n. \u2022 Bilgisayarda A/D veya ok tu\u015Flar\u0131yla
-      da d\xF6nebilirsin. \u2022 Seviye atlad\u0131\u011F\u0131nda \xE7\u0131kan
-      kartlardan birini se\xE7,   arac\u0131na yeni bir yetenek kazand\u0131r  (Kalkan,
-      \u015Eok Dalgas\u0131, H\u0131zlanma vb.)"
-    english: "\u2022 Your car moves forward automatically. \u2022 Tap the left half
-      of the screen: turn left. \u2022 Tap the right half of the screen: turn right.
-      \u2022 On PC, you can also turn using A/D or the arrow keys. \u2022 When you
-      level up, pick one of the cards   to grant your car a new ability  (Shield,
-      Shockwave, Speed Boost, etc.)"
+    turkish: "<b><color=#FFC93C>KONTROLLER</color></b>\r\nAra\xE7 kendi gider. Sol
+      yar\u0131ya dokun sola, sa\u011F yar\u0131ya dokun sa\u011Fa d\xF6nersin.\r\nParma\u011F\u0131n\u0131
+      bas\u0131l\u0131 tuttu\u011Fun s\xFCrece d\xF6nmeye devam eder, b\u0131rak\u0131nca
+      d\xFCzelir.\r\n\r\n<b><color=#FFC93C>AMA\xC7</color></b>\r\nPolisten ka\xE7\u0131p
+      uzun dayan. Skorun s\xFCreyle artar.\r\nAranma y\u0131ld\u0131z\u0131n artt\u0131k\xE7a
+      polisler \xE7o\u011Fal\u0131r ve h\u0131zlan\u0131r.\r\n\r\n<b><color=#FFC93C>KUTULAR</color></b>\r\nYoldaki
+      kutular kalkan, h\u0131zlanma, tamir ve \u015Fok dalgas\u0131 verir.\r\nEtkileri
+      k\u0131sa s\xFCrer, g\xF6rd\xFC\u011F\xFCn anda topla.\r\n\r\n<b><color=#FFC93C>KARTLAR</color></b>\r\nYak\u0131n\u0131nda
+      par\xE7alanan polislerden deneyim kazan\u0131rs\u0131n.\r\nSeviye atlay\u0131nca
+      se\xE7ti\u011Fin kart arac\u0131n\u0131 kal\u0131c\u0131 olarak g\xFC\xE7lendirir.\r\n\r\n<b><color=#FFC93C>ARA\xC7LAR</color></b>\r\nOyun
+      ba\u015Flarken kullanaca\u011F\u0131n arac\u0131 se\xE7ersin.\r\nYeni ara\xE7lar
+      en y\xFCksek skorun artt\u0131k\xE7a a\xE7\u0131l\u0131r."
+    english: '<b><color=#FFC93C>CONTROLS</color></b>
+
+      The car drives itself.
+      Tap the left half to turn left, the right half to turn right.
+
+      Hold
+      your finger down to keep turning; let go to straighten out.
+
+      
+
+      <b><color=#FFC93C>GOAL</color></b>
+
+      Escape
+      the police and survive. Your score grows with time.
+
+      As your wanted
+      level rises, police get faster and more numerous.
+
+      
+
+      <b><color=#FFC93C>CRATES</color></b>
+
+      Crates
+      on the road give shields, speed boosts, repairs and shockwaves.
+
+      Their
+      effects are brief, so grab them as soon as you see them.
+
+      
+
+      <b><color=#FFC93C>CARDS</color></b>
+
+      You
+      earn experience from police wrecked near you.
+
+      When you level up, the
+      card you pick permanently upgrades your car.
+
+      
+
+      <b><color=#FFC93C>CARS</color></b>
+
+      You
+      choose which car to drive before the run starts.
+
+      New cars unlock as
+      your high score grows.'
   - label: "Y\xFCksek Skor Etiketi"
     turkish: "En Y\xFCksek Skor:"
     english: 'High Score:'
@@ -100,3 +148,17 @@ MonoBehaviour:
   - label: "Yeni Rekor Yaz\u0131s\u0131"
     turkish: "YEN\u0130 REKOR!"
     english: NEW RECORD!
+  - label: "EME\u011E\u0130 GE\xC7ENLER"
+    turkish: "EME\u011E\u0130 GE\xC7ENLER"
+    english: CREDITS
+  - label: "EME\u011E\u0130 GE\xC7ENLER METN\u0130"
+    turkish: "<b><color=#FFC93C>Geli\u015Ftirme</color></b>\r\nBedirhan (Beco.cs)\r\nBerat\r\nYusuf\r\n\r\n<b><color=#FFC93C>G\xF6rsel
+      Varl\u0131klar</color></b>\r\nRunemark Studio \u2014 \u015Eehir ve ara\xE7
+      modelleri\r\nKenney \u2014 Aray\xFCz g\xF6rselleri\r\n\r\n<b><color=#FFC93C>Efektler</color></b>\r\nTwoUncleVFX\r\n\r\n<b><color=#FFC93C>Yaz\u0131
+      Tipi</color></b>\r\nAudiowide \u2014 SIL Open Font License\r\n\r\n<b><color=#FFC93C>Motor</color></b>\r\nUnity
+      6"
+    english: "<b><color=#FFC93C>Development</color></b>\r\nBedirhan (Beco.cs)\r\nBerat\r\nYusuf\r\n\r\n<b><color=#FFC93C>Art
+      Assets</color></b>\r\nRunemark Studio \u2014 City and vehicle models\r\nKenney
+      \u2014 UI sprites\r\n\r\n<b><color=#FFC93C>Effects</color></b>\r\nTwoUncleVFX\r\n\r\n<b><color=#FFC93C>Font</color></b>\r\nAudiowide
+      \u2014 SIL Open Font License\r\n\r\n<b><color=#FFC93C>Engine</color></b>\r\nUnity
+      6"

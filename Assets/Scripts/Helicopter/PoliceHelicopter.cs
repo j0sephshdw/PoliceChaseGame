@@ -41,6 +41,10 @@ public class PoliceHelicopter : MonoBehaviour
     [Header("Kapan Atma Ayarları")]
     public float dropInterval = 4f;
     public float groundOffset = 0.02f;
+    [Tooltip("Bırakma aralığının inebileceği en düşük değer")]
+    public float minDropInterval = 1.5f;
+    [Tooltip("Her 1 skor puanının aralığı kaç saniye kısaltacağı")]
+    public float dropIntervalScale = 0.0015f;
 
     [Header("Kapan Atma Animasyonu (YENİ)")]
     [Tooltip("Kapan atmadan kaç saniye önce hedef hizasına girip alçalmaya başlasın")]
@@ -97,7 +101,7 @@ public class PoliceHelicopter : MonoBehaviour
             GameObject pObj = GameObject.FindGameObjectWithTag("Player");
             if (pObj != null) player = pObj.transform;
         }
-        dropTimer = dropInterval;
+        dropTimer = GetCurrentDropInterval();
 
         activeHeight = heightAbovePlayer;
         activeSway = swayAmount;
@@ -179,7 +183,7 @@ public class PoliceHelicopter : MonoBehaviour
             {
                 DropSpikeStrip();
             }
-            dropTimer = dropInterval; // Her iki durumda da süreyi sıfırla ki bir sonraki atış denemesini bekle
+            dropTimer = GetCurrentDropInterval(); // Her iki durumda da süreyi sıfırla ki bir sonraki atış denemesini bekle
         }
 
         RotateRotors();
@@ -195,6 +199,14 @@ public class PoliceHelicopter : MonoBehaviour
         {
             tailRotor.Rotate(Vector3.forward * tailRotorSpeed * Time.deltaTime, Space.Self);
         }
+    }
+
+    // Skora göre kısalan güncel bırakma aralığını hesaplar.
+    // Oyun ilerledikçe helikopter daha sık kapan bırakır.
+    private float GetCurrentDropInterval()
+    {
+        int score = ScoreManager.Instance != null ? ScoreManager.Instance.Score : 0;
+        return Mathf.Max(minDropInterval, dropInterval - (score * dropIntervalScale));
     }
 
     private void DropSpikeStrip()

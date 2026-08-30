@@ -8,8 +8,11 @@ public class LocalizationData : ScriptableObject
     public class LocalizedEntry
     {
         public string label; // Sadece senin Inspector'da hangi satırın ne olduğunu anlaman için, kod bunu kullanmıyor
-        public string turkish;
-        public string english;
+
+        // Uzun metinlerde (örn. Nasıl Oynanır açıklaması) alt alta satır yazabilmek için
+        // çok satırlı kutu kullanıyoruz; tek satırlık alanda Enter'a basmak mümkün olmuyor.
+        [TextArea(2, 8)] public string turkish;
+        [TextArea(2, 8)] public string english;
     }
 
     public List<LocalizedEntry> entries;
