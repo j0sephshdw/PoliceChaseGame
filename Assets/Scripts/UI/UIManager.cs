@@ -74,6 +74,9 @@ public class UIManager : MonoBehaviour
     private const int LowQualityFrameRate = 60;
     private const int HighQualityFrameRate = 120;
 
+    private static float cachedMusicVolume = -1f;
+    private static float cachedSFXVolume = -1f;
+
     private void Start()
     {
         // Sahne ilk açıldığında sadece Ana Menü görünsün, diğer paneller kapalı kalsın.
@@ -346,11 +349,13 @@ public class UIManager : MonoBehaviour
     private void OnMusicVolumeChanged(float value)
     {
         PlayerPrefs.SetFloat(MusicVolumeKey, value);
+        cachedMusicVolume = value; // Önbelleği güncel tut
     }
 
     private void OnSFXVolumeChanged(float value)
     {
         PlayerPrefs.SetFloat(SFXVolumeKey, value);
+        cachedSFXVolume = value; // Önbelleği güncel tut
     }
 
     private void OnVibrationChanged(bool isOn)
@@ -360,12 +365,18 @@ public class UIManager : MonoBehaviour
 
     public static float GetMusicVolume()
     {
-        return PlayerPrefs.GetFloat(MusicVolumeKey, 1f);
+        if (cachedMusicVolume < 0f)
+            cachedMusicVolume = PlayerPrefs.GetFloat(MusicVolumeKey, 1f);
+
+        return cachedMusicVolume;
     }
 
     public static float GetSFXVolume()
     {
-        return PlayerPrefs.GetFloat(SFXVolumeKey, 1f);
+        if (cachedSFXVolume < 0f)
+            cachedSFXVolume = PlayerPrefs.GetFloat(SFXVolumeKey, 1f);
+
+        return cachedSFXVolume;
     }
 
     public static bool IsVibrationEnabled()

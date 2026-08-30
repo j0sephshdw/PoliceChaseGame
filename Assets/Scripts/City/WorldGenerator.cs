@@ -19,6 +19,9 @@ public class WorldGenerator : MonoBehaviour
     private Dictionary<Vector2Int, GameObject> spawnedTiles = new();
 
     private int selectedMapIndex = 0;
+    // Oyuncunun en son hangi karoda olduğunu tutuyoruz; koordinat değişmedikçe
+    // dünya güncellemesini tekrar çalıştırmaya gerek yok.
+    private Vector2Int lastPlayerTile = new Vector2Int(int.MinValue, int.MinValue);
 
     [SerializeField] private Transform tilesParent; // Tüm GroundTile'ların toplanacağı klasör obje
 
@@ -38,6 +41,17 @@ public class WorldGenerator : MonoBehaviour
 
     private void Update()
     {
+        if (player == null) return;
+
+        // Karo üretimi ve silinmesi ancak oyuncu başka bir karoya geçtiğinde değişir.
+        // Her karede tüm karoları taramak yerine sadece koordinat değiştiğinde çalışıyoruz.
+        Vector2Int currentTile = new Vector2Int(
+            Mathf.FloorToInt(player.position.x / tileSize),
+            Mathf.FloorToInt(player.position.z / tileSize));
+
+        if (currentTile == lastPlayerTile) return;
+
+        lastPlayerTile = currentTile;
         UpdateWorld();
     }
 

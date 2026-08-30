@@ -52,6 +52,11 @@ public class GameUIManager : MonoBehaviour
 
     private const string GameVolumeKey = "GameVolume";
 
+    // PlayerPrefs okuması her karede 12'den fazla yerden çağrıldığı için değeri önbelleğe
+    // alıyoruz; yalnızca slider değiştiğinde güncelleniyor. Negatif değer "henüz okunmadı" demek
+    // (ses seviyesi 0 olabileceği için sıfırı işaret olarak kullanamıyoruz).
+    private static float cachedGameVolume = -1f;
+
     private void Start()
     {
         GameManager.Instance.OnGameStateChanged += HandleGameStateChanged;
@@ -127,11 +132,15 @@ public class GameUIManager : MonoBehaviour
     private void OnGameVolumeChanged(float value)
     {
         PlayerPrefs.SetFloat(GameVolumeKey, value);
+        cachedGameVolume = value; // Önbelleği güncel tut
     }
 
     public static float GetGameVolume()
     {
-        return PlayerPrefs.GetFloat(GameVolumeKey, 1f);
+        if (cachedGameVolume < 0f)
+            cachedGameVolume = PlayerPrefs.GetFloat(GameVolumeKey, 1f);
+
+        return cachedGameVolume;
     }
 
     private void UpdateGameOverScreen()
