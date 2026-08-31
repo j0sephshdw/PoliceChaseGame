@@ -26,14 +26,12 @@ public class CameraShake : MonoBehaviour
         instance = this;
         impulseSource = GetComponent<CinemachineImpulseSource>();
     }
-
     private void OnDestroy()
     {
         // static alanlar sahne değişince silinmediği için, yok olan örneğin
         // referansının geride kalmaması adına temizliyoruz.
         if (instance == this) instance = null;
     }
-
     // force: sarsıntı şiddeti. 0.3 hafif temas, 1.0 sert çarpma, 1.5 patlama gibi düşünülebilir.
     public static void Shake(float force)
     {
