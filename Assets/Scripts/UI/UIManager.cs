@@ -306,7 +306,6 @@ public class UIManager : MonoBehaviour
 
         PlayerPrefs.SetInt(QualityKey, level);
         PlayerPrefs.Save();
-
         Debug.Log($"Kalite: {QualitySettings.names[QualitySettings.GetQualityLevel()]} | Pipeline: {QualitySettings.renderPipeline?.name}");
     }
 

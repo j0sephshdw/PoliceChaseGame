@@ -64,7 +64,8 @@ public class GameUIManager : MonoBehaviour
         ScoreManager.Instance.OnXPChanged += HandleXPChanged;
         GameEvents.Instance.OnPlayerHealthChanged += HandleHealthChanged;
 
-        hudPanel.SetActive(true);
+        // Araç seçimi sırasında HUD gizli kalsın, oyun başlayınca açılsın
+        hudPanel.SetActive(GameManager.Instance.CurrentState != GameState.CarSelect);
         hudSoundIcon.sprite = UIManager.IsMuted() ? audioOffSprite : audioOnSprite;
         pausePanel.SetActive(false);
         gameVolumeSlider.value = PlayerPrefs.GetFloat(GameVolumeKey, 1f);
@@ -100,6 +101,7 @@ public class GameUIManager : MonoBehaviour
     // GameManager durumu her değiştiğinde (Playing/Paused/GameOver) çalışır.
     private void HandleGameStateChanged(GameState newState)
     {
+        hudPanel.SetActive(newState != GameState.CarSelect); // Araç seçim ekranında HUD görünmesin
         pausePanel.SetActive(newState == GameState.Paused);
         gameOverPanel.SetActive(newState == GameState.GameOver);
         wantedStarsText.SetActive(newState == GameState.Playing);

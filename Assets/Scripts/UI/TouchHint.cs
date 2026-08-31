@@ -26,8 +26,14 @@ public class TouchHint : MonoBehaviour
     {
         if (hintGroup != null) hintGroup.alpha = 0f;
 
-        if (GameManager.Instance != null)
-            GameManager.Instance.OnGameStateChanged += HandleGameStateChanged;
+        if (GameManager.Instance == null) return;
+
+        GameManager.Instance.OnGameStateChanged += HandleGameStateChanged;
+
+        // Bu script HUD panelinin içinde olduğu için, panel araç seçiminden sonra açıldığında
+        // çalışmaya başlıyor ve oyunun Playing'e geçtiği bildirimi o ana kadar çoktan gönderilmiş
+        // oluyor. Bu yüzden aboneliğin yanında mevcut durumu bir kez de doğrudan kontrol ediyoruz.
+        HandleGameStateChanged(GameManager.Instance.CurrentState);
     }
 
     private void OnDestroy()
